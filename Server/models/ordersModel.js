@@ -26,10 +26,10 @@ order{
 import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema({
-  drug_name: { type: String, required: true },  
+  drug_name: { type: String, required: true },
+  // Store drug reference by numeric `drug_id` to match Drug model's auto-increment id
   drug_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Drug",
+    type: Number,
     required: true,
   },
   quantity: { type: Number, required: true },

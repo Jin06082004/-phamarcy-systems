@@ -159,7 +159,10 @@
                 </p>
             </div>
         </div>
+        <script src="../../shared/api.js"></script>
         <script>
+            const { userAPI } = window;
+
             const tabs = document.querySelectorAll(".tab");
             const panels = {
                 login: document.getElementById("loginForm"),
@@ -249,45 +252,71 @@
             });
 
             // --- basic form handling (client-side demo) ---
-            const loginForm = document.getElementById('loginForm');
             const loginError = document.getElementById('loginError');
 
-            loginForm.addEventListener('submit', (e) => {
+            loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                loginError.hidden = true;
                 const data = new FormData(loginForm);
-                const identity = data.get('identity')?.trim();
-                const password = data.get('password')?.trim();
+                const identity = data.get("identity")?.trim();
+                const password = data.get("password")?.trim();
+
                 if (!identity || !password) {
-                    loginError.textContent = 'Vui lòng nhập đầy đủ thông tin.';
+                    loginError.textContent = "Vui lòng nhập đầy đủ thông tin.";
                     loginError.hidden = false;
                     return;
                 }
-                // demo: normally you'd send fetch() to server here
-                loginError.textContent = 'Demo: form hợp lệ. Thực hiện đăng nhập...';
-                loginError.hidden = false;
-                loginError.style.color = 'var(--primary)';
+
+                try {
+                    const response = await userAPI.login({ 
+                        username: identity, 
+                        password 
+                    });
+                    
+                    if (response.success) {
+                        localStorage.setItem("user", JSON.stringify(response.data));
+                        window.location.href = "/Web/user/index.html";
+                    } else {
+                        loginError.textContent = response.message;
+                        loginError.hidden = false;
+                    }
+                } catch (error) {
+                    loginError.textContent = "Lỗi kết nối server";
+                    loginError.hidden = false;
+                }
             });
 
-            registerForm.addEventListener('submit', (e) => {
+            registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 registerError.hidden = true;
                 const data = new FormData(registerForm);
-                const pwd = data.get('password') || '';
-                const conf = data.get('confirm') || '';
-                if (pwd.length < 8) {
-                    registerError.textContent = 'Mật khẩu phải có ít nhất 8 ký tự.';
-                    registerError.hidden = false;
-                    return;
-                }
+                const pwd = data.get("password") || "";
+                const conf = data.get("confirm") || "";
+
                 if (pwd !== conf) {
-                    registerError.textContent = 'Mật khẩu nhập lại không khớp.';
+                    registerError.textContent = "Mật khẩu không khớp";
                     registerError.hidden = false;
                     return;
                 }
-                registerError.textContent = 'Demo: tài khoản hợp lệ. Vui lòng gửi lên server.';
-                registerError.hidden = false;
-                registerError.style.color = 'var(--primary)';
+
+                try {
+                    const response = await userAPI.register({
+                        username: data.get("username"),
+                        password: pwd,
+                        full_name: data.get("full_name"),
+                        email: data.get("email"),
+                    });
+
+                    if (response.success) {
+                        alert("Đăng ký thành công! Vui lòng đăng nhập.");
+                        show("login");
+                    } else {
+                        registerError.textContent = response.message;
+                        registerError.hidden = false;
+                    }
+                } catch (error) {
+                    registerError.textContent = "Lỗi kết nối server";
+                    registerError.hidden = false;
+                }
             });
         </script>
     </body>

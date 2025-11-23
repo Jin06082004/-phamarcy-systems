@@ -93,6 +93,7 @@
           </button>
           <input
             type="text"
+            id="category-search"
             class="search-input"
             placeholder="Tìm kiếm danh mục..."
           />
@@ -141,8 +142,38 @@
       </section>
     </main>
 
+    <!-- ========== MODAL ADD/EDIT CATEGORY ========== -->
+    <div id="category-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="category-modal-title">Thêm danh mục</h2>
+          <button class="modal-close" id="category-close">&times;</button>
+        </div>
+        <form id="category-form">
+          <div class="form-group">
+            <label>Tên danh mục:</label>
+            <input type="text" id="category-name" required placeholder="VD: Kháng sinh" />
+          </div>
+          <div class="form-group">
+            <label>Mô tả:</label>
+            <textarea id="category-description" placeholder="Mô tả danh mục..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-green">Lưu</button>
+            <button type="button" class="btn-gray" id="category-cancel">Hủy</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- ========== SCRIPT ========== -->
-    <script>
+    <script type="module">
+      import { categoryAPI } from "../shared/api.js";
+
+      let categories = [];
+      let editingCategoryId = null;
+      const searchInput = document.getElementById('category-search');
+
       const toggleSidebar = document.getElementById("toggleSidebar");
       const sidebar = document.querySelector(".sidebar");
       const icon = toggleSidebar.querySelector("i");
@@ -151,6 +182,135 @@
         sidebar.classList.toggle("collapsed");
         icon.classList.toggle("bx-chevron-right");
       });
+
+      // Modal elements
+      const modal = document.getElementById('category-modal');
+      const modalTitle = document.getElementById('category-modal-title');
+      const closeBtn = document.getElementById('category-close');
+      const cancelBtn = document.getElementById('category-cancel');
+      const addBtn = document.getElementById('add-category-btn');
+      const form = document.getElementById('category-form');
+
+      function openModal(title = 'Thêm danh mục', category = null) {
+        modalTitle.textContent = title;
+        editingCategoryId = category ? category.category_id : null;
+        if (category) {
+          document.getElementById('category-name').value = category.name || '';
+          document.getElementById('category-description').value = category.description || '';
+        } else {
+          form.reset();
+        }
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() {
+        modal.style.display = 'none';
+        editingCategoryId = null;
+        form.reset();
+      }
+
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      addBtn.addEventListener('click', () => openModal());
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+      async function loadCategories() {
+        try {
+          const res = await categoryAPI.getAll();
+          if (res.success) {
+            categories = res.data || [];
+            renderTable();
+          } else {
+            console.error('Failed to load categories', res);
+            alert('Không thể tải danh mục');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi kết nối server');
+        }
+      }
+
+      function renderTable(filtered = null) {
+        const data = filtered ?? categories;
+        const tbody = document.querySelector('table tbody');
+        if (!data.length) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">Không có dữ liệu</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(cat => `
+          <tr>
+            <td><strong>${cat.category_id ?? 'N/A'}</strong></td>
+            <td>${cat.name || ''}</td>
+            <td>${cat.description || ''}</td>
+            <td>
+              <button class="btn-edit" onclick="window.editCategory(${cat.category_id})"><i class="bx bx-edit"></i></button>
+              <button class="btn-delete" onclick="window.deleteCategory(${cat.category_id})"><i class="bx bx-trash"></i></button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Search filter (client-side)
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          const q = searchInput.value.trim().toLowerCase();
+          if (!q) {
+            renderTable(categories);
+            return;
+          }
+          const filtered = categories.filter(c => (c.name || '').toLowerCase().includes(q) || String(c.category_id).includes(q));
+          renderTable(filtered);
+        });
+      }
+
+      window.editCategory = (id) => {
+        const cat = categories.find(c => Number(c.category_id) === Number(id));
+        if (cat) openModal('Sửa danh mục', cat);
+      };
+
+      window.deleteCategory = async (id) => {
+        if (!confirm('Bạn có chắc muốn xóa danh mục này?')) return;
+        try {
+          const res = await categoryAPI.delete(id);
+          if (res.success) {
+            alert('Xóa thành công');
+            await loadCategories();
+          } else {
+            alert('Xóa thất bại: ' + (res.message || ''));
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi kết nối');
+        }
+      };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          name: document.getElementById('category-name').value.trim(),
+          description: document.getElementById('category-description').value.trim(),
+        };
+        try {
+          let res;
+          if (editingCategoryId) {
+            res = await categoryAPI.update(editingCategoryId, payload);
+          } else {
+            res = await categoryAPI.create(payload);
+          }
+          if (res.success) {
+            closeModal();
+            await loadCategories();
+            alert('Lưu thành công');
+          } else {
+            alert('Lỗi: ' + (res.message || ''));
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi kết nối');
+        }
+      });
+
+      document.addEventListener('DOMContentLoaded', loadCategories);
     </script>
   </body>
 </html>

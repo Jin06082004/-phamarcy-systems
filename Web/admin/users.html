@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý người dùng - Hệ thống quản lý nhà thuốc</title>
 
-    <!-- Boxicons & CSS -->
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/admin.css" />
   </head>
   <body>
@@ -21,81 +17,30 @@
       </div>
 
       <ul class="sidebar-menu">
-        <li>
-          <a href="index.html">
-            <i class="bx bx-home"></i>
-            <span>Bảng điều khiển</span>
-          </a>
-        </li>
-        <li>
-          <a href="drugs.html">
-            <i class="bx bx-plus-medical"></i>
-            <span>Thuốc</span>
-          </a>
-        </li>
-        <li>
-          <a href="categories.html">
-            <i class="bx bx-category"></i>
-            <span>Danh mục</span>
-          </a>
-        </li>
-        <li>
-          <a href="orders.html">
-            <i class="bx bx-cart-alt"></i>
-            <span>Đơn hàng</span>
-          </a>
-        </li>
-        <li class="active">
-          <a href="users.html">
-            <i class="bx bx-user"></i>
-            <span>Người dùng</span>
-          </a>
-        </li>
-        <li>
-          <a href="statistics.html">
-            <i class="bx bx-line-chart"></i>
-            <span>Thống kê</span>
-          </a>
-        </li>
-        <li>
-          <a href="discount.html">
-            <i class="bx bx-tag"></i>
-            <span>Khuyễn mãi</span>
-          </a>
-        </li>
-        <li class="logout">
-          <a href="#">
-            <i class="bx bx-log-out"></i>
-            <span>Đăng xuất</span>
-          </a>
-        </li>
+        <li><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+        <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Thuốc</span></a></li>
+        <li><a href="categories.html"><i class="bx bx-category"></i><span>Danh mục</span></a></li>
+        <li><a href="orders.html"><i class="bx bx-cart-alt"></i><span>Đơn hàng</span></a></li>
+        <li class="active"><a href="users.html"><i class="bx bx-user"></i><span>Người dùng</span></a></li>
+        <li><a href="statistics.html"><i class="bx bx-line-chart"></i><span>Thống kê</span></a></li>
+        <li><a href="discount.html"><i class="bx bx-tag"></i><span>Khuyễn mãi</span></a></li>
+        <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
       </ul>
 
-      <div class="sidebar-toggle" id="toggleSidebar">
-        <i class="bx bx-chevron-left"></i>
-      </div>
+      <div class="sidebar-toggle" id="toggleSidebar"><i class="bx bx-chevron-left"></i></div>
     </aside>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
       <header class="main-header">
         <h1>Quản lý người dùng</h1>
-        <div class="user-info">
-          <i class="bx bx-user-circle"></i>
-          <span>Admin</span>
-        </div>
+        <div class="user-info"><i class="bx bx-user-circle"></i><span>Admin</span></div>
       </header>
 
       <section class="content">
         <div class="toolbar">
-          <button class="btn-green" id="add-user-btn">
-            <i class="bx bx-plus"></i> Thêm người dùng mới
-          </button>
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Tìm kiếm người dùng..."
-          />
+          <button class="btn-green" id="add-user-btn"><i class="bx bx-plus"></i> Thêm người dùng mới</button>
+          <input type="text" id="user-search" class="search-input" placeholder="Tìm kiếm người dùng..." />
         </div>
 
         <div class="table-container">
@@ -103,6 +48,7 @@
             <thead>
               <tr>
                 <th>Mã người dùng</th>
+                <th>Tên đăng nhập</th>
                 <th>Họ và tên</th>
                 <th>Email</th>
                 <th>Số điện thoại</th>
@@ -112,54 +58,341 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>U001</td>
-                <td>Nguyễn Văn A</td>
-                <td>vana@gmail.com</td>
-                <td>0912345678</td>
-                <td>Khách hàng</td>
-                <td>Hoạt động</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-edit"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>U002</td>
-                <td>Trần Thị B</td>
-                <td>thib@gmail.com</td>
-                <td>0987654321</td>
-                <td>Nhân viên</td>
-                <td>Hoạt động</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-edit"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              <tr style="text-align:center;"><td colspan="8">Đang tải dữ liệu...</td></tr>
             </tbody>
           </table>
         </div>
       </section>
     </main>
 
+    <!-- ========== MODAL ADD/EDIT USER ========== -->
+    <div id="user-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="user-modal-title">Thêm người dùng mới</h2>
+          <button class="modal-close" id="user-close">&times;</button>
+        </div>
+        <form id="user-form">
+          <div class="form-group">
+            <label>Tên đăng nhập:</label>
+            <input type="text" id="user-username" required placeholder="VD: nguyenvana" />
+          </div>
+
+          <div class="form-group">
+            <label>Mật khẩu:</label>
+            <input type="password" id="user-password" placeholder="Để trống nếu không muốn đổi" />
+          </div>
+
+          <div class="form-group">
+            <label>Họ và tên:</label>
+            <input type="text" id="user-fullname" placeholder="VD: Nguyễn Văn A" />
+          </div>
+
+          <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="user-email" placeholder="VD: vana@gmail.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Số điện thoại:</label>
+            <input type="tel" id="user-phone" placeholder="VD: 0912345678" />
+          </div>
+
+          <div class="form-group">
+            <label>Địa chỉ:</label>
+            <textarea id="user-address" placeholder="Địa chỉ đầy đủ..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Vai trò:</label>
+            <select id="user-role">
+              <option value="user">Người dùng (User)</option>
+              <option value="pharmacist">Dược sĩ (Pharmacist)</option>
+              <option value="admin">Quản trị viên (Admin)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Trạng thái:</label>
+            <select id="user-status">
+              <option value="false">Chưa kích hoạt</option>
+              <option value="true">Đã kích hoạt</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-green">Lưu</button>
+            <button type="button" class="btn-gray" id="user-cancel">Hủy</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- ========== SCRIPT ========== -->
-    <script>
+    <script type="module">
+      import { userAPI } from "../shared/api.js";
+
+      // ========== STATE ==========
+      let users = [];
+      let editingUserId = null;
+
+      // ========== DOM ELEMENTS ==========
       const toggleSidebar = document.getElementById("toggleSidebar");
       const sidebar = document.querySelector(".sidebar");
       const icon = toggleSidebar.querySelector("i");
+      const modal = document.getElementById("user-modal");
+      const modalTitle = document.getElementById("user-modal-title");
+      const closeBtn = document.getElementById("user-close");
+      const cancelBtn = document.getElementById("user-cancel");
+      const addBtn = document.getElementById("add-user-btn");
+      const form = document.getElementById("user-form");
+      const searchInput = document.getElementById("user-search");
 
+      // ========== SIDEBAR TOGGLE ==========
       toggleSidebar.addEventListener("click", () => {
         sidebar.classList.toggle("collapsed");
         icon.classList.toggle("bx-chevron-right");
       });
+
+      // ========== MODAL CONTROL ==========
+      function openModal(title = "Thêm người dùng mới", userId = null) {
+        modalTitle.textContent = title;
+        editingUserId = userId;
+
+        if (userId) {
+          // Edit mode
+          const user = users.find(u => u.user_id === userId);
+          if (user) {
+            document.getElementById("user-username").value = user.username || "";
+            document.getElementById("user-username").disabled = true;
+            document.getElementById("user-password").value = "";
+            document.getElementById("user-fullname").value = user.full_name || "";
+            document.getElementById("user-email").value = user.email || "";
+            document.getElementById("user-phone").value = user.phone || "";
+            document.getElementById("user-address").value = user.address || "";
+            document.getElementById("user-role").value = user.role || "pharmacist";
+            document.getElementById("user-status").value = String(user.is_active) || "false";
+          }
+        } else {
+          // Add mode
+          document.getElementById("user-username").disabled = false;
+          form.reset();
+          document.getElementById("user-role").value = "pharmacist";
+          document.getElementById("user-status").value = "false";
+        }
+
+        modal.style.display = "flex";
+      }
+
+      function closeModal() {
+        modal.style.display = "none";
+        editingUserId = null;
+        form.reset();
+        document.getElementById("user-username").disabled = false;
+      }
+
+      addBtn.addEventListener("click", () => openModal());
+      closeBtn.addEventListener("click", closeModal);
+      cancelBtn.addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+      // ========== LOAD USERS ==========
+      async function loadUsers() {
+        try {
+          console.log("🔄 Đang tải danh sách người dùng...");
+          const res = await userAPI.getAll();
+          console.log("📦 Response:", res);
+
+          if (res.success && res.data) {
+            users = res.data;
+            renderTable(users);
+          } else if (Array.isArray(res)) {
+            users = res;
+            renderTable(users);
+          } else {
+            showError("Không thể tải danh sách người dùng");
+          }
+        } catch (error) {
+          console.error("❌ Lỗi tải người dùng:", error);
+          showError("Lỗi kết nối server: " + error.message);
+        }
+      }
+
+      // ========== RENDER TABLE ==========
+      function renderTable(data = users) {
+        const tbody = document.querySelector("table tbody");
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">Không có dữ liệu</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(user => `
+          <tr>
+            <td><strong>${user.user_id || "N/A"}</strong></td>
+            <td>${user.username || "N/A"}</td>
+            <td>${user.full_name || "—"}</td>
+            <td>${user.email || "—"}</td>
+            <td>${user.phone || "—"}</td>
+            <td>
+              <span style="background-color: ${user.role === 'admin' ? '#ffd700' : user.role === 'pharmacist' ? '#cfe9cf' : '#e3f2fd'}; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                ${user.role === 'admin' ? 'Admin' : user.role === 'pharmacist' ? 'Dược sĩ' : 'Người dùng'}
+              </span>
+            </td>
+            <td>
+              <span style="background-color: ${user.is_active ? '#d4fcd7' : '#ffd6d6'}; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                ${user.is_active ? 'Hoạt động' : 'Chưa kích hoạt'}
+              </span>
+            </td>
+            <td>
+              <button class="btn-edit" onclick="window.editUser(${user.user_id})" title="Sửa"><i class="bx bx-edit"></i></button>
+              <button class="btn-delete" onclick="window.deleteUser(${user.user_id})" title="Xóa"><i class="bx bx-trash"></i></button>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      // ========== SEARCH ==========
+      searchInput.addEventListener("keyup", () => {
+        const keyword = searchInput.value.toLowerCase();
+        const filtered = users.filter(user =>
+          (user.username && user.username.toLowerCase().includes(keyword)) ||
+          (user.full_name && user.full_name.toLowerCase().includes(keyword)) ||
+          (user.email && user.email.toLowerCase().includes(keyword)) ||
+          String(user.user_id).includes(keyword)
+        );
+        renderTable(filtered);
+      });
+
+      // ========== FORM SUBMIT ==========
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          username: document.getElementById("user-username").value.trim(),
+          full_name: document.getElementById("user-fullname").value.trim(),
+          email: document.getElementById("user-email").value.trim(),
+          phone: document.getElementById("user-phone").value.trim(),
+          address: document.getElementById("user-address").value.trim(),
+          role: document.getElementById("user-role").value,
+          is_active: document.getElementById("user-status").value === "true",
+        };
+
+        const password = document.getElementById("user-password").value.trim();
+        if (password) {
+          payload.password = password;
+        }
+
+        // Validate
+        if (!payload.username || !payload.full_name) {
+          showError("Vui lòng điền đầy đủ thông tin bắt buộc");
+          return;
+        }
+
+        try {
+          let res;
+          if (editingUserId) {
+            // Update
+            res = await userAPI.update(editingUserId, payload);
+            showSuccess("✅ Cập nhật người dùng thành công");
+          } else {
+            // Create (need password for new user)
+            if (!password) {
+              showError("Mật khẩu là bắt buộc khi tạo người dùng mới");
+              return;
+            }
+            res = await userAPI.register(payload);
+            showSuccess("✅ Thêm người dùng thành công");
+          }
+
+          console.log("Response:", res);
+          closeModal();
+          await loadUsers();
+        } catch (error) {
+          console.error("Error:", error);
+          showError("❌ Lỗi: " + error.message);
+        }
+      });
+
+      // ========== ACTIONS ==========
+      window.editUser = (id) => {
+        openModal("Sửa thông tin người dùng", id);
+      };
+
+      window.deleteUser = async (id) => {
+        if (confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
+          try {
+            const res = await userAPI.delete(id);
+            showSuccess("✅ Xóa người dùng thành công");
+            await loadUsers();
+          } catch (error) {
+            showError("❌ Lỗi khi xóa: " + error.message);
+          }
+        }
+      };
+
+      // ========== NOTIFICATIONS ==========
+      function showError(message) {
+        const msg = document.createElement("div");
+        msg.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #f44336;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 9999;
+          animation: slideIn 0.3s ease;
+        `;
+        msg.textContent = message;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+      }
+
+      function showSuccess(message) {
+        const msg = document.createElement("div");
+        msg.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #4CAF50;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 9999;
+          animation: slideIn 0.3s ease;
+        `;
+        msg.textContent = message;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+      }
+
+      // ========== INIT ==========
+      document.addEventListener("DOMContentLoaded", loadUsers);
+
+      // ========== LOGOUT ==========
+      document.getElementById("logout-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        if (confirm("Bạn có chắc muốn đăng xuất?")) {
+          localStorage.removeItem("user");
+          window.location.href = "/Web/user/pages/login.html";
+        }
+      });
     </script>
+
+    <style>
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
   </body>
 </html>

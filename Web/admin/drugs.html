@@ -94,6 +94,7 @@
           <input
             type="text"
             class="search-input"
+            id="search-input"
             placeholder="Tìm kiếm thuốc..."
           />
         </div>
@@ -107,42 +108,13 @@
                 <th>Danh mục</th>
                 <th>Giá</th>
                 <th>Số lượng</th>
-                <th>Hạn sử dụng</th>
+                <th>Mô tả</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>TH001</td>
-                <td>Paracetamol 500mg</td>
-                <td>Giảm đau</td>
-                <td>5.000₫</td>
-                <td>120</td>
-                <td>12/2026</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-edit"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>TH002</td>
-                <td>Amoxicillin 250mg</td>
-                <td>Kháng sinh</td>
-                <td>8.000₫</td>
-                <td>85</td>
-                <td>05/2027</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-edit"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
+              <tr style="text-align: center;">
+                <td colspan="7">Đang tải dữ liệu...</td>
               </tr>
             </tbody>
           </table>
@@ -150,15 +122,312 @@
       </section>
     </main>
 
-    <!-- ========== SCRIPT ========== -->
-    <script>
-      const toggleSidebar = document.getElementById("toggleSidebar");
-      const sidebar = document.querySelector(".sidebar");
-      const icon = toggleSidebar.querySelector("i");
+    <!-- ========== MODAL THÊMC/SỬA THUỐC ========== -->
+    <div id="drug-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title">Thêm thuốc mới</h2>
+          <button class="modal-close" id="close-modal">&times;</button>
+        </div>
+        <form id="drug-form">
+          <div class="form-group">
+            <label>Mã thuốc:</label>
+            <input type="text" id="drug-code" required placeholder="VD: DRG001" />
+          </div>
 
-      toggleSidebar.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        icon.classList.toggle("bx-chevron-right");
+          <div class="form-group">
+            <label>Tên thuốc:</label>
+            <input type="text" id="drug-name" required placeholder="VD: Paracetamol 500mg" />
+          </div>
+
+          <div class="form-group">
+            <label>Danh mục:</label>
+            <select id="drug-category" required>
+              <option value="">-- Chọn danh mục --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Giá (₫):</label>
+            <input type="number" id="drug-price" required min="0" placeholder="50000" />
+          </div>
+
+          <div class="form-group">
+            <label>Số lượng:</label>
+            <input type="number" id="drug-stock" required min="0" placeholder="100" />
+          </div>
+
+          <div class="form-group">
+            <label>Mô tả:</label>
+            <textarea id="drug-description" placeholder="Mô tả chi tiết thuốc..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>URL Hình ảnh:</label>
+            <input type="url" id="drug-image" placeholder="https://example.com/image.jpg" />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-green">Lưu</button>
+            <button type="button" class="btn-gray" id="cancel-btn">Hủy</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========== SCRIPT ========== -->
+    <script type="module">
+      import { drugAPI, categoryAPI } from "../shared/api.js";
+
+      // ========== STATE ==========
+      let allDrugs = [];
+      let allCategories = [];
+      let editingDrugId = null;
+
+      // ========== DOM ELEMENTS ==========
+      const modal = document.getElementById("drug-modal");
+      const modalTitle = document.getElementById("modal-title");
+      const drugForm = document.getElementById("drug-form");
+      const closeModalBtn = document.getElementById("close-modal");
+      const cancelBtn = document.getElementById("cancel-btn");
+      const addDrugBtn = document.getElementById("add-drug-btn");
+      const searchInput = document.getElementById("search-input");
+
+      // ========== MODAL CONTROL ==========
+      function openModal(title = "Thêm thuốc mới", drugId = null) {
+        modalTitle.textContent = title;
+        editingDrugId = drugId;
+        
+        if (drugId) {
+          // Edit mode
+          const drug = allDrugs.find(d => d.drug_id === drugId);
+          if (drug) {
+            document.getElementById("drug-code").value = drug.drug_code || "";
+            document.getElementById("drug-name").value = drug.name || "";
+            document.getElementById("drug-category").value = drug.category_id || "";
+            document.getElementById("drug-price").value = drug.price || "";
+            document.getElementById("drug-stock").value = drug.stock || "";
+            document.getElementById("drug-description").value = drug.description || "";
+            document.getElementById("drug-image").value = drug.image || "";
+          }
+        } else {
+          // Add mode
+          drugForm.reset();
+        }
+        
+        modal.style.display = "flex";
+      }
+
+      function closeModal() {
+        modal.style.display = "none";
+        editingDrugId = null;
+        drugForm.reset();
+      }
+
+      addDrugBtn.addEventListener("click", () => openModal());
+      closeModalBtn.addEventListener("click", closeModal);
+      cancelBtn.addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // ========== LOAD DATA ==========
+      async function loadCategories() {
+        try {
+          const response = await categoryAPI.getAll();
+          if (response.success && response.data) {
+            allCategories = response.data;
+            updateCategorySelect();
+          }
+        } catch (error) {
+          console.error("Lỗi tải danh mục:", error);
+        }
+      }
+
+      function updateCategorySelect() {
+        const select = document.getElementById("drug-category");
+        const currentValue = select.value;
+        
+        select.innerHTML = '<option value="">-- Chọn danh mục --</option>';
+        allCategories.forEach(cat => {
+          const option = document.createElement("option");
+          // Use numeric category_id to match server schema
+          option.value = cat.category_id ?? "";
+          option.textContent = cat.name || cat.category_name || "Không xác định";
+          select.appendChild(option);
+        });
+        
+        select.value = currentValue;
+      }
+
+      async function loadDrugs() {
+        try {
+          console.log("🔄 Đang tải danh sách thuốc...");
+          const response = await drugAPI.getAll();
+          console.log("📦 Response:", response);
+          
+          if (response.success && response.data) {
+            allDrugs = response.data;
+            renderDrugs(allDrugs);
+          } else {
+            console.error("❌ Lỗi: Response không hợp lệ", response);
+            showError("Không thể tải danh sách thuốc");
+          }
+        } catch (error) {
+          console.error("❌ Lỗi tải thuốc:", error);
+          showError("Lỗi kết nối server: " + error.message);
+        }
+      }
+
+      // ========== RENDER TABLE ==========
+      function renderDrugs(drugs = allDrugs) {
+        const tbody = document.querySelector("table tbody");
+        
+        if (!drugs || drugs.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; padding: 20px;'>Không có dữ liệu</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = drugs.map(drug => {
+          const categoryName = allCategories.find(c =>
+            Number(c.category_id) === Number(drug.category_id)
+          )?.name || `ID: ${drug.category_id}`;
+
+          return `
+            <tr>
+              <td><strong>${drug.drug_code || "N/A"}</strong></td>
+              <td>${drug.name || "N/A"}</td>
+              <td>${categoryName}</td>
+              <td>${drug.price ? drug.price.toLocaleString() : "N/A"}₫</td>
+              <td>
+                <span style="background-color: ${drug.stock < 50 ? '#fff3cd' : '#d4edda'}; padding: 5px 10px; border-radius: 4px;">
+                  ${drug.stock || 0}
+                </span>
+              </td>
+              <td>${drug.description || "-"}</td>
+              <td>
+                <button class="btn-edit" onclick="window.editDrug(${drug.drug_id})" title="Sửa">
+                  <i class="bx bx-edit"></i>
+                </button>
+                <button class="btn-delete" onclick="window.deleteDrug(${drug.drug_id})" title="Xóa">
+                  <i class="bx bx-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // ========== SEARCH ==========
+      searchInput.addEventListener("keyup", () => {
+        const keyword = searchInput.value.toLowerCase();
+        const filtered = allDrugs.filter(drug =>
+          drug.name.toLowerCase().includes(keyword) ||
+          drug.drug_code.toLowerCase().includes(keyword)
+        );
+        renderDrugs(filtered);
+      });
+
+      // ========== FORM SUBMIT ==========
+      drugForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+          const formData = {
+          drug_code: document.getElementById("drug-code").value.trim(),
+          name: document.getElementById("drug-name").value.trim(),
+          category_id: parseInt(document.getElementById("drug-category").value),
+          price: parseFloat(document.getElementById("drug-price").value),
+          stock: parseInt(document.getElementById("drug-stock").value),
+          description: document.getElementById("drug-description").value.trim(),
+          image: document.getElementById("drug-image").value.trim(),
+        };
+
+        // Validate
+        if (!formData.drug_code || !formData.name || !formData.category_id || !formData.price || !formData.stock) {
+          showError("Vui lòng điền đầy đủ thông tin bắt buộc");
+          return;
+        }
+
+        try {
+          let response;
+          if (editingDrugId) {
+            // Update
+            response = await drugAPI.update(editingDrugId, formData);
+            showSuccess("✅ Cập nhật thuốc thành công");
+          } else {
+            // Create
+            response = await drugAPI.create(formData);
+            showSuccess("✅ Thêm thuốc thành công");
+          }
+
+          closeModal();
+          await loadDrugs();
+        } catch (error) {
+          showError("❌ Lỗi: " + error.message);
+        }
+      });
+
+      // ========== ACTIONS ==========
+      window.editDrug = (id) => {
+        openModal("Sửa thông tin thuốc", id);
+      };
+
+      window.deleteDrug = async (id) => {
+        if (confirm("Bạn chắc chắn muốn xóa thuốc này?")) {
+          try {
+            await drugAPI.delete(id);
+            showSuccess("✅ Xóa thuốc thành công");
+            await loadDrugs();
+          } catch (error) {
+            showError("❌ Lỗi khi xóa: " + error.message);
+          }
+        }
+      };
+
+      // ========== NOTIFICATIONS ==========
+      function showError(message) {
+        const msg = document.createElement("div");
+        msg.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: #f44336;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 6px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+          z-index: 2000;
+          max-width: 400px;
+        `;
+        msg.textContent = message;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 4000);
+      }
+
+      function showSuccess(message) {
+        const msg = document.createElement("div");
+        msg.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: #4CAF50;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 6px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+          z-index: 2000;
+          max-width: 400px;
+        `;
+        msg.textContent = message;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+      }
+
+      // ========== INIT ==========
+      document.addEventListener("DOMContentLoaded", async () => {
+        console.log("🚀 Khởi tạo trang...");
+        await loadCategories();
+        await loadDrugs();
       });
     </script>
   </body>

@@ -5,97 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý đơn hàng - Hệ thống quản lý nhà thuốc</title>
 
-    <!-- Boxicons & CSS -->
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/admin.css" />
   </head>
   <body>
-    <!-- ========== SIDEBAR ========== -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <i class="bx bx-capsule logo-icon"></i>
         <span class="logo-text">Pharmacy</span>
       </div>
-
       <ul class="sidebar-menu">
-        <li>
-          <a href="index.html">
-            <i class="bx bx-home"></i>
-            <span>Bảng điều khiển</span>
-          </a>
-        </li>
-        <li>
-          <a href="drugs.html">
-            <i class="bx bx-plus-medical"></i>
-            <span>Thuốc</span>
-          </a>
-        </li>
-        <li>
-          <a href="categories.html">
-            <i class="bx bx-category"></i>
-            <span>Danh mục</span>
-          </a>
-        </li>
-        <li class="active">
-          <a href="orders.html">
-            <i class="bx bx-cart-alt"></i>
-            <span>Đơn hàng</span>
-          </a>
-        </li>
-        <li>
-          <a href="users.html">
-            <i class="bx bx-user"></i>
-            <span>Người dùng</span>
-          </a>
-        </li>
-        <li>
-          <a href="statistics.html">
-            <i class="bx bx-line-chart"></i>
-            <span>Thống kê</span>
-          </a>
-        </li>
-        <li>
-          <a href="discount.html">
-            <i class="bx bx-tag"></i>
-            <span>Khuyễn mãi</span>
-          </a>
-        </li>
-        <li class="logout">
-          <a href="#">
-            <i class="bx bx-log-out"></i>
-            <span>Đăng xuất</span>
-          </a>
-        </li>
+        <li><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+        <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Thuốc</span></a></li>
+        <li><a href="categories.html"><i class="bx bx-category"></i><span>Danh mục</span></a></li>
+        <li class="active"><a href="orders.html"><i class="bx bx-cart-alt"></i><span>Đơn hàng</span></a></li>
+        <li><a href="users.html"><i class="bx bx-user"></i><span>Người dùng</span></a></li>
+        <li><a href="statistics.html"><i class="bx bx-line-chart"></i><span>Thống kê</span></a></li>
+        <li><a href="discount.html"><i class="bx bx-tag"></i><span>Khuyễn mãi</span></a></li>
+        <li class="logout"><a href="#"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
       </ul>
-
-      <div class="sidebar-toggle" id="toggleSidebar">
-        <i class="bx bx-chevron-left"></i>
-      </div>
+      <div class="sidebar-toggle" id="toggleSidebar"><i class="bx bx-chevron-left"></i></div>
     </aside>
 
-    <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
       <header class="main-header">
         <h1>Quản lý đơn hàng</h1>
-        <div class="user-info">
-          <i class="bx bx-user-circle"></i>
-          <span>Admin</span>
-        </div>
+        <div class="user-info"><i class="bx bx-user-circle"></i><span>Admin</span></div>
       </header>
 
       <section class="content">
         <div class="toolbar">
-          <button class="btn-green" id="add-order-btn">
-            <i class="bx bx-plus"></i> Thêm đơn hàng mới
-          </button>
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Tìm kiếm đơn hàng..."
-          />
+          <button class="btn-green" id="add-order-btn"><i class="bx bx-plus"></i> Thêm đơn hàng mới</button>
+          <input type="text" id="order-search" class="search-input" placeholder="Tìm kiếm đơn hàng..." />
         </div>
 
         <div class="table-container">
@@ -111,52 +52,162 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>DH001</td>
-                <td>Nguyễn Văn A</td>
-                <td>05/11/2025</td>
-                <td>320.000₫</td>
-                <td>Đã thanh toán</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-show"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>DH002</td>
-                <td>Trần Thị B</td>
-                <td>06/11/2025</td>
-                <td>150.000₫</td>
-                <td>Chưa thanh toán</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-show"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              <tr style="text-align:center"><td colspan="6">Đang tải dữ liệu...</td></tr>
             </tbody>
           </table>
         </div>
       </section>
+
+      <!-- Order Modal -->
+      <div id="order-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="order-modal-title">Chi tiết đơn hàng</h2>
+            <button class="modal-close" id="order-close">&times;</button>
+          </div>
+          <form id="order-form">
+            <div class="form-group"><label>Customer ID:</label><input type="text" id="order-customer" placeholder="Customer ObjectId" /></div>
+            <div class="form-group"><label>Order items (JSON array):</label><textarea id="order-items" placeholder='[{"drug_id":1,"quantity":1,"price":10000}]'></textarea></div>
+            <div class="form-group"><label>Payment method:</label>
+              <select id="order-payment"><option value="cash">cash</option><option value="card">card</option><option value="online">online</option></select>
+            </div>
+            <div class="form-group"><label>Notes:</label><textarea id="order-notes"></textarea></div>
+            <div class="form-group"><label>Status:</label>
+              <select id="order-status"><option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select>
+            </div>
+            <div class="form-actions"><button class="btn-green" type="submit">Lưu</button><button class="btn-gray" type="button" id="order-cancel">Hủy</button></div>
+          </form>
+        </div>
+      </div>
     </main>
 
-    <!-- ========== SCRIPT ========== -->
-    <script>
+    <script type="module">
+      import { orderAPI } from "../shared/api.js";
+
       const toggleSidebar = document.getElementById("toggleSidebar");
       const sidebar = document.querySelector(".sidebar");
       const icon = toggleSidebar.querySelector("i");
+      toggleSidebar.addEventListener("click", () => { sidebar.classList.toggle("collapsed"); icon.classList.toggle("bx-chevron-right"); });
 
-      toggleSidebar.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        icon.classList.toggle("bx-chevron-right");
+      let orders = [];
+      let editingOrderId = null;
+
+      const searchInput = document.getElementById('order-search');
+      const modal = document.getElementById('order-modal');
+      const modalTitle = document.getElementById('order-modal-title');
+      const closeBtn = document.getElementById('order-close');
+      const cancelBtn = document.getElementById('order-cancel');
+      const addBtn = document.getElementById('add-order-btn');
+      const form = document.getElementById('order-form');
+
+      addBtn.addEventListener('click', () => openModal('Tạo đơn hàng', null));
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+      function openModal(title = 'Chi tiết đơn', order = null) {
+        modalTitle.textContent = title;
+        if (order) {
+          editingOrderId = order.order_id;
+          document.getElementById('order-customer').value = order.customer?._id || order.customer || '';
+          document.getElementById('order-items').value = JSON.stringify(order.order_items || [], null, 2);
+          document.getElementById('order-payment').value = order.payment_method || 'cash';
+          document.getElementById('order-notes').value = order.notes || '';
+          document.getElementById('order-status').value = order.status || 'Pending';
+        } else {
+          editingOrderId = null;
+          form.reset();
+        }
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() { modal.style.display = 'none'; editingOrderId = null; form.reset(); }
+
+      async function loadOrders() {
+        try {
+          const res = await orderAPI.getAll();
+          orders = Array.isArray(res) ? res : (res && res.data) ? res.data : [];
+          renderTable(orders);
+        } catch (err) {
+          console.error(err);
+          alert('Lỗi kết nối server');
+        }
+      }
+
+      function renderTable(data) {
+        const tbody = document.querySelector('table tbody');
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Không có dữ liệu</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(o => `
+          <tr>
+            <td><strong>${o.order_id}</strong></td>
+            <td>${o.customer?.name || o.customer || 'N/A'}</td>
+            <td>${new Date(o.order_date || o.createdAt).toLocaleString()}</td>
+            <td>${(o.total_amount||0).toLocaleString()}₫</td>
+            <td>${o.status}</td>
+            <td>
+              <button class="btn-edit" onclick="window.viewOrder(${o.order_id})" title="Xem"><i class="bx bx-show"></i></button>
+              <button class="btn-delete" onclick="window.removeOrder(${o.order_id})" title="Xóa"><i class="bx bx-trash"></i></button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      window.viewOrder = async (orderId) => {
+        try {
+          const res = await orderAPI.getById(orderId);
+          const order = res && (res.order_id || res.data) ? (res.order || res) : res;
+          if (order && order.order_id) openModal('Chi tiết đơn hàng', order);
+          else alert('Không tìm thấy đơn hàng');
+        } catch (err) { console.error(err); alert('Lỗi khi lấy chi tiết'); }
+      };
+
+      window.removeOrder = async (orderId) => {
+        if (!confirm('Bạn có chắc muốn xóa đơn hàng này?')) return;
+        try { const res = await orderAPI.delete(orderId); alert(res.message || 'Xóa thành công'); await loadOrders(); } catch (err) { console.error(err); alert('Lỗi khi xóa'); }
+      };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {};
+        payload.customer_id = document.getElementById('order-customer').value.trim();
+        try {
+          payload.order_items = (JSON.parse(document.getElementById('order-items').value || '[]') || []).map(it => ({
+            drug_id: Number(it.drug_id),
+            drug_name: it.drug_name || '',
+            quantity: Number(it.quantity) || 0,
+            price: Number(it.price) || 0,
+          }));
+        } catch (err) { alert('Order items must be valid JSON array'); return; }
+        payload.payment_method = document.getElementById('order-payment').value;
+        payload.notes = document.getElementById('order-notes').value.trim();
+        payload.status = document.getElementById('order-status').value;
+
+        try {
+          if (editingOrderId) {
+            const res = await orderAPI.update(editingOrderId, payload);
+            alert(res.message || 'Cập nhật thành công');
+          } else {
+            const res = await orderAPI.create(payload);
+            alert(res.message || 'Tạo thành công');
+          }
+          closeModal();
+          await loadOrders();
+        } catch (err) { console.error(err); alert('Lỗi khi lưu đơn hàng'); }
       });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          const q = searchInput.value.trim().toLowerCase();
+          if (!q) return renderTable(orders);
+          const filtered = orders.filter(o => String(o.order_id).includes(q) || (o.customer?.name||'').toLowerCase().includes(q));
+          renderTable(filtered);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', loadOrders);
     </script>
   </body>
 </html>

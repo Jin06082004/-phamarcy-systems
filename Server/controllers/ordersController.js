@@ -1,4 +1,5 @@
 import Order from "../models/ordersModel.js";
+import Drug from "../models/drugModel.js";
 import orderService from "../services/ordersServices.js";
 
 // Tạo đơn hàng mới (tự tăng order_id)
@@ -52,23 +53,8 @@ export const createOrder = async (req, res) => {
 // Lấy danh sách tất cả đơn hàng (hiện order_id)
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
-      .populate("customer_id", "name email phone")
-      .populate("order_items.drug_id", "drug_name price");
-
-    const formatted = orders.map((order) => ({
-      order_id: order.order_id,
-      customer: order.customer_id,
-      order_items: order.order_items,
-      total_amount: order.total_amount,
-      status: order.status,
-      payment_method: order.payment_method,
-      notes: order.notes,
-      order_date: order.order_date,
-      createdAt: order.createdAt,
-    }));
-
-    res.status(200).json(formatted);
+    const orders = await Order.find().populate("customer_id", "name email phone");
+    res.status(200).json(orders);
   } catch (error) {
     console.error("❌ Lỗi lấy danh sách đơn hàng:", error);
     res.status(500).json({ message: "Không thể lấy danh sách đơn hàng" });
@@ -79,24 +65,13 @@ export const getAllOrders = async (req, res) => {
 export const getOrderByOrderId = async (req, res) => {
   try {
     const { order_id } = req.params;
-    const order = await Order.findOne({ order_id })
-      .populate("customer_id", "name email phone")
-      .populate("order_items.drug_id", "drug_name price");
+    const order = await Order.findOne({ order_id }).populate("customer_id", "name email phone");
 
     if (!order) {
       return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
     }
 
-    res.status(200).json({
-      order_id: order.order_id,
-      customer: order.customer_id,
-      order_items: order.order_items,
-      total_amount: order.total_amount,
-      status: order.status,
-      payment_method: order.payment_method,
-      notes: order.notes,
-      order_date: order.order_date,
-    });
+    res.status(200).json(order);
   } catch (error) {
     console.error("❌ Lỗi lấy chi tiết đơn hàng:", error);
     res.status(500).json({ message: "Không thể lấy chi tiết đơn hàng" });
@@ -130,6 +105,45 @@ export const updateOrderStatus = async (req, res) => {
   } catch (error) {
     console.error("❌ Lỗi cập nhật trạng thái:", error);
     res.status(500).json({ message: "Không thể cập nhật trạng thái đơn hàng" });
+  }
+};
+
+// Cập nhật toàn bộ đơn hàng (customer, items, payment, notes, status)
+export const updateOrder = async (req, res) => {
+  try {
+    const { order_id } = req.params;
+    const { customer_id, order_items, payment_method, notes, status } = req.body;
+
+    // Basic validation
+    if (payment_method && !["cash", "card", "online"].includes(payment_method)) {
+      return res.status(400).json({ message: "Phương thức thanh toán không hợp lệ" });
+    }
+
+    const items = Array.isArray(order_items) ? order_items : [];
+    const total_amount = items.reduce((s, it) => s + (Number(it.quantity) || 0) * (Number(it.price) || 0), 0);
+
+    const updated = await Order.findOneAndUpdate(
+      { order_id },
+      {
+        customer_id,
+        order_items: items,
+        total_amount,
+        payment_method,
+        notes,
+        ...(status ? { status } : {}),
+      },
+      { new: true }
+    ).populate("customer_id", "name email phone");
+
+    if (!updated) return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+
+    res.status(200).json({
+      message: "✅ Cập nhật đơn hàng thành công",
+      order: updated
+    });
+  } catch (error) {
+    console.error("❌ Lỗi cập nhật đơn hàng:", error);
+    res.status(500).json({ message: "Không thể cập nhật đơn hàng" });
   }
 };
 

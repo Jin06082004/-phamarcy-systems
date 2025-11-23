@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý khuyến mãi - Hệ thống quản lý nhà thuốc</title>
 
-    <!-- Boxicons & CSS -->
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/admin.css" />
   </head>
   <body>
@@ -21,81 +17,30 @@
       </div>
 
       <ul class="sidebar-menu">
-        <li>
-          <a href="index.html">
-            <i class="bx bx-home"></i>
-            <span>Bảng điều khiển</span>
-          </a>
-        </li>
-        <li>
-          <a href="drugs.html">
-            <i class="bx bx-plus-medical"></i>
-            <span>Thuốc</span>
-          </a>
-        </li>
-        <li>
-          <a href="categories.html">
-            <i class="bx bx-category"></i>
-            <span>Danh mục</span>
-          </a>
-        </li>
-        <li>
-          <a href="orders.html">
-            <i class="bx bx-cart-alt"></i>
-            <span>Đơn hàng</span>
-          </a>
-        </li>
-        <li>
-          <a href="users.html">
-            <i class="bx bx-user"></i>
-            <span>Người dùng</span>
-          </a>
-        </li>
-        <li>
-          <a href="statistics.html">
-            <i class="bx bx-line-chart"></i>
-            <span>Thống kê</span>
-          </a>
-        </li>
-        <li class="active">
-          <a href="discount.html">
-            <i class="bx bx-tag"></i>
-            <span>Khuyến mãi</span>
-          </a>
-        </li>
-        <li class="logout">
-          <a href="#">
-            <i class="bx bx-log-out"></i>
-            <span>Đăng xuất</span>
-          </a>
-        </li>
+        <li><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+        <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Thuốc</span></a></li>
+        <li><a href="categories.html"><i class="bx bx-category"></i><span>Danh mục</span></a></li>
+        <li><a href="orders.html"><i class="bx bx-cart-alt"></i><span>Đơn hàng</span></a></li>
+        <li><a href="users.html"><i class="bx bx-user"></i><span>Người dùng</span></a></li>
+        <li><a href="statistics.html"><i class="bx bx-line-chart"></i><span>Thống kê</span></a></li>
+        <li class="active"><a href="discount.html"><i class="bx bx-tag"></i><span>Khuyến mãi</span></a></li>
+        <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
       </ul>
 
-      <div class="sidebar-toggle" id="toggleSidebar">
-        <i class="bx bx-chevron-left"></i>
-      </div>
+      <div class="sidebar-toggle" id="toggleSidebar"><i class="bx bx-chevron-left"></i></div>
     </aside>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
       <header class="main-header">
         <h1>Quản lý khuyến mãi</h1>
-        <div class="user-info">
-          <i class="bx bx-user-circle"></i>
-          <span>Admin</span>
-        </div>
+        <div class="user-info"><i class="bx bx-user-circle"></i><span>Admin</span></div>
       </header>
 
       <section class="content">
         <div class="toolbar">
-          <button class="btn-green" id="add-discount-btn">
-            <i class="bx bx-plus"></i> Thêm mã giảm giá mới
-          </button>
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Tìm kiếm mã giảm giá..."
-          />
+          <button class="btn-green" id="add-discount-btn"><i class="bx bx-plus"></i> Thêm mã giảm giá mới</button>
+          <input type="text" id="discount-search" class="search-input" placeholder="Tìm kiếm mã giảm giá..." />
         </div>
 
         <div class="table-container">
@@ -107,59 +52,345 @@
                 <th>Phần trăm giảm</th>
                 <th>Ngày bắt đầu</th>
                 <th>Ngày kết thúc</th>
+                <th>Lượt sử dụng</th>
                 <th>Trạng thái</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>DISCOUNT10</td>
-                <td>Giảm 10% cho đơn hàng trên 500k</td>
-                <td>10%</td>
-                <td>01/11/2025</td>
-                <td>30/11/2025</td>
-                <td>Hoạt động</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-edit"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>NEWYEAR20</td>
-                <td>Khuyến mãi đầu năm 20%</td>
-                <td>20%</td>
-                <td>01/01/2026</td>
-                <td>15/01/2026</td>
-                <td>Chưa bắt đầu</td>
-                <td>
-                  <button class="btn-edit">
-                    <i class="bx bx-edit"></i>
-                  </button>
-                  <button class="btn-delete">
-                    <i class="bx bx-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              <tr style="text-align:center;"><td colspan="8">Đang tải dữ liệu...</td></tr>
             </tbody>
           </table>
         </div>
       </section>
     </main>
 
+    <!-- ========== MODAL ADD/EDIT DISCOUNT ========== -->
+    <div id="discount-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="discount-modal-title">Thêm mã giảm giá mới</h2>
+          <button class="modal-close" id="discount-close">&times;</button>
+        </div>
+        <form id="discount-form">
+          <div class="form-group">
+            <label>Mã giảm giá:</label>
+            <input type="text" id="discount-code" required placeholder="VD: DISCOUNT10" />
+          </div>
+
+          <div class="form-group">
+            <label>Mô tả:</label>
+            <textarea id="discount-description" placeholder="Mô tả mã giảm giá..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Phần trăm giảm (%):</label>
+            <input type="number" id="discount-percentage" required min="0" max="100" placeholder="VD: 10" />
+          </div>
+
+          <div class="form-group">
+            <label>Ngày bắt đầu:</label>
+            <input type="date" id="discount-start-date" required />
+          </div>
+
+          <div class="form-group">
+            <label>Ngày kết thúc:</label>
+            <input type="date" id="discount-end-date" required />
+          </div>
+
+          <div class="form-group">
+            <label>Giới hạn lượt sử dụng (0 = không giới hạn):</label>
+            <input type="number" id="discount-usage-limit" min="0" placeholder="100" />
+          </div>
+
+          <div class="form-group">
+            <label>Trạng thái:</label>
+            <select id="discount-status">
+              <option value="true">Hoạt động</option>
+              <option value="false">Tạm dừng</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-green">Lưu</button>
+            <button type="button" class="btn-gray" id="discount-cancel">Hủy</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- ========== SCRIPT ========== -->
-    <script>
+    <script type="module">
+      import { discountAPI } from "../shared/api.js";
+
+      // ========== STATE ==========
+      let discounts = [];
+      let editingDiscountId = null;
+
+      // ========== DOM ELEMENTS ==========
       const toggleSidebar = document.getElementById("toggleSidebar");
       const sidebar = document.querySelector(".sidebar");
       const icon = toggleSidebar.querySelector("i");
+      const modal = document.getElementById("discount-modal");
+      const modalTitle = document.getElementById("discount-modal-title");
+      const closeBtn = document.getElementById("discount-close");
+      const cancelBtn = document.getElementById("discount-cancel");
+      const addBtn = document.getElementById("add-discount-btn");
+      const form = document.getElementById("discount-form");
+      const searchInput = document.getElementById("discount-search");
 
+      // ========== SIDEBAR TOGGLE ==========
       toggleSidebar.addEventListener("click", () => {
         sidebar.classList.toggle("collapsed");
         icon.classList.toggle("bx-chevron-right");
       });
+
+      // ========== MODAL CONTROL ==========
+      function openModal(title = "Thêm mã giảm giá mới", discountId = null) {
+        modalTitle.textContent = title;
+        editingDiscountId = discountId;
+
+        if (discountId) {
+          // Edit mode
+          const discount = discounts.find(d => d._id === discountId);
+          if (discount) {
+            document.getElementById("discount-code").value = discount.code || "";
+            document.getElementById("discount-code").disabled = true;
+            document.getElementById("discount-description").value = discount.description || "";
+            document.getElementById("discount-percentage").value = discount.percentage || "";
+            document.getElementById("discount-start-date").value = discount.start_date ? discount.start_date.split('T')[0] : "";
+            document.getElementById("discount-end-date").value = discount.end_date ? discount.end_date.split('T')[0] : "";
+            document.getElementById("discount-usage-limit").value = discount.usage_limit || "";
+            document.getElementById("discount-status").value = String(discount.is_active);
+          }
+        } else {
+          // Add mode
+          document.getElementById("discount-code").disabled = false;
+          form.reset();
+          document.getElementById("discount-status").value = "true";
+        }
+
+        modal.style.display = "flex";
+      }
+
+      function closeModal() {
+        modal.style.display = "none";
+        editingDiscountId = null;
+        form.reset();
+        document.getElementById("discount-code").disabled = false;
+      }
+
+      addBtn.addEventListener("click", () => openModal());
+      closeBtn.addEventListener("click", closeModal);
+      cancelBtn.addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+      // ========== LOAD DISCOUNTS ==========
+      async function loadDiscounts() {
+        try {
+          console.log("🔄 Đang tải danh sách mã giảm giá...");
+          const res = await discountAPI.getAll();
+          console.log("📦 Response:", res);
+
+          if (Array.isArray(res)) {
+            discounts = res;
+            renderTable(discounts);
+          } else if (res.success && Array.isArray(res.data)) {
+            discounts = res.data;
+            renderTable(discounts);
+          } else {
+            showError("Không thể tải danh sách mã giảm giá");
+          }
+        } catch (error) {
+          console.error("❌ Lỗi tải mã giảm giá:", error);
+          showError("Lỗi kết nối server: " + error.message);
+        }
+      }
+
+      // ========== RENDER TABLE ==========
+      function renderTable(data = discounts) {
+        const tbody = document.querySelector("table tbody");
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">Không có dữ liệu</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(discount => {
+          const startDate = new Date(discount.start_date);
+          const endDate = new Date(discount.end_date);
+          const now = new Date();
+          
+          let status = "";
+          if (now < startDate) {
+            status = "Chưa bắt đầu";
+          } else if (now > endDate) {
+            status = "Đã kết thúc";
+          } else if (discount.is_active) {
+            status = "Hoạt động";
+          } else {
+            status = "Tạm dừng";
+          }
+
+          const statusColor = status === "Hoạt động" ? "#d4fcd7" : status === "Tạm dừng" ? "#ffd6d6" : "#fff3cd";
+
+          return `
+            <tr>
+              <td><strong>${discount.code}</strong></td>
+              <td>${discount.description || "—"}</td>
+              <td><strong>${discount.percentage}%</strong></td>
+              <td>${new Date(discount.start_date).toLocaleDateString('vi-VN')}</td>
+              <td>${new Date(discount.end_date).toLocaleDateString('vi-VN')}</td>
+              <td>${discount.used_count || 0} / ${discount.usage_limit || "∞"}</td>
+              <td>
+                <span style="background-color: ${statusColor}; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                  ${status}
+                </span>
+              </td>
+              <td>
+                <button class="btn-edit" onclick="window.editDiscount('${discount._id}')" title="Sửa"><i class="bx bx-edit"></i></button>
+                <button class="btn-delete" onclick="window.deleteDiscount('${discount._id}')" title="Xóa"><i class="bx bx-trash"></i></button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // ========== SEARCH ==========
+      searchInput.addEventListener("keyup", () => {
+        const keyword = searchInput.value.toLowerCase();
+        const filtered = discounts.filter(discount =>
+          (discount.code && discount.code.toLowerCase().includes(keyword)) ||
+          (discount.description && discount.description.toLowerCase().includes(keyword))
+        );
+        renderTable(filtered);
+      });
+
+      // ========== FORM SUBMIT ==========
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          code: document.getElementById("discount-code").value.trim().toUpperCase(),
+          description: document.getElementById("discount-description").value.trim(),
+          percentage: Number(document.getElementById("discount-percentage").value),
+          start_date: document.getElementById("discount-start-date").value,
+          end_date: document.getElementById("discount-end-date").value,
+          usage_limit: Number(document.getElementById("discount-usage-limit").value) || 0,
+          is_active: document.getElementById("discount-status").value === "true",
+        };
+
+        // Validate
+        if (!payload.code || payload.percentage < 0 || payload.percentage > 100) {
+          showError("Vui lòng điền đầy đủ thông tin hợp lệ");
+          return;
+        }
+
+        if (new Date(payload.start_date) >= new Date(payload.end_date)) {
+          showError("Ngày kết thúc phải sau ngày bắt đầu");
+          return;
+        }
+
+        try {
+          let res;
+          if (editingDiscountId) {
+            // Update
+            res = await discountAPI.update(editingDiscountId, payload);
+            showSuccess("✅ Cập nhật mã giảm giá thành công");
+          } else {
+            // Create
+            res = await discountAPI.create(payload);
+            showSuccess("✅ Thêm mã giảm giá thành công");
+          }
+
+          console.log("Response:", res);
+          closeModal();
+          await loadDiscounts();
+        } catch (error) {
+          console.error("Error:", error);
+          showError("❌ Lỗi: " + error.message);
+        }
+      });
+
+      // ========== ACTIONS ==========
+      window.editDiscount = (id) => {
+        openModal("Sửa mã giảm giá", id);
+      };
+
+      window.deleteDiscount = async (id) => {
+        if (confirm("Bạn có chắc chắn muốn xóa mã giảm giá này?")) {
+          try {
+            const res = await discountAPI.delete(id);
+            showSuccess("✅ Xóa mã giảm giá thành công");
+            await loadDiscounts();
+          } catch (error) {
+            showError("❌ Lỗi khi xóa: " + error.message);
+          }
+        }
+      };
+
+      // ========== NOTIFICATIONS ==========
+      function showError(message) {
+        const msg = document.createElement("div");
+        msg.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #f44336;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 9999;
+          animation: slideIn 0.3s ease;
+        `;
+        msg.textContent = message;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+      }
+
+      function showSuccess(message) {
+        const msg = document.createElement("div");
+        msg.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #4CAF50;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 9999;
+          animation: slideIn 0.3s ease;
+        `;
+        msg.textContent = message;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+      }
+
+      // ========== INIT ==========
+      document.addEventListener("DOMContentLoaded", loadDiscounts);
+
+      // ========== LOGOUT ==========
+      document.getElementById("logout-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        if (confirm("Bạn có chắc muốn đăng xuất?")) {
+          localStorage.removeItem("user");
+          window.location.href = "/Web/user/pages/login.html";
+        }
+      });
     </script>
+
+    <style>
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
   </body>
 </html>
