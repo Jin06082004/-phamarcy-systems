@@ -65,12 +65,13 @@ export const userAPI = {
 };
 
 export const orderAPI = {
-    getAll: () => apiCall("/orders"),
-    getById: (id) => apiCall(`/orders/${id}`),
-    create: (data) => apiCall("/orders", "POST", data),
-    update: (id, data) => apiCall(`/orders/${id}`, "PUT", data),
+    getAll: () => apiCall("/orders", "GET"),
+    getById: (id) => apiCall(`/orders/${id}`, "GET"),
+    create: (payload) => apiCall("/orders", "POST", payload),
+    update: (id, payload) => apiCall(`/orders/${id}`, "PUT", payload),
     updateStatus: (id, status) => apiCall(`/orders/${id}/status`, "PUT", { status }),
     delete: (id) => apiCall(`/orders/${id}`, "DELETE"),
+    getTopSellers: (period) => apiCall(`/orders/top/${period}`, "GET"),
 };
 
 export const invoiceAPI = {

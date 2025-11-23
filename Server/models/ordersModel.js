@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema(
     order_id: { type: Number, required: true, unique: true },
     customer_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+      ref: "User",
       required: true,
     },
     order_items: [orderItemSchema],

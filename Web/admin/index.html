@@ -5,15 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - Hệ thống quản lý nhà thuốc</title>
 
-    <!-- Boxicons & CSS -->
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/admin.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
-    <!-- ========== SIDEBAR ========== -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <i class="bx bx-capsule logo-icon"></i>
@@ -21,102 +17,155 @@
       </div>
 
       <ul class="sidebar-menu">
-        <li class="active">
-          <a href="#" id="dashboard-link">
-            <i class="bx bx-home"></i>
-            <span>Bảng điều khiển</span>
-          </a>
-        </li>
-        <li>
-          <a href="drugs.html" id="drugs-link">
-            <i class="bx bx-plus-medical"></i>
-            <span>Thuốc</span>
-          </a>
-        </li>
-        <li>
-          <a href="categories.html" id="categories-link">
-            <i class="bx bx-category"></i>
-            <span>Danh mục</span>
-          </a>
-        </li>
-        <li>
-          <a href="orders.html" id="orders-link">
-            <i class="bx bx-cart-alt"></i>
-            <span>Đơn hàng</span>
-          </a>
-        </li>
-        <li>
-          <a href="users.html" id="users-link">
-            <i class="bx bx-user"></i>
-            <span>Người dùng</span>
-          </a>
-        </li>
-        <li>
-          <a href="statistics.html" id="statistics-link">
-            <i class="bx bx-line-chart"></i>
-            <span>Thống kê</span>
-          </a>
-        </li>
-        <li>
-          <a href="discount.html" id="discount-link">
-            <i class="bx bx-tag"></i>
-            <span>Khuyễn mãi</span>
-          </a>
-        </li>
-        <li class="logout">
-          <a href="#" id="logout-link">
-            <i class="bx bx-log-out"></i>
-            <span>Đăng xuất</span>
-          </a>
-        </li>
+        <li class="active"><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+        <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Thuốc</span></a></li>
+        <li><a href="categories.html"><i class="bx bx-category"></i><span>Danh mục</span></a></li>
+        <li><a href="orders.html"><i class="bx bx-cart-alt"></i><span>Đơn hàng</span></a></li>
+        <li><a href="users.html"><i class="bx bx-user"></i><span>Người dùng</span></a></li>
+        <li><a href="statistics.html"><i class="bx bx-line-chart"></i><span>Thống kê</span></a></li>
+        <li><a href="discount.html"><i class="bx bx-tag"></i><span>Khuyến mãi</span></a></li>
+        <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
       </ul>
 
-      <div class="sidebar-toggle" id="toggleSidebar">
-        <i class="bx bx-chevron-left"></i>
-      </div>
+      <div class="sidebar-toggle" id="toggleSidebar"><i class="bx bx-chevron-left"></i></div>
     </aside>
 
-    <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
       <header class="main-header">
         <h1>Bảng điều khiển</h1>
-        <div class="user-info">
-          <i class="bx bx-user-circle"></i>
-          <span>Admin</span>
-        </div>
+        <div class="user-info"><i class="bx bx-user-circle"></i><span>Admin</span></div>
       </header>
 
       <section class="content">
-        <div class="dashboard-summary">
+        <div class="dashboard-summary" id="summary">
+          <!-- Cards injected by JS -->
           <div class="card">
             <h3>Tổng số thuốc</h3>
-            <p>128</p>
+            <p id="total-drugs">—</p>
           </div>
           <div class="card">
             <h3>Tổng đơn hàng</h3>
-            <p>245</p>
+            <p id="total-orders">—</p>
           </div>
           <div class="card">
             <h3>Người dùng</h3>
-            <p>64</p>
+            <p id="total-users">—</p>
           </div>
           <div class="card">
-            <h3>Doanh thu</h3>
-            <p>35.200.000₫</p>
+            <h3>Doanh thu (đã thanh toán)</h3>
+            <p id="total-revenue">—</p>
+          </div>
+        </div>
+
+        <div class="charts" style="padding: 20px;">
+          <div class="chart-card" style="margin-bottom:20px;">
+            <h3>Doanh thu 6 tháng gần nhất</h3>
+            <canvas id="revenueMiniChart" height="120"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <h3>Top thuốc bán chạy (tháng)</h3>
+            <canvas id="topSellersMiniChart" height="120"></canvas>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- ========== SCRIPT ========== -->
-    <script>
+    <script type="module">
+      import { drugAPI, orderAPI, userAPI, invoiceAPI } from "../shared/api.js";
+
+      function fmtVND(n) {
+        return n ? n.toLocaleString('vi-VN') + '₫' : '0₫';
+      }
+
+      async function loadSummary() {
+        try {
+          const [drugsRes, ordersRes, usersRes, invoicesRes, topRes] = await Promise.all([
+            drugAPI.getAll(),
+            orderAPI.getAll(),
+            userAPI.getAll(),
+            invoiceAPI.getAll(),
+            orderAPI.getTopSellers('month'),
+          ]);
+
+          const drugs = Array.isArray(drugsRes) ? drugsRes : (drugsRes.data || []);
+          const orders = Array.isArray(ordersRes) ? ordersRes : (ordersRes.data || []);
+          const users = Array.isArray(usersRes) ? usersRes : (usersRes.data || []);
+          const invoices = Array.isArray(invoicesRes) ? invoicesRes : (invoicesRes.data || []);
+
+          // totals
+          document.getElementById('total-drugs').textContent = drugs.length;
+          document.getElementById('total-orders').textContent = orders.length;
+          document.getElementById('total-users').textContent = users.length;
+
+          // revenue: sum invoices with status paid/completed (use field total or total_amount)
+          const revenue = invoices.reduce((s, inv) => {
+            const total = inv.total || inv.total_amount || inv.paid_amount || 0;
+            return s + Number(total || 0);
+          }, 0);
+          document.getElementById('total-revenue').textContent = fmtVND(revenue);
+
+          // build revenue chart (6 months)
+          const months = [];
+          const monthSums = [];
+          const now = new Date();
+          for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const key = d.toLocaleString('vi-VN', { month: 'short', year: '2-digit' });
+            months.push(key);
+            monthSums.push(0);
+          }
+          invoices.forEach(inv => {
+            const date = new Date(inv.date || inv.createdAt || inv.invoice_date || inv.invoiceDate);
+            if (isNaN(date)) return;
+            const idx = months.findIndex(m => date.toLocaleString('vi-VN', { month: 'short', year: '2-digit' }) === m);
+            if (idx >= 0) {
+              const total = Number(inv.total || inv.total_amount || inv.paid_amount || 0);
+              monthSums[idx] += total;
+            }
+          });
+
+          const revenueCtx = document.getElementById('revenueMiniChart').getContext('2d');
+          new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+              labels: months,
+              datasets: [{ label: 'Doanh thu', data: monthSums.map(v => Math.round(v)), borderColor: '#248a3d', backgroundColor: 'rgba(36,138,61,0.15)', tension: 0.3 }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+          });
+
+          // top sellers chart (expect array [{ drug_name, qty }] or similar)
+          const top = Array.isArray(topRes) ? topRes : (topRes.data || []);
+          const labels = top.slice(0,6).map(t => t.drug_name || t.name || `ID:${t.drug_id}`);
+          const qtys = top.slice(0,6).map(t => Number(t.qty || t.quantity || t.sold || t.count || 0));
+          const topCtx = document.getElementById('topSellersMiniChart').getContext('2d');
+          new Chart(topCtx, {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Số lượng', data: qtys, backgroundColor: '#ffb703' }] },
+            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+          });
+        } catch (error) {
+          console.error('Load summary error', error);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', loadSummary);
+
+      // sidebar toggle + logout
       const toggleSidebar = document.getElementById("toggleSidebar");
       const sidebar = document.querySelector(".sidebar");
       const icon = toggleSidebar.querySelector("i");
-
       toggleSidebar.addEventListener("click", () => {
         sidebar.classList.toggle("collapsed");
         icon.classList.toggle("bx-chevron-right");
+      });
+      document.getElementById('logout-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Bạn có chắc muốn đăng xuất?')) {
+          localStorage.removeItem('user');
+          window.location.href = '/Web/user/pages/login.html';
+        }
       });
     </script>
   </body>

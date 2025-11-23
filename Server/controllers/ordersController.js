@@ -1,5 +1,6 @@
 import Order from "../models/ordersModel.js";
 import Drug from "../models/drugModel.js";
+import User from "../models/userModel.js";
 import orderService from "../services/ordersServices.js";
 
 // Tạo đơn hàng mới (tự tăng order_id)

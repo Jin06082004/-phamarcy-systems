@@ -5,178 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thống kê - Hệ thống quản lý nhà thuốc</title>
 
-    <!-- Boxicons & CSS -->
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/admin.css" />
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
-    <!-- ========== SIDEBAR ========== -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <i class="bx bx-capsule logo-icon"></i>
         <span class="logo-text">Pharmacy</span>
       </div>
-
       <ul class="sidebar-menu">
-        <li>
-          <a href="index.html">
-            <i class="bx bx-home"></i>
-            <span>Bảng điều khiển</span>
-          </a>
-        </li>
-        <li>
-          <a href="drugs.html">
-            <i class="bx bx-plus-medical"></i>
-            <span>Thuốc</span>
-          </a>
-        </li>
-        <li>
-          <a href="categories.html">
-            <i class="bx bx-category"></i>
-            <span>Danh mục</span>
-          </a>
-        </li>
-        <li>
-          <a href="orders.html">
-            <i class="bx bx-cart-alt"></i>
-            <span>Đơn hàng</span>
-          </a>
-        </li>
-        <li>
-          <a href="users.html">
-            <i class="bx bx-user"></i>
-            <span>Người dùng</span>
-          </a>
-        </li>
-        <li class="active">
-          <a href="statistics.html">
-            <i class="bx bx-line-chart"></i>
-            <span>Thống kê</span>
-          </a>
-        </li>
-        <li>
-          <a href="discount.html">
-            <i class="bx bx-tag"></i>
-            <span>Khuyễn mãi</span>
-          </a>
-        </li>
-        <li class="logout">
-          <a href="#">
-            <i class="bx bx-log-out"></i>
-            <span>Đăng xuất</span>
-          </a>
-        </li>
+        <li><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+        <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Thuốc</span></a></li>
+        <li><a href="categories.html"><i class="bx bx-category"></i><span>Danh mục</span></a></li>
+        <li><a href="orders.html"><i class="bx bx-cart-alt"></i><span>Đơn hàng</span></a></li>
+        <li><a href="users.html"><i class="bx bx-user"></i><span>Người dùng</span></a></li>
+        <li class="active"><a href="statistics.html"><i class="bx bx-line-chart"></i><span>Thống kê</span></a></li>
+        <li><a href="discount.html"><i class="bx bx-tag"></i><span>Khuyến mãi</span></a></li>
+        <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
       </ul>
 
-      <div class="sidebar-toggle" id="toggleSidebar">
-        <i class="bx bx-chevron-left"></i>
-      </div>
+      <div class="sidebar-toggle" id="toggleSidebar"><i class="bx bx-chevron-left"></i></div>
     </aside>
 
-    <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content">
       <header class="main-header">
         <h1>Thống kê nhà thuốc</h1>
-        <div class="user-info">
-          <i class="bx bx-user-circle"></i>
-          <span>Admin</span>
-        </div>
+        <div class="user-info"><i class="bx bx-user-circle"></i><span>Admin</span></div>
       </header>
 
       <section class="content">
-        <div class="stats-cards">
+        <div class="stats-cards" id="stats-cards">
+          <div class="card">
+            <h3>Doanh thu (năm)</h3>
+            <p id="year-revenue">—</p>
+          </div>
           <div class="card">
             <h3>Đơn hàng hôm nay</h3>
-            <p>25</p>
+            <p id="orders-today">—</p>
           </div>
           <div class="card">
             <h3>Thuốc bán chạy</h3>
-            <p>Paracetamol</p>
-          </div>
-          <div class="card">
-            <h3>Người dùng mới</h3>
-            <p>12</p>
-          </div>
-          <div class="card">
-            <h3>Doanh thu</h3>
-            <p>5.200.000₫</p>
+            <p id="top-drug">—</p>
           </div>
         </div>
 
         <div class="charts">
           <div class="chart-card">
-            <h3>Doanh thu theo tháng</h3>
+            <h3>Doanh thu theo tháng (12 tháng)</h3>
             <canvas id="revenueChart"></canvas>
           </div>
+
           <div class="chart-card">
             <h3>Đơn hàng theo trạng thái</h3>
             <canvas id="ordersChart"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <h3>Top 10 thuốc bán chạy (năm)</h3>
+            <canvas id="topSellersChart"></canvas>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- ========== SCRIPT ========== -->
-    <script>
+    <script type="module">
+      import { orderAPI, invoiceAPI, drugAPI } from "../shared/api.js";
+
+      function fmtVND(n) { return n ? n.toLocaleString('vi-VN') + '₫' : '0₫'; }
+
+      async function loadStatistics() {
+        try {
+          const [invoicesRes, ordersRes, topRes, drugsRes] = await Promise.all([
+            invoiceAPI.getAll(),
+            orderAPI.getAll(),
+            orderAPI.getTopSellers('year'),
+            drugAPI.getAll(),
+          ]);
+
+          const invoices = Array.isArray(invoicesRes) ? invoicesRes : (invoicesRes.data || []);
+          const orders = Array.isArray(ordersRes) ? ordersRes : (ordersRes.data || []);
+          const top = Array.isArray(topRes) ? topRes : (topRes.data || []);
+          const drugs = Array.isArray(drugsRes) ? drugsRes : (drugsRes.data || []);
+
+          // Year revenue
+          const year = new Date().getFullYear();
+          const yearRevenue = invoices.reduce((s, inv) => {
+            const date = new Date(inv.date || inv.createdAt || inv.invoice_date || inv.invoiceDate);
+            if (date.getFullYear() !== year) return s;
+            return s + Number(inv.total || inv.total_amount || inv.paid_amount || 0);
+          }, 0);
+          document.getElementById('year-revenue').textContent = fmtVND(yearRevenue);
+
+          // Orders today
+          const todayStr = new Date().toDateString();
+          const ordersToday = orders.filter(o => {
+            const d = new Date(o.order_date || o.createdAt || o.date);
+            return d.toDateString() === todayStr;
+          }).length;
+          document.getElementById('orders-today').textContent = ordersToday;
+
+          // Top drug display
+          document.getElementById('top-drug').textContent = (top[0] && (top[0].drug_name || top[0].name)) || '—';
+
+          // Revenue 12 months
+          const months = [];
+          const monthSums = [];
+          const now = new Date();
+          for (let i = 11; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const key = d.toLocaleString('vi-VN', { month: 'short', year: '2-digit' });
+            months.push(key);
+            monthSums.push(0);
+          }
+          invoices.forEach(inv => {
+            const date = new Date(inv.date || inv.createdAt || inv.invoice_date || inv.invoiceDate);
+            if (isNaN(date)) return;
+            const key = date.toLocaleString('vi-VN', { month: 'short', year: '2-digit' });
+            const idx = months.indexOf(key);
+            if (idx >= 0) {
+              monthSums[idx] += Number(inv.total || inv.total_amount || inv.paid_amount || 0);
+            }
+          });
+          const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+          new Chart(revenueCtx, {
+            type: 'line',
+            data: { labels: months, datasets: [{ label: 'Doanh thu', data: monthSums.map(Math.round), borderColor: '#248a3d', backgroundColor: 'rgba(36,138,61,0.15)', tension: 0.25 }] },
+            options: { responsive: true }
+          });
+
+          // Orders by status
+          const statusCounts = orders.reduce((acc, o) => {
+            const st = o.status || 'Unknown';
+            acc[st] = (acc[st] || 0) + 1;
+            return acc;
+          }, {});
+          const statusLabels = Object.keys(statusCounts);
+          const statusData = statusLabels.map(l => statusCounts[l]);
+          const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+          new Chart(ordersCtx, {
+            type: 'doughnut',
+            data: { labels: statusLabels, datasets: [{ data: statusData, backgroundColor: ['#248a3d','#f1c40f','#e74c3c','#9b59b6'] }] },
+            options: { responsive: true }
+          });
+
+          // Top sellers bar chart (top array expected)
+          const topLabels = top.slice(0,10).map(t => t.drug_name || t.name || `ID:${t.drug_id}`);
+          const topQty = top.slice(0,10).map(t => Number(t.qty || t.quantity || t.sold || t.count || 0));
+          const topCtx = document.getElementById('topSellersChart').getContext('2d');
+          new Chart(topCtx, {
+            type: 'bar',
+            data: { labels: topLabels, datasets: [{ label: 'Số lượng bán', data: topQty, backgroundColor: '#ff7b00' }] },
+            options: { responsive: true }
+          });
+
+        } catch (error) {
+          console.error('Load statistics error', error);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', loadStatistics);
+
+      // sidebar toggle + logout
       const toggleSidebar = document.getElementById("toggleSidebar");
       const sidebar = document.querySelector(".sidebar");
       const icon = toggleSidebar.querySelector("i");
-
       toggleSidebar.addEventListener("click", () => {
         sidebar.classList.toggle("collapsed");
         icon.classList.toggle("bx-chevron-right");
       });
-
-      // ==== Chart.js examples ====
-      const revenueCtx = document.getElementById("revenueChart").getContext("2d");
-      const revenueChart = new Chart(revenueCtx, {
-        type: "line",
-        data: {
-          labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"],
-          datasets: [
-            {
-              label: "Doanh thu (₫)",
-              data: [5000000, 4200000, 6000000, 5500000, 7000000, 6500000],
-              borderColor: "#248a3d",
-              backgroundColor: "rgba(36,138,61,0.2)",
-              tension: 0.3,
-              fill: true
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: true, position: "top" }
-          }
-        }
-      });
-
-      const ordersCtx = document.getElementById("ordersChart").getContext("2d");
-      const ordersChart = new Chart(ordersCtx, {
-        type: "doughnut",
-        data: {
-          labels: ["Đã thanh toán", "Chưa thanh toán", "Đang giao"],
-          datasets: [
-            {
-              label: "Số lượng đơn",
-              data: [40, 10, 5],
-              backgroundColor: ["#248a3d", "#f1c40f", "#e74c3c"],
-              borderWidth: 1
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: "bottom" }
-          }
+      document.getElementById('logout-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Bạn có chắc muốn đăng xuất?')) {
+          localStorage.removeItem('user');
+          window.location.href = '/Web/user/pages/login.html';
         }
       });
     </script>
