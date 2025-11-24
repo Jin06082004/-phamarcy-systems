@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Khuyến mãi - DrugStore</title>
-  <link rel="stylesheet" href="../css/dashboard.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
   </head>
   <body>
     <div data-include="../../shared/components/topbar.html"></div>
@@ -15,9 +15,56 @@
         <h2>Khuyến mãi</h2>
         <p>Các chương trình khuyến mãi, mã giảm giá đang diễn ra.</p>
       </section>
+      <section style="padding: 30px 10%;">
+        <div id="promoList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px;">Đang tải khuyến mãi...</div>
+        </div>
+      </section>
     </main>
 
     <div data-include="../../shared/components/footer.html"></div>
     <script src="../../shared/include.js"></script>
+    <script type="module">
+      import { discountAPI } from "../../shared/api.js";
+      async function loadPromotions() {
+        try {
+          const res = await discountAPI.getAll();
+          const promos = Array.isArray(res) ? res : (res.data || []);
+          const now = new Date();
+          const list = document.getElementById('promoList');
+          if (promos.length === 0) {
+            list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">Chưa có khuyến mãi</div>';
+            return;
+          }
+          list.innerHTML = promos.map(promo => {
+            let status = "";
+            if (now < new Date(promo.start_date)) status = "Chưa bắt đầu";
+            else if (now > new Date(promo.end_date)) status = "Đã kết thúc";
+            else if (promo.is_active) status = "Hoạt động";
+            else status = "Tạm dừng";
+            return `
+              <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); padding: 24px;">
+                <h3 style="margin:0 0 8px; color:#d32f2f;">Mã: ${promo.code}</h3>
+                <p style="margin:0 0 8px; color:#155724;">${promo.description || "—"}</p>
+                <ul style="margin:0 0 8px; color:#666; font-size:14px;">
+                  <li>Giảm <strong>${promo.percentage}%</strong> đơn hàng</li>
+                  <li>Áp dụng từ <strong>${new Date(promo.start_date).toLocaleDateString('vi-VN')}</strong> đến <strong>${new Date(promo.end_date).toLocaleDateString('vi-VN')}</strong></li>
+                  <li>Lượt sử dụng: <strong>${promo.used_count || 0} / ${promo.usage_limit || "∞"}</strong></li>
+                  <li>Trạng thái: <span style="color:${status==='Hoạt động'?'#1b5e20':'#888'}">${status}</span></li>
+                </ul>
+                <button onclick="window.copyPromo('${promo.code}')" style="background:#6fdc6f; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">Sao chép mã</button>
+              </div>
+            `;
+          }).join('');
+        } catch (error) {
+          document.getElementById('promoList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
+        }
+      }
+      window.copyPromo = (code) => {
+        navigator.clipboard.writeText(code);
+        alert(`Đã sao chép mã: ${code}`);
+      };
+      loadPromotions();
+    </script>
   </body>
 </html>

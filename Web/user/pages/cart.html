@@ -1,84 +1,176 @@
-
 <!DOCTYPE html>
 <html lang="vi">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Giỏ hàng - DrugStore</title>
-		<link rel="stylesheet" href="../css/dashboard.css" />
-	</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giỏ hàng - DrugStore</title>
+    <link rel="stylesheet" href="../css/dashboard.css" />
+  </head>
 
-	<body>
-		<!-- Import components -->
-		<div data-include="../../shared/components/topbar.html"></div>
-		<div data-include="../../shared/components/navbar.html"></div>
+  <body>
+    <div data-include="../../shared/components/topbar.html"></div>
+    <div data-include="../../shared/components/navbar.html"></div>
 
-		<!-- Nội dung chính -->
-		<main class="content">
-			<section class="drugs-header">
-				<h2>Giỏ hàng của bạn</h2>
-				<p>Kiểm tra sản phẩm, điều chỉnh số lượng và tiến hành thanh toán.</p>
-			</section>
+    <main class="content">
+      <section class="drugs-header">
+        <h2>Giỏ hàng của bạn</h2>
+        <p>Kiểm tra sản phẩm, điều chỉnh số lượng và tiến hành thanh toán.</p>
+      </section>
 
-			<section class="cart-section" style="padding:30px 10%;">
-				<div class="cart-list">
-					<!-- Example cart item (replace with dynamic content later) -->
-					<div class="cart-item" style="display:flex;gap:16px;align-items:center;background:#fff;border:1px solid #c5e8c8;padding:12px;border-radius:10px;margin-bottom:12px;">
-						<img src="../../shared/images/drug1.jpg" alt="Paracetamol" style="width:96px;height:96px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'" />
-						<div style="flex:1">
-							<h3 style="margin:0;color:#155724">Paracetamol 500mg</h3>
-							<p style="margin:6px 0;color:#4a754a">Hộp 10 viên</p>
-							<div class="price" style="font-weight:700;color:#1b5e20">25.000đ</div>
-						</div>
-						<div style="display:flex;flex-direction:column;gap:8px;align-items:center">
-							<div>
-								<button class="qty-decrease">-</button>
-								<input type="number" class="qty" value="1" min="1" style="width:48px;text-align:center;padding:6px;margin:0 6px;border-radius:6px;border:1px solid #b6e3b9" />
-								<button class="qty-increase">+</button>
-							</div>
-							<button class="btn-remove" style="background:transparent;border:none;color:#ef4444;cursor:pointer">Xóa</button>
-						</div>
-					</div>
+      <section class="cart-section" style="padding: 30px 10%; display: flex; gap: 30px;">
+        <div style="flex: 1;">
+          <div id="cartItems" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px;">
+            <div style="text-align: center; padding: 40px; color: #666;">Đang tải giỏ hàng...</div>
+          </div>
+        </div>
 
-					<!-- Empty state example (hidden when items exist) -->
-					<div class="empty-state" style="display:none;text-align:center;padding:40px;background:#fff;border:1px solid #cfe9cf;border-radius:10px;">
-						<p style="margin:0;color:#2d7a2e">Giỏ hàng trống. Hãy thêm sản phẩm bạn cần vào giỏ.</p>
-						<a href="/user/index.html" class="btn-primary" style="display:inline-block;margin-top:12px">Mua sắm ngay</a>
-					</div>
-				</div>
+        <aside style="width: 350px;">
+          <div style="background: #fff; border: 1px solid #c5e8c8; padding: 20px; border-radius: 10px;">
+            <h4 style="margin: 0 0 15px; color: #155724;">Tóm tắt đơn hàng</h4>
+            
+            <div style="display: flex; justify-content: space-between; margin: 10px 0; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+              <span>Tạm tính</span>
+              <span style="font-weight: 700; color: #1b5e20;" id="subtotal">0₫</span>
+            </div>
 
-				<aside class="cart-summary" style="max-width:360px;margin-top:16px;">
-					<div style="background:#fff;border:1px solid #c5e8c8;padding:16px;border-radius:10px;">
-						<h4 style="margin:0 0 8px;color:#155724">Tổng đơn hàng</h4>
-						<div style="display:flex;justify-content:space-between;margin:8px 0"><span>SP (1)</span><span style="font-weight:700;color:#1b5e20">25.000đ</span></div>
-						<div style="display:flex;justify-content:space-between;margin:8px 0"><span>Phí vận chuyển</span><span>Miễn phí</span></div>
-						<hr />
-						<div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;color:#155724"> <span>Tổng thanh toán</span> <span>25.000đ</span></div>
-						<button class="btn-primary" style="width:100%;margin-top:12px">Tiến hành thanh toán</button>
-					</div>
-				</aside>
-			</section>
-		</main>
+            <div style="display: flex; justify-content: space-between; margin: 10px 0; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+              <span>Phí vận chuyển</span>
+              <span>Miễn phí</span>
+            </div>
 
-		<div data-include="../../shared/components/footer.html"></div>
+            <div style="display: flex; justify-content: space-between; margin: 10px 0; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+              <span>Mã giảm giá</span>
+              <input type="text" id="discountCode" placeholder="Nhập mã" style="width: 120px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;" />
+            </div>
 
-		<script src="../../shared/include.js"></script>
-		<script>
-			// small client-side interaction for qty buttons
-			document.addEventListener('click', (e) => {
-				if (e.target.classList.contains('qty-increase')) {
-					const input = e.target.closest('.cart-item').querySelector('.qty');
-					input.value = Number(input.value) + 1;
-				}
-				if (e.target.classList.contains('qty-decrease')) {
-					const input = e.target.closest('.cart-item').querySelector('.qty');
-					input.value = Math.max(1, Number(input.value) - 1);
-				}
-				if (e.target.classList.contains('btn-remove')) {
-					const item = e.target.closest('.cart-item');
-					item.remove();
-				}
-			});
-		</script>
-	</body>
+            <div style="display: flex; justify-content: space-between; margin: 10px 0; padding: 15px 0;">
+              <span style="font-size: 1.1rem; font-weight: 800; color: #155724;">Tổng thanh toán</span>
+              <span style="font-size: 1.2rem; font-weight: 800; color: #d32f2f;" id="total">0₫</span>
+            </div>
+
+            <button onclick="window.checkout()" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px;">Tiến hành thanh toán</button>
+            <a href="/Web/user/pages/drugs.html" style="display: block; width: 100%; padding: 10px; text-align: center; margin-top: 10px; color: #155724; text-decoration: none; border: 1px solid #155724; border-radius: 6px;">Tiếp tục mua sắm</a>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div data-include="../../shared/components/footer.html"></div>
+
+    <script src="../../shared/include.js"></script>
+    <script type="module">
+      import { orderAPI, invoiceAPI } from "../../shared/api.js";
+
+      function renderCart() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const container = document.getElementById('cartItems');
+
+        if (cart.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+              <p style="color: #666; margin: 0 0 20px;">Giỏ hàng trống</p>
+              <a href="/Web/user/pages/drugs.html" class="btn-primary" style="display: inline-block; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 6px;">Mua sắm ngay</a>
+            </div>
+          `;
+          document.getElementById('subtotal').textContent = '0₫';
+          document.getElementById('total').textContent = '0₫';
+          return;
+        }
+
+        let subtotal = 0;
+        container.innerHTML = cart.map((item, idx) => {
+          const total = item.price * item.quantity;
+          subtotal += total;
+          return `
+            <div style="display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; align-items: center;">
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 5px;">${item.name}</h4>
+                <p style="margin: 0; color: #666; font-size: 14px;">Giá: ${item.price.toLocaleString()}₫</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <button onclick="window.changeQty(${idx}, -1)" style="width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px;">−</button>
+                <input type="number" value="${item.quantity}" min="1" style="width: 50px; text-align: center; border: 1px solid #ccc; padding: 5px; border-radius: 4px;" readonly />
+                <button onclick="window.changeQty(${idx}, 1)" style="width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px;">+</button>
+              </div>
+              <span style="font-weight: 700; min-width: 100px; text-align: right;">${total.toLocaleString()}₫</span>
+              <button onclick="window.removeFromCart(${idx})" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Xóa</button>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('subtotal').textContent = subtotal.toLocaleString() + '₫';
+        document.getElementById('total').textContent = subtotal.toLocaleString() + '₫';
+      }
+
+      window.changeQty = (idx, delta) => {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+      };
+
+      window.removeFromCart = (idx) => {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.splice(idx, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+      };
+
+      window.checkout = async () => {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        if (!user) {
+          alert('Vui lòng đăng nhập để thanh toán');
+          window.location.href = '/Web/user/pages/login.html';
+          return;
+        }
+
+        if (cart.length === 0) {
+          alert('Giỏ hàng trống');
+          return;
+        }
+
+        try {
+          const total = cart.reduce((s, item) => s + item.price * item.quantity, 0);
+
+          // Tạo order
+          const orderRes = await orderAPI.create({
+            customer_id: user.user_id,
+            order_items: cart.map(item => ({
+              drug_id: item.drug_id,
+              drug_name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            })),
+            total_amount: total,
+            payment_method: 'cash',
+            status: 'Pending',
+            notes: 'Đơn hàng từ web'
+          });
+
+          console.log('Order created:', orderRes);
+
+          // Tạo invoice
+          const invoiceRes = await invoiceAPI.create({
+            order_id: orderRes.data?.order_id || orderRes.order_id,
+            customer_id: user.user_id,
+            total: total,
+            status: 'pending'
+          });
+
+          console.log('Invoice created:', invoiceRes);
+
+          alert('✅ Đơn hàng được tạo thành công! Mã đơn: ORD-' + (orderRes.data?.order_id || orderRes.order_id));
+          localStorage.removeItem('cart');
+          window.location.href = '/Web/user/index.html';
+        } catch (error) {
+          console.error('Checkout error:', error);
+          alert('❌ Lỗi khi thanh toán: ' + error.message);
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', renderCart);
+    </script>
+  </body>
 </html>

@@ -4,83 +4,133 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Danh sách thuốc - DrugStore</title>
-  <link rel="stylesheet" href="../css/dashboard.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet" />
   </head>
 
   <body>
-  <!-- Import components -->
-  <div data-include="../../shared/components/topbar.html"></div>
-  <div data-include="../../shared/components/navbar.html"></div>
+    <!-- Import components -->
+    <div data-include="../../shared/components/topbar.html"></div>
+    <div data-include="../../shared/components/navbar.html"></div>
 
     <!-- Nội dung chính -->
     <main class="content">
       <section class="drugs-header">
         <h2>Danh sách thuốc</h2>
         <p>Tìm kiếm, xem thông tin và chọn mua thuốc một cách dễ dàng.</p>
-        <div class="filter-bar">
-          <input type="text" id="searchInput" placeholder="🔍 Nhập tên thuốc cần tìm..." />
-          <select id="categorySelect">
-            <option value="all">Tất cả danh mục</option>
-            <option value="pain">Giảm đau</option>
-            <option value="vitamin">Vitamin & Khoáng chất</option>
-            <option value="flu">Cảm cúm</option>
-            <option value="digest">Tiêu hoá</option>
-          </select>
-        </div>
       </section>
 
-      <section class="drug-list" id="drugList">
-        <!-- Thẻ thuốc -->
-        <div class="drug-card">
-          <img src="../../shared/images/drug1.jpg" alt="Paracetamol" onerror="this.style.display='none'" />
-          <h3>Paracetamol 500mg</h3>
-          <p>Giảm đau, hạ sốt nhanh chóng.</p>
-          <div class="price">25.000đ</div>
-          <button>Thêm vào giỏ</button>
+      <section class="drugs-section" style="padding: 30px 10%;">
+        <div class="filter-bar" style="margin-bottom: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
+          <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm thuốc..." style="flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" />
+          <select id="categorySelect" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; min-width: 150px;">
+            <option value="">Tất cả danh mục</option>
+          </select>
         </div>
 
-        <div class="drug-card">
-          <img src="../../shared/images/drug2.jpg" alt="Vitamin C" onerror="this.style.display='none'" />
-          <h3>Vitamin C 1000mg</h3>
-          <p>Tăng cường hệ miễn dịch, chống oxy hóa.</p>
-          <div class="price">85.000đ</div>
-          <button>Thêm vào giỏ</button>
-        </div>
-
-        <div class="drug-card">
-          <img src="../../shared/images/drug3.jpg" alt="Amoxicillin" onerror="this.style.display='none'" />
-          <h3>Amoxicillin 500mg</h3>
-          <p>Kháng sinh điều trị nhiễm khuẩn.</p>
-          <div class="price">48.000đ</div>
-          <button>Thêm vào giỏ</button>
-        </div>
-
-        <div class="drug-card">
-          <img src="../../shared/images/drug4.jpg" alt="Omeprazol" onerror="this.style.display='none'" />
-          <h3>Omeprazol 20mg</h3>
-          <p>Giảm tiết acid dạ dày, hỗ trợ điều trị viêm loét.</p>
-          <div class="price">60.000đ</div>
-          <button>Thêm vào giỏ</button>
+        <div class="drug-list" id="drugList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px;">Đang tải thuốc...</div>
         </div>
       </section>
     </main>
 
-  <div data-include="../../shared/components/footer.html"></div>
+    <div data-include="../../shared/components/footer.html"></div>
 
-  <script src="../../shared/include.js"></script>
-    <script>
-      // Bộ lọc đơn giản cho danh sách thuốc
-      const searchInput = document.getElementById("searchInput");
-      const drugList = document.getElementById("drugList");
-      searchInput.addEventListener("input", function () {
-        const keyword = this.value.toLowerCase();
-        const cards = drugList.querySelectorAll(".drug-card");
-        cards.forEach((card) => {
-          const name = card.querySelector("h3").textContent.toLowerCase();
-          card.style.display = name.includes(keyword) ? "block" : "none";
-        });
+    <script src="../../shared/include.js"></script>
+    <script type="module">
+      import { drugAPI, categoryAPI } from "../../shared/api.js";
+
+      let allDrugs = [];
+      let allCategories = [];
+
+      async function loadDrugs() {
+        try {
+          const res = await drugAPI.getAll();
+          allDrugs = Array.isArray(res) ? res : (res.data || []);
+          renderDrugs(allDrugs);
+        } catch (error) {
+          console.error("Lỗi tải thuốc:", error);
+          document.getElementById('drugList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
+        }
+      }
+
+      async function loadCategories() {
+        try {
+          const res = await categoryAPI.getAll();
+          allCategories = Array.isArray(res) ? res : (res.data || []);
+          
+          const select = document.getElementById('categorySelect');
+          allCategories.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat.category_id;
+            opt.textContent = cat.name;
+            select.appendChild(opt);
+          });
+        } catch (error) {
+          console.error("Lỗi tải danh mục:", error);
+        }
+      }
+
+      function renderDrugs(drugs) {
+        const list = document.getElementById('drugList');
+        if (!drugs || drugs.length === 0) {
+          list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Không tìm thấy thuốc</div>';
+          return;
+        }
+
+        list.innerHTML = drugs.map(drug => `
+          <div class="drug-card" style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.3s;">
+            <img src="${drug.image || '../../shared/images/drug1.jpg'}" alt="${drug.name}" style="width: 100%; height: 180px; object-fit: cover;" onerror="this.src='../../shared/images/drug1.jpg'" />
+            <div style="padding: 15px;">
+              <h3 style="margin: 0 0 8px; font-size: 16px; color: #155724;">${drug.name}</h3>
+              <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${drug.description || 'Thuốc chất lượng cao'}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
+                <span style="font-size: 18px; font-weight: bold; color: #d32f2f;">${drug.price ? drug.price.toLocaleString() : '0'}₫</span>
+                <span style="font-size: 12px; color: ${drug.stock > 0 ? '#4CAF50' : '#f44336'};">${drug.stock > 0 ? 'Còn hàng' : 'Hết hàng'}</span>
+              </div>
+              <button onclick="window.addToCart(${drug.drug_id}, '${drug.name}', ${drug.price})" ${drug.stock <= 0 ? 'disabled' : ''} style="width: 100%; padding: 10px; background: ${drug.stock > 0 ? '#4CAF50' : '#ccc'}; color: white; border: none; border-radius: 4px; cursor: ${drug.stock > 0 ? 'pointer' : 'not-allowed'}; font-weight: 600; margin-top: 10px;">
+                ${drug.stock > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      window.addToCart = (drugId, name, price) => {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existing = cart.find(item => item.drug_id === drugId);
+        
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          cart.push({ drug_id: drugId, name, price, quantity: 1 });
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert(`✅ Đã thêm "${name}" vào giỏ hàng`);
+      };
+
+      document.getElementById('searchInput').addEventListener('keyup', (e) => {
+        const keyword = e.target.value.toLowerCase();
+        const filtered = allDrugs.filter(drug => 
+          drug.name.toLowerCase().includes(keyword) || 
+          (drug.description && drug.description.toLowerCase().includes(keyword))
+        );
+        renderDrugs(filtered);
       });
+
+      document.getElementById('categorySelect').addEventListener('change', (e) => {
+        const categoryId = e.target.value;
+        if (!categoryId) {
+          renderDrugs(allDrugs);
+        } else {
+          const filtered = allDrugs.filter(drug => drug.category_id == categoryId);
+          renderDrugs(filtered);
+        }
+      });
+
+      loadDrugs();
+      loadCategories();
     </script>
   </body>
 </html>
