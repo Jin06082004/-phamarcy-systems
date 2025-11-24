@@ -15,6 +15,8 @@ import prescriptionRouter from './routers/prescriptionRoutes.js';
 import userRouter from './routers/userRoutes.js';
 import ordersRouter from './routers/ordersRouter.js';
 import discountRouter from "./routers/discountRouters.js";
+import cartRouter from "./routers/cartRoutes.js";
+import couponRouter from "./routers/couponRoutes.js";
 
 const app = express();
 
@@ -89,6 +91,8 @@ app.use('/prescriptions', prescriptionRouter);
 app.use('/users', userRouter);
 app.use('/orders', ordersRouter);
 app.use("/discounts", discountRouter);
+app.use("/carts", cartRouter);
+app.use("/coupons", couponRouter);
 
 app.get('/', (req, res) => res.send('Pharmacy management server is running'));
 
