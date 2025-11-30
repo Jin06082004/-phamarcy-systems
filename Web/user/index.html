@@ -30,27 +30,8 @@
 
       <section class="featured">
         <h3>Sản phẩm nổi bật</h3>
-        <div class="product-grid">
-          <div class="product-card">
-            <img src="../../shared/images/drug1.jpg" alt="Thuốc 1" onerror="this.style.display='none'" />
-            <h4>Paracetamol 500mg</h4>
-            <p>Giảm đau, hạ sốt nhanh chóng</p>
-            <button>Thêm vào giỏ</button>
-          </div>
-
-          <div class="product-card">
-            <img src="../../shared/images/drug2.jpg" alt="Thuốc 2" onerror="this.style.display='none'" />
-            <h4>Vitamin C 1000mg</h4>
-            <p>Tăng cường miễn dịch, chống oxy hóa</p>
-            <button>Thêm vào giỏ</button>
-          </div>
-
-          <div class="product-card">
-            <img src="../../shared/images/drug3.jpg" alt="Thuốc 3" onerror="this.style.display='none'" />
-            <h4>Omega-3 Fish Oil</h4>
-            <p>Hỗ trợ tim mạch và não bộ</p>
-            <button>Thêm vào giỏ</button>
-          </div>
+        <div class="product-grid" id="featured-products">
+          <div style="grid-column:1/-1;text-align:center;padding:40px;">Đang tải sản phẩm...</div>
         </div>
       </section>
     </main>
@@ -58,5 +39,87 @@
   <div data-include="../shared/components/footer.html"></div>
 
     <script src="../shared/include.js"></script>
+    <script src="../shared/notification.js"></script>
+    <script type="module">
+      import { drugAPI } from '../shared/api.js';
+      import { cartAPI } from '../shared/cartApi.js';
+
+      // ensure there's a guest token for anonymous carts
+      function ensureGuestToken() {
+        let t = localStorage.getItem('guest_token');
+        if (!t) {
+          t = 'guest_' + Math.random().toString(36).slice(2, 12);
+          localStorage.setItem('guest_token', t);
+        }
+        return t;
+      }
+
+      async function loadFeatured() {
+        try {
+          const res = await drugAPI.getAll();
+          const products = Array.isArray(res) ? res : (res.data || []);
+          const container = document.getElementById('featured-products');
+          if (!products.length) {
+            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#666;">Chưa có sản phẩm</div>';
+            return;
+          }
+
+          container.innerHTML = products.slice(0, 9).map(p => {
+              let imgTag = "";
+              if (p.image) {
+                const isAbsolute = p.image.startsWith('http') || p.image.startsWith('/');
+                const src = isAbsolute ? p.image : ('/shared/' + p.image.replace(/^(\.\/|\/)+/, ''));
+                imgTag = `<img src="${src}" alt="${p.name}" />`;
+              }
+              return `
+              <div class="product-card">
+                ${imgTag}
+                <h4>${p.name}</h4>
+                <p>${p.description || ''}</p>
+                <div>
+                  <div style="text-align:center;margin:12px 0;font-weight:800;font-size:1.4rem;color:#d32f2f;">${(p.price||0).toLocaleString()}₫</div>
+                  <button data-id="${p.drug_id}" data-name="${p.name}" data-price="${p.price||0}">🛒 Thêm vào giỏ</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+           // attach handlers
+           container.querySelectorAll('button[data-id]').forEach(btn => {
+             btn.addEventListener('click', async (e) => {
+               const id = Number(btn.dataset.id);
+               const name = btn.dataset.name;
+               const price = Number(btn.dataset.price || 0);
+               
+               // Always add to localStorage for immediate availability
+               fallbackAdd(id, name, price);
+               
+               // Also try server cart in background
+               try {
+                 const guestToken = ensureGuestToken();
+                 await cartAPI.add({ guest_token: guestToken, item: { drug_id: id, name, price, quantity: 1 } });
+               } catch (err) {
+                 console.warn('Server cart add failed, using localStorage only', err);
+               }
+             });
+           });
+         } catch (error) {
+           document.getElementById('featured-products').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:red;">Lỗi tải dữ liệu</div>';
+         }
+       }
+
+      function fallbackAdd(id, name, price) {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const idx = cart.findIndex(i => Number(i.drug_id) === Number(id));
+        if (idx >= 0) cart[idx].quantity = Number(cart[idx].quantity) + 1;
+        else cart.push({ drug_id: id, name, price, quantity: 1 });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        // ensure guest token exists for later merge
+        ensureGuestToken();
+        alert(`Đã thêm ${name} vào giỏ`);
+      }
+
+      document.addEventListener('DOMContentLoaded', loadFeatured);
+    </script>
   </body>
 </html>

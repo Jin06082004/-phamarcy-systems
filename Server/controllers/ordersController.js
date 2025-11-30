@@ -6,7 +6,11 @@ import orderService from "../services/ordersServices.js";
 // Tạo đơn hàng mới (tự tăng order_id)
 export const createOrder = async (req, res) => {
   try {
-    const { customer_id, order_items, payment_method, notes, status } = req.body;
+    let { customer_id, order_items, payment_method, notes, status } = req.body;
+    // if request is authenticated, prefer token's user_id
+    if (req.user && req.user.user_id) {
+      customer_id = Number(req.user.user_id);
+    }
 
     // Lấy order cuối cùng để tự tăng ID
     const lastOrder = await Order.findOne().sort({ order_id: -1 });
@@ -17,6 +21,20 @@ export const createOrder = async (req, res) => {
       (sum, item) => sum + item.quantity * item.price,
       0
     );
+
+    // Giảm số lượng tồn kho của từng thuốc
+    const Drug = (await import('../models/drugModel.js')).default;
+    for (const item of order_items) {
+      const drug = await Drug.findOne({ drug_id: item.drug_id });
+      if (!drug) {
+        return res.status(400).json({ success: false, message: `Không tìm thấy thuốc với drug_id ${item.drug_id}` });
+      }
+      if (drug.stock < item.quantity) {
+        return res.status(400).json({ success: false, message: `Thuốc ${drug.name} không đủ số lượng trong kho` });
+      }
+      drug.stock -= item.quantity;
+      await drug.save();
+    }
 
     const newOrder = new Order({
       order_id: newOrderId,
@@ -32,33 +50,45 @@ export const createOrder = async (req, res) => {
 
     await newOrder.save();
 
-    res.status(201).json({
-      message: "✅ Tạo đơn hàng thành công",
-      order: {
-        order_id: newOrder.order_id,
-        customer_id: newOrder.customer_id,
-        order_items: newOrder.order_items,
-        total_amount: newOrder.total_amount,
-        status: newOrder.status,
-        payment_method: newOrder.payment_method,
-        notes: newOrder.notes,
-        order_date: newOrder.order_date,
-      },
-    });
+    res.status(201).json({ success: true, data: {
+      order_id: newOrder.order_id,
+      customer_id: newOrder.customer_id,
+      order_items: newOrder.order_items,
+      total_amount: newOrder.total_amount,
+      status: newOrder.status,
+      payment_method: newOrder.payment_method,
+      notes: newOrder.notes,
+      order_date: newOrder.order_date,
+    }});
   } catch (error) {
     console.error("❌ Lỗi tạo đơn hàng:", error);
-    res.status(500).json({ message: "Không thể tạo đơn hàng" });
+    res.status(500).json({ success: false, message: "Không thể tạo đơn hàng" });
   }
 };
 
 // Lấy danh sách tất cả đơn hàng (hiện order_id)
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("customer_id", "name email phone");
+    const orders = await Order.find().sort({ order_id: -1 });
     res.status(200).json(orders);
   } catch (error) {
     console.error("❌ Lỗi lấy danh sách đơn hàng:", error);
     res.status(500).json({ message: "Không thể lấy danh sách đơn hàng" });
+  }
+};
+
+// Lấy đơn hàng của user hiện tại
+export const getMyOrders = async (req, res) => {
+  try {
+    if (!req.user || !req.user.user_id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    
+    const orders = await Order.find({ customer_id: Number(req.user.user_id) }).sort({ order_id: -1 });
+    res.status(200).json({ success: true, data: orders });
+  } catch (error) {
+    console.error("❌ Lỗi lấy đơn hàng của tôi:", error);
+    res.status(500).json({ success: false, message: "Không thể lấy danh sách đơn hàng" });
   }
 };
 

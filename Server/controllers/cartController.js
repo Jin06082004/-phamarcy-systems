@@ -133,7 +133,9 @@ export const clearCart = async (req, res) => {
  */
 export const mergeGuestCart = async (req, res) => {
   try {
-    const { guest_token, user_id } = req.body;
+    const { guest_token } = req.body;
+    // if authenticated, prefer token's user_id
+    const user_id = (req.user && req.user.user_id) ? Number(req.user.user_id) : req.body.user_id;
     if (!guest_token || !user_id) return res.status(400).json({ success: false, message: "guest_token và user_id required" });
 
     const guestCart = await Cart.findOne({ guest_token });

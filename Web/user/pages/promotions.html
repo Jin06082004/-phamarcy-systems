@@ -5,6 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Khuyến mãi - DrugStore</title>
     <link rel="stylesheet" href="../css/dashboard.css" />
+    <style>
+      .promo-container {
+        padding: 40px 10%;
+      }
+
+      .promo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .promo-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .promo-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(16, 185, 129, 0.2);
+        border-color: var(--primary-green);
+      }
+
+      .promo-header {
+        background: linear-gradient(135deg, #10b981, #059669);
+        padding: 1.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .promo-header::before {
+        content: '🎉';
+        position: absolute;
+        font-size: 8rem;
+        opacity: 0.1;
+        right: -20px;
+        top: -20px;
+      }
+
+      .promo-code {
+        font-size: 1.75rem;
+        font-weight: 900;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      }
+
+      .promo-discount {
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+      }
+
+      .promo-description {
+        font-size: 0.95rem;
+        opacity: 0.95;
+      }
+
+      .promo-body {
+        padding: 1.5rem;
+      }
+
+      .promo-detail {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.95rem;
+        color: #6b7280;
+      }
+
+      .promo-detail:last-child {
+        border-bottom: none;
+      }
+
+      .promo-detail-icon {
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+      }
+
+      .promo-detail strong {
+        color: #1f2937;
+        margin-left: 0.25rem;
+      }
+
+      .promo-status {
+        display: inline-block;
+        padding: 0.375rem 0.875rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-left: 0.5rem;
+      }
+
+      .status-active {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-upcoming {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .status-expired {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .status-paused {
+        background: #f3f4f6;
+        color: #6b7280;
+      }
+
+      .promo-footer {
+        padding: 0 1.5rem 1.5rem;
+      }
+
+      .copy-btn {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+
+      .copy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      }
+
+      .copy-btn:active {
+        transform: translateY(0);
+      }
+
+      .promo-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255,255,255,0.95);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: #10b981;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      }
+
+      .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+      }
+    </style>
   </head>
   <body>
     <div data-include="../../shared/components/topbar.html"></div>
@@ -12,58 +185,129 @@
 
     <main class="content">
       <section class="drugs-header">
-        <h2>Khuyến mãi</h2>
-        <p>Các chương trình khuyến mãi, mã giảm giá đang diễn ra.</p>
+        <h2>🎁 Khuyến mãi hấp dẫn</h2>
+        <p>Săn ngay các mã giảm giá và chương trình khuyến mãi đang diễn ra</p>
       </section>
-      <section style="padding: 30px 10%;">
-        <div id="promoList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
-          <div style="grid-column: 1/-1; text-align: center; padding: 40px;">Đang tải khuyến mãi...</div>
+      
+      <section class="promo-container">
+        <div id="promoList" class="promo-grid">
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #6b7280; font-size: 1.125rem;">
+            ⏳ Đang tải khuyến mãi...
+          </div>
         </div>
       </section>
     </main>
 
     <div data-include="../../shared/components/footer.html"></div>
     <script src="../../shared/include.js"></script>
+    <script src="../../shared/notification.js"></script>
     <script type="module">
       import { discountAPI } from "../../shared/api.js";
+      
       async function loadPromotions() {
         try {
           const res = await discountAPI.getAll();
           const promos = Array.isArray(res) ? res : (res.data || []);
           const now = new Date();
           const list = document.getElementById('promoList');
+          
           if (promos.length === 0) {
-            list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">Chưa có khuyến mãi</div>';
+            list.innerHTML = `
+              <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-icon">🎁</div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">Chưa có khuyến mãi</h3>
+                <p style="color: #6b7280; font-size: 1rem;">Hãy quay lại sau để không bỏ lỡ các chương trình ưu đãi hấp dẫn!</p>
+              </div>
+            `;
             return;
           }
+          
           list.innerHTML = promos.map(promo => {
             let status = "";
-            if (now < new Date(promo.start_date)) status = "Chưa bắt đầu";
-            else if (now > new Date(promo.end_date)) status = "Đã kết thúc";
-            else if (promo.is_active) status = "Hoạt động";
-            else status = "Tạm dừng";
+            let statusClass = "";
+            
+            if (now < new Date(promo.start_date)) {
+              status = "Sắp diễn ra";
+              statusClass = "status-upcoming";
+            } else if (now > new Date(promo.end_date)) {
+              status = "Đã kết thúc";
+              statusClass = "status-expired";
+            } else if (promo.is_active) {
+              status = "Đang hoạt động";
+              statusClass = "status-active";
+            } else {
+              status = "Tạm dừng";
+              statusClass = "status-paused";
+            }
+
+            const usagePercent = promo.usage_limit ? Math.round((promo.used_count || 0) / promo.usage_limit * 100) : 0;
+            
             return `
-              <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); padding: 24px;">
-                <h3 style="margin:0 0 8px; color:#d32f2f;">Mã: ${promo.code}</h3>
-                <p style="margin:0 0 8px; color:#155724;">${promo.description || "—"}</p>
-                <ul style="margin:0 0 8px; color:#666; font-size:14px;">
-                  <li>Giảm <strong>${promo.percentage}%</strong> đơn hàng</li>
-                  <li>Áp dụng từ <strong>${new Date(promo.start_date).toLocaleDateString('vi-VN')}</strong> đến <strong>${new Date(promo.end_date).toLocaleDateString('vi-VN')}</strong></li>
-                  <li>Lượt sử dụng: <strong>${promo.used_count || 0} / ${promo.usage_limit || "∞"}</strong></li>
-                  <li>Trạng thái: <span style="color:${status==='Hoạt động'?'#1b5e20':'#888'}">${status}</span></li>
-                </ul>
-                <button onclick="window.copyPromo('${promo.code}')" style="background:#6fdc6f; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">Sao chép mã</button>
+              <div class="promo-card">
+                <div class="promo-header">
+                  ${status === 'Đang hoạt động' ? '<div class="promo-badge">🔥 HOT</div>' : ''}
+                  <div class="promo-code">${promo.code}</div>
+                  <div class="promo-discount">-${promo.percentage}% OFF</div>
+                  <div class="promo-description">${promo.description || 'Giảm giá đặc biệt'}</div>
+                </div>
+
+                <div class="promo-body">
+                  <div class="promo-detail">
+                    <span class="promo-detail-icon">📅</span>
+                    <span>Từ <strong>${new Date(promo.start_date).toLocaleDateString('vi-VN')}</strong></span>
+                  </div>
+                  <div class="promo-detail">
+                    <span class="promo-detail-icon">⏰</span>
+                    <span>Đến <strong>${new Date(promo.end_date).toLocaleDateString('vi-VN')}</strong></span>
+                  </div>
+                  <div class="promo-detail">
+                    <span class="promo-detail-icon">🎯</span>
+                    <span>Đã dùng: <strong>${promo.used_count || 0}</strong> / <strong>${promo.usage_limit || '∞'}</strong> lượt</span>
+                  </div>
+                  ${promo.usage_limit ? `
+                    <div class="promo-detail">
+                      <span class="promo-detail-icon">📊</span>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                          <span>Còn lại</span>
+                          <strong>${100 - usagePercent}%</strong>
+                        </div>
+                        <div style="height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #10b981, #059669); width: ${100 - usagePercent}%; transition: width 0.3s ease;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ` : ''}
+                  <div class="promo-detail">
+                    <span class="promo-detail-icon">📍</span>
+                    <span>Trạng thái: <span class="promo-status ${statusClass}">${status}</span></span>
+                  </div>
+                </div>
+
+                <div class="promo-footer">
+                  <button onclick="window.copyPromo('${promo.code}')" class="copy-btn">
+                    📋 Sao chép mã
+                  </button>
+                </div>
               </div>
             `;
           }).join('');
         } catch (error) {
-          document.getElementById('promoList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
+          document.getElementById('promoList').innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <div class="empty-icon">❌</div>
+              <h3 style="font-size: 1.5rem; font-weight: 700; color: #ef4444; margin-bottom: 0.5rem;">Lỗi tải dữ liệu</h3>
+              <p style="color: #6b7280; font-size: 1rem;">Không thể tải danh sách khuyến mãi. Vui lòng thử lại sau.</p>
+            </div>
+          `;
         }
       }
+      
       window.copyPromo = (code) => {
         navigator.clipboard.writeText(code);
-        alert(`Đã sao chép mã: ${code}`);
+        notification.success(`Đã sao chép mã: ${code}`, '📋 Thành công!');
       };
+      
       loadPromotions();
     </script>
   </body>

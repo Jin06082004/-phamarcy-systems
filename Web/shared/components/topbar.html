@@ -8,9 +8,87 @@
       <input type="text" placeholder="Tìm thuốc, vitamin, thực phẩm..." />
       <button>🔍</button>
     </div>
-    <div class="user-actions">
-      <a href="/Web/user/pages/cart.html">🛒 Giỏ hàng</a>
-      <a href="/Web/user/pages/login.html">👤 Đăng nhập</a>
+    <div class="user-actions" id="userActions">
+      <a href="/Web/user/pages/cart.html" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: white; color: #1f2937; text-decoration: none; border-radius: 10px; font-weight: 500; transition: all 0.3s; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <span style="font-size: 1.25rem;">🛒</span>
+        <span>Giỏ hàng</span>
+      </a>
+      <a href="/Web/user/pages/login.html" id="loginBtn" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: white; color: #1f2937; text-decoration: none; border-radius: 10px; font-weight: 500; transition: all 0.3s; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <span style="font-size: 1.25rem;">👤</span>
+        <span>Đăng nhập</span>
+      </a>
+      <div id="userInfo" style="display: none; align-items: center; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.3s;">
+          <div style="width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            👤
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+            <span style="font-size: 0.75rem; color: rgba(255,255,255,0.9); font-weight: 500;">Xin chào,</span>
+            <span id="userName" style="font-weight: 700; color: white; font-size: 0.95rem;"></span>
+          </div>
+        </div>
+        <a href="#" id="logoutBtn" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);">
+          <span style="font-size: 1.125rem;">🚪</span>
+          <span>Đăng xuất</span>
+        </a>
+      </div>
     </div>
   </div>
 </header>
+
+<style>
+  .user-actions a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    background: #f9fafb !important;
+  }
+  
+  #userInfo > div:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+  }
+  
+  #logoutBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4) !important;
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+  }
+</style>
+
+<script>
+  // Check if user is logged in and update UI
+  (function() {
+    const userStr = localStorage.getItem('user');
+    const loginBtn = document.getElementById('loginBtn');
+    const userInfo = document.getElementById('userInfo');
+    const userName = document.getElementById('userName');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.username || user.full_name) {
+          // Hide login button
+          loginBtn.style.display = 'none';
+          // Show user info
+          userInfo.style.display = 'flex';
+          userName.textContent = user.full_name || user.username || 'User';
+          
+          // Add logout handler
+          logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+              localStorage.removeItem('user');
+              localStorage.removeItem('token');
+              localStorage.removeItem('cart');
+              localStorage.removeItem('guest_token');
+              window.location.href = '/Web/user/index.html';
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+    }
+  })();
+</script>

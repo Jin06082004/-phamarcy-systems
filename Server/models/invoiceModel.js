@@ -49,8 +49,8 @@ const invoiceSchema = new mongoose.Schema(
         payment_method: { type: String, default: "cash" },
         status: {
             type: String,
-            enum: ["draft", "unpaid", "partially_paid", "paid", "cancelled", "refunded"],
-            default: "unpaid",
+            enum: ["draft", "pending", "unpaid", "partially_paid", "paid", "cancelled", "refunded"],
+            default: "pending",
         },
         createdBy: { type: String, default: "" },
         notes: { type: String, default: "" },

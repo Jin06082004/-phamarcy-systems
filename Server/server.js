@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from "cors";  // Thêm dòng này
 import { connectDB } from "./src/dbConfig.js";
 import drugRouter from "./routers/drugRoutes.js";
@@ -19,6 +21,13 @@ import cartRouter from "./routers/cartRoutes.js";
 import couponRouter from "./routers/couponRoutes.js";
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve only the `shared` folder from the frontend as `/shared` so image paths like
+// `/shared/images/logo.png` resolve, without exposing the entire `Web` folder.
+app.use('/shared', express.static(path.join(__dirname, '../Web/shared')));
 
 // Thêm CORS middleware TRƯỚC các route
 // Configure CORS to allow local development origins and handle preflight properly

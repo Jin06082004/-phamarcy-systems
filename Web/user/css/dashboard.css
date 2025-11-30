@@ -1,183 +1,642 @@
-/* Dashboard styles adapted to drugs.css theme (pharmacy green) */
-body {
-  font-family: "Montserrat", sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f6fbf6; /* soft mint background like drugs.css */
-  color: #155724;
+/* Modern Dashboard Styles with Enhanced UX */
+:root {
+  --primary-green: #10b981;
+  --primary-dark: #059669;
+  --primary-light: #d1fae5;
+  --accent: #3b82f6;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --bg-light: #f9fafb;
+  --border: #e5e7eb;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Topbar / Header */
-.topbar {
-  background: linear-gradient(90deg, #a8e6a3, #d3f8d3);
-  border-bottom: 2px solid #a6dba8;
-  padding: 12px 0;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* ========== TOPBAR ========== */
+.topbar {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
 .topbar-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 90%;
-  margin: auto;
-}
-.logo h1 {
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0;
-  color: #155724;
-}
-.logo span { color: #1b5e20; }
-.search-box input { padding: 8px; border: 1px solid #b6e3b9; border-radius: 6px; }
-.search-box button { padding: 8px 10px; background: #69c16c; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-.user-actions a { color: #154d21; text-decoration: none; margin-left: 12px; }
-
-/* Navbar (feature bar) */
-.navbar { background: transparent; padding: 8px 0; }
-.menu { list-style: none; display: flex; justify-content: center; margin: 0; padding: 0; gap: 10px; overflow:auto; white-space:nowrap; }
-.menu li { flex: 0 0 auto; }
-.menu li a { color: #155724; text-decoration: none; padding: 10px 16px; display: block; border-radius: 8px; font-weight:600 }
-.menu li a:hover { background: rgba(105,193,108,0.12); }
-.menu li a.active { background: linear-gradient(90deg, rgba(105,193,108,0.16), rgba(105,193,108,0.06)); }
-
-/* Hero / welcome */
-.hero { display:flex; align-items:center; justify-content:space-between; padding:40px 8%; background: linear-gradient(90deg,#e8fbeb,#f6fbf6); border-bottom:1px solid #e2f3e2 }
-.hero-text { max-width:55%; }
-.hero-text h2 { font-size:32px; margin:0; color:#155724 }
-.hero-text span { color:#1b5e20 }
-.hero-text p { margin-top:10px; color:#2d7a2e }
-.btn-primary { margin-top:16px; padding:10px 18px; background:#6fdc6f; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:700 }
-.btn-primary:hover { background:#4ac74a }
-.hero-image img { max-width:360px; border-radius:10px }
-
-/* Featured / Products */
-.featured { padding:40px 8% }
-.product-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:24px }
-.product-card { background:#fff; border:1px solid #c5e8c8; border-radius:12px; padding:14px; text-align:center; transition:all .3s ease; box-shadow:0 3px 6px rgba(0,0,0,0.05) }
-.product-card:hover { transform:translateY(-6px); box-shadow:0 5px 15px rgba(91,168,94,0.18) }
-.product-card img { width:100%; height:160px; object-fit:cover; border-radius:10px }
-.product-card h4 { margin:12px 0 6px; color:#136c13 }
-.product-card p { color:#4a754a; margin:6px 0 12px }
-.product-card button { background:#6fdc6f; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-weight:600 }
-.product-card button:hover { background:#4ac74a }
-
-/* Footer */
-.footer { background:#154d21; color:#fff; text-align:center; padding:20px 0; margin-top:40px }
-
-/* Responsive tweaks */
-@media (max-width:900px) {
-  .hero { flex-direction:column; gap:18px }
-  .hero-text { max-width:100%; text-align:center }
-  .hero-image img { max-width:280px }
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  gap: 2rem;
 }
 
-/* ======================================================
-   Drugs page styles (merged from drugs.css)
-   Kept under a separate section for clarity and maintainability.
-   Rules here are specific to the drugs listing and product cards
-   (selectors use .drugs-header, .drug-list, .drug-card, etc.)
-   ====================================================== */
-
-/* Style riêng cho trang danh sách thuốc */
-/* body background already set above for dashboard; avoid overriding */
-
-/* Header phần tiêu đề trang (drugs) */
-.drugs-header {
-  text-align: center;
-  padding: 50px 10%;
-  background: linear-gradient(90deg, #a8e6a3, #d3f8d3);
-  border-bottom: 2px solid #a6dba8;
-}
-.drugs-header h2 {
-  font-size: 32px;
-  color: #155724;
-  font-weight: 700;
-}
-.drugs-header p {
-  color: #2d7a2e;
-  margin-top: 10px;
-  font-weight: 500;
-}
-.filter-bar {
-  margin-top: 25px;
+.logo {
   display: flex;
-  justify-content: center;
-  gap: 15px;
-}
-.filter-bar input,
-.filter-bar select {
-  padding: 10px 15px;
-  border-radius: 6px;
-  border: 1px solid #b6e3b9;
-  outline: none;
-  font-family: "Montserrat";
-  background: #ffffff;
-}
-.filter-bar input:focus,
-.filter-bar select:focus {
-  border-color: #69c16c;
-  box-shadow: 0 0 5px rgba(105, 193, 108, 0.3);
+  align-items: center;
+  gap: 0.75rem;
 }
 
-/* Danh sách thuốc */
-.drug-list {
-  padding: 50px 10%;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 25px;
+.logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
-.drug-card {
-  background: #fff;
-  border: 1px solid #c5e8c8;
-  border-radius: 12px;
-  padding: 15px;
-  text-align: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
-}
-.drug-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 5px 15px rgba(91, 168, 94, 0.25);
-}
-.drug-card img {
-  width: 100%;
-  border-radius: 10px;
-  height: 160px;
-  object-fit: cover;
-}
-.drug-card h3 {
-  margin-top: 10px;
-  color: #136c13;
-  font-size: 18px;
-}
-.drug-card p {
-  color: #4a754a;
-  font-size: 14px;
-  margin: 8px 0 12px;
-}
-.price {
-  color: #1b5e20;
+
+.logo h1 {
+  font-size: 1.5rem;
   font-weight: 700;
-  font-size: 16px;
-  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.drug-card button {
-  background: #6fdc6f;
+
+.search-box {
+  flex: 1;
+  max-width: 600px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1.25rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  background: white;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.search-box button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary-green);
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
-}
-.drug-card button:hover {
-  background: #4ac74a;
+  transition: var(--transition);
+  font-size: 1.1rem;
 }
 
-/* small responsive tweak for drug-list */
-@media (max-width:700px) {
-  .drug-list { padding: 30px 6%; gap:18px }
-  .drugs-header { padding: 30px 6% }
+.search-box button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.user-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.user-actions a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  color: var(--text-dark);
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: var(--transition);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.user-actions a:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-green);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ========== NAVBAR ========== */
+.navbar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 73px;
+  z-index: 99;
+  box-shadow: var(--shadow-sm);
+}
+
+.menu {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.menu::-webkit-scrollbar {
+  display: none;
+}
+
+.menu li a {
+  display: block;
+  padding: 1rem 1.5rem;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: var(--transition);
+  position: relative;
+}
+
+.menu li a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 80%;
+  height: 3px;
+  background: var(--primary-green);
+  border-radius: 3px 3px 0 0;
+  transition: var(--transition);
+}
+
+.menu li a:hover,
+.menu li a.active {
+  background: var(--primary-light);
+  color: var(--primary-green);
+}
+
+.menu li a:hover::after,
+.menu li a.active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* ========== HERO SECTION ========== */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 10%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 24px;
+  margin: 40px 10%;
+  box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+  gap: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-30px); }
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 600px;
+  z-index: 1;
+  animation: fadeInLeft 0.6s ease;
+}
+
+.hero-text h2 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+}
+
+.hero-text h2 span {
+  color: #fef3c7;
+  text-shadow: 0 0 30px rgba(254, 243, 199, 0.5);
+}
+
+.hero-text p {
+  font-size: 1.25rem;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 2.5rem;
+  line-height: 1.8;
+  text-shadow: 0 1px 10px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.125rem 3rem;
+  background: white;
+  color: var(--primary-green);
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+.hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  animation: fadeInRight 0.6s ease;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  transform: perspective(1000px) rotateY(-10deg);
+  transition: transform 0.5s ease;
+}
+
+.hero-image img:hover {
+  transform: perspective(1000px) rotateY(0deg) scale(1.05);
+}
+
+/* ========== FEATURED PRODUCTS ========== */
+.featured {
+  padding: 80px 10%;
+  background: white;
+  margin: 0;
+}
+
+.featured h3 {
+  font-size: 2.75rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4rem;
+  color: var(--text-dark);
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.featured h3::before {
+  content: '✨';
+  margin-right: 0.5rem;
+  font-size: 2.5rem;
+}
+
+.featured h3::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary-green), var(--accent));
+  border-radius: 3px;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+.product-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: var(--transition);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-green), var(--accent));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover::before {
+  transform: scaleX(1);
+}
+
+.product-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+  border-color: var(--primary-green);
+}
+
+.product-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  transition: var(--transition);
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.product-card:hover img {
+  transform: scale(1.08);
+}
+
+.product-card h4 {
+  padding: 1.5rem 1.5rem 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: center;
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.4;
+}
+
+.product-card p {
+  padding: 0 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  line-height: 1.7;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-card > div:last-child {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.product-card button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+}
+
+.product-card button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.product-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.product-card button:active {
+  transform: translateY(0);
+}
+
+/* ========== DRUGS PAGE STYLES ========== */
+.drugs-header {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
+  margin-bottom: 2rem;
+}
+
+.drugs-header h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.drugs-header p {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+}
+
+.filter-bar {
+  display: flex;
+  gap: 1rem;
+  max-width: 1400px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-bar input,
+.filter-bar select {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.875rem 1.25rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  background: white;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.drug-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+.drug-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: var(--transition);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.drug-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-green);
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-top: 4rem;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .hero-text h2 {
+    font-size: 2.5rem;
+  }
+  
+  .product-grid,
+  .drug-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar-content {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .search-box {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .hero-text h2 {
+    font-size: 2rem;
+  }
+  
+  .product-grid,
+  .drug-list {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
 }
 
 

@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
         phone: { type: String, default: "" },
         email: { type: String, default: "" },
         address: { type: String, default: "" },
-        role: { type: String, enum: ["admin", "pharmacist"], default: "pharmacist" },
+        role: { type: String, enum: ["admin", "pharmacist", "user"], default: "user" },
         is_active: { type: Boolean, default: false },
     },
     { timestamps: true }

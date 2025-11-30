@@ -159,9 +159,9 @@
                 </p>
             </div>
         </div>
-        <script type="module" src="../../shared/api.js"></script>
-        <script>
-            const { userAPI } = window;
+        <script type="module">
+            import { userAPI } from "../../shared/api.js";
+            import { cartAPI } from "../../shared/cartApi.js";
 
             const tabs = document.querySelectorAll(".tab");
             const panels = {
@@ -267,15 +267,32 @@
                 }
 
                 try {
-                    const response = await userAPI.login({ 
-                        username: identity, 
-                        password 
-                    });
-                    
+                    const response = await userAPI.login({ username: identity, password });
+
                     if (response.success) {
+                        // save user info + token
                         localStorage.setItem("user", JSON.stringify(response.data));
-                        localStorage.setItem("token", response.token || "");
-                        window.location.href = "/Web/user/index.html";
+                        if (response.token) localStorage.setItem("token", response.token);
+
+                        // if there is a guest cart, attempt to merge it on the server
+                        const guestToken = localStorage.getItem('guest_token');
+                        try {
+                            if (guestToken) {
+                                await cartAPI.merge({ guest_token: guestToken, user_id: Number(response.data.user_id) });
+                                // remove local guest cart after merge
+                                localStorage.removeItem('cart');
+                                localStorage.removeItem('guest_token');
+                            }
+                        } catch (mergeErr) {
+                            console.warn('Merge guest cart failed:', mergeErr);
+                        }
+
+                        // Redirect based on user role
+                        if (response.data.role === 'admin') {
+                            window.location.href = "/Web/admin/index.html";
+                        } else {
+                            window.location.href = "/Web/user/index.html";
+                        }
                     } else {
                         loginError.textContent = response.message || "Đăng nhập thất bại";
                         loginError.hidden = false;

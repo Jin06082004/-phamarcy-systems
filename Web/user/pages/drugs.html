@@ -37,6 +37,7 @@
     <div data-include="../../shared/components/footer.html"></div>
 
     <script src="../../shared/include.js"></script>
+    <script src="../../shared/notification.js"></script>
     <script type="module">
       import { drugAPI, categoryAPI } from "../../shared/api.js";
 
@@ -77,23 +78,31 @@
           list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Không tìm thấy thuốc</div>';
           return;
         }
-
-        list.innerHTML = drugs.map(drug => `
-          <div class="drug-card" style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.3s;">
-            <img src="${drug.image || '../../shared/images/drug1.jpg'}" alt="${drug.name}" style="width: 100%; height: 180px; object-fit: cover;" onerror="this.src='../../shared/images/drug1.jpg'" />
-            <div style="padding: 15px;">
-              <h3 style="margin: 0 0 8px; font-size: 16px; color: #155724;">${drug.name}</h3>
-              <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${drug.description || 'Thuốc chất lượng cao'}</p>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
-                <span style="font-size: 18px; font-weight: bold; color: #d32f2f;">${drug.price ? drug.price.toLocaleString() : '0'}₫</span>
-                <span style="font-size: 12px; color: ${drug.stock > 0 ? '#4CAF50' : '#f44336'};">${drug.stock > 0 ? 'Còn hàng' : 'Hết hàng'}</span>
+    
+        list.innerHTML = drugs.map(drug => {
+          let imgTag = "";
+          if (drug.image) {
+            const isAbsolute = drug.image.startsWith("http") || drug.image.startsWith("/");
+            const src = isAbsolute ? drug.image : ("/shared/" + drug.image.replace(/^(\.\/|\/)+/, ""));
+            imgTag = `<img src="${src}" alt="${drug.name}" style="width:100%; height:180px; object-fit:cover;" />`;
+          }
+          return `
+            <div class="drug-card" style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.3s;">
+              ${imgTag}
+              <div style="padding: 15px;">
+                <h3 style="margin: 0 0 8px; font-size: 16px; color: #155724;">${drug.name}</h3>
+                <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${drug.description || 'Thuốc chất lượng cao'}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
+                  <span style="font-size: 18px; font-weight: bold; color: #d32f2f;">${drug.price ? drug.price.toLocaleString() : '0'}₫</span>
+                  <span style="font-size: 12px; color: ${drug.stock > 0 ? '#4CAF50' : '#f44336'};">${drug.stock > 0 ? 'Còn hàng' : 'Hết hàng'}</span>
+                </div>
+                <button onclick="window.addToCart(${drug.drug_id}, '${drug.name}', ${drug.price})" ${drug.stock <= 0 ? 'disabled' : ''} style="width: 100%; padding: 10px; background: ${drug.stock > 0 ? '#4CAF50' : '#ccc'}; color: white; border: none; border-radius: 4px; cursor: ${drug.stock > 0 ? 'pointer' : 'not-allowed'}; font-weight: 600; margin-top: 10px;">
+                  ${drug.stock > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}
+                </button>
               </div>
-              <button onclick="window.addToCart(${drug.drug_id}, '${drug.name}', ${drug.price})" ${drug.stock <= 0 ? 'disabled' : ''} style="width: 100%; padding: 10px; background: ${drug.stock > 0 ? '#4CAF50' : '#ccc'}; color: white; border: none; border-radius: 4px; cursor: ${drug.stock > 0 ? 'pointer' : 'not-allowed'}; font-weight: 600; margin-top: 10px;">
-                ${drug.stock > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}
-              </button>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       window.addToCart = (drugId, name, price) => {

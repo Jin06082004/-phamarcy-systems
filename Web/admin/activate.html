@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kích hoạt Admin - DrugStore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 1.75rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .subtitle {
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .field {
+            margin-bottom: 1.25rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 0.9rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .message {
+            margin-top: 1rem;
+            padding: 0.875rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .message.error {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #ef4444;
+            display: block;
+        }
+        .message.success {
+            background: #d1fae5;
+            border: 1px solid #6ee7b7;
+            color: #059669;
+            display: block;
+        }
+        .hint {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        .hint code {
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔐 Kích hoạt Admin</h1>
+        <p class="subtitle">Nâng cấp tài khoản thành quản trị viên</p>
+        
+        <form id="activateForm">
+            <div class="field">
+                <label for="username">Tên đăng nhập</label>
+                <input type="text" id="username" name="username" placeholder="Nhập username cần nâng cấp" required />
+            </div>
+            
+            <div class="field">
+                <label for="key">Mã kích hoạt</label>
+                <input type="password" id="key" name="key" placeholder="Nhập admin key" required />
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">Kích hoạt Admin</button>
+            
+            <div class="message" id="message"></div>
+        </form>
+        
+        <p class="hint">
+            Admin key: <code>MyS3cr3tAdm1nK3y</code><br>
+            Sau khi kích hoạt, hãy đăng nhập lại để tự động chuyển đến trang admin.
+        </p>
+    </div>
+
+    <script type="module">
+        import { userAPI } from "../shared/api.js";
+
+        const form = document.getElementById('activateForm');
+        const message = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const key = document.getElementById('key').value.trim();
+            
+            if (!username || !key) {
+                showMessage('Vui lòng nhập đầy đủ thông tin', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang xử lý...';
+            
+            try {
+                const response = await userAPI.activateAdmin({ username, key });
+                
+                if (response.success) {
+                    showMessage('✅ Kích hoạt admin thành công! Đang chuyển đến trang đăng nhập...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/Web/user/pages/login.html';
+                    }, 2000);
+                } else {
+                    showMessage(response.message || 'Kích hoạt thất bại', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kích hoạt Admin';
+                }
+            } catch (error) {
+                console.error('Activation error:', error);
+                showMessage(error.message || 'Lỗi kết nối server', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kích hoạt Admin';
+            }
+        });
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = `message ${type}`;
+        }
+    </script>
+</body>
+</html>

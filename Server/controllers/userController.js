@@ -1,9 +1,12 @@
 import userModel from "../models/userModel.js";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
 const ADMIN_KEY = process.env.ADMIN_ACTIVATION_KEY || "";
+const JWT_SECRET = process.env.JWT_SECRET || "changeme";
+const JWT_EXPIRES = process.env.JWT_EXPIRES || "7d";
 
 // Đăng ký người dùng (mặc định role=pharmacist, is_active=false)
 export const registerUser = async (req, res) => {
@@ -15,9 +18,10 @@ export const registerUser = async (req, res) => {
 
         const existing = await userModel.findOne({ username: username.toLowerCase() });
         if (existing) return res.status(400).json({ success: false, message: "Tên đăng nhập đã tồn tại" });
-
-        const user = await userModel.create({ username, password, full_name, phone, email, address, role: "pharmacist", is_active: false });
-        res.status(201).json({ success: true, message: "Tạo tài khoản thành công. Tài khoản mặc định là pharmacist và chưa kích hoạt.", data: { user_id: user.user_id, username: user.username } });
+        // Create normal users with role 'user' and mark them active so they can login immediately.
+        // Admins are still activated via /users/activate-admin endpoint.
+        const user = await userModel.create({ username, password, full_name, phone, email, address, role: "user", is_active: true });
+        res.status(201).json({ success: true, message: "Tạo tài khoản thành công.", data: { user_id: user.user_id, username: user.username } });
     } catch (error) {
         res.status(500).json({ success: false, message: "Tạo tài khoản thất bại", error: error.message });
     }
@@ -58,7 +62,11 @@ export const loginUser = async (req, res) => {
 
         if (!user.is_active) return res.status(403).json({ success: false, message: "Tài khoản chưa được kích hoạt" });
 
-        res.status(200).json({ success: true, message: "Đăng nhập thành công", data: { user_id: user.user_id, username: user.username, role: user.role } });
+        // sign JWT
+        const payload = { user_id: user.user_id, username: user.username, role: user.role };
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+
+        res.status(200).json({ success: true, message: "Đăng nhập thành công", data: payload, token });
     } catch (error) {
         res.status(500).json({ success: false, message: "Đăng nhập thất bại", error: error.message });
     }

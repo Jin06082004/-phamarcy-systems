@@ -163,8 +163,13 @@
           </div>
 
           <div class="form-group">
-            <label>URL Hình ảnh:</label>
-            <input type="url" id="drug-image" placeholder="https://example.com/image.jpg" />
+            <label>Hình ảnh:</label>
+            <input type="file" id="drug-image-file" accept="image/*" />
+            <div id="image-preview" style="margin-top: 10px; display: none;">
+              <img id="preview-img" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px;" />
+              <button type="button" id="remove-image-btn" style="display: block; margin-top: 5px; padding: 4px 8px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">Xóa ảnh</button>
+            </div>
+            <input type="hidden" id="drug-image" />
           </div>
 
           <div class="form-actions">
@@ -208,11 +213,19 @@
             document.getElementById("drug-price").value = drug.price || "";
             document.getElementById("drug-stock").value = drug.stock || "";
             document.getElementById("drug-description").value = drug.description || "";
-            document.getElementById("drug-image").value = drug.image || "";
+            hiddenImageInput.value = drug.image || "";
+            // Show preview if image exists
+            if (drug.image) {
+              previewImg.src = drug.image;
+              imagePreview.style.display = "block";
+            }
           }
         } else {
           // Add mode
           drugForm.reset();
+          imagePreview.style.display = "none";
+          previewImg.src = "";
+          hiddenImageInput.value = "";
         }
         
         modal.style.display = "flex";
@@ -229,6 +242,34 @@
       cancelBtn.addEventListener("click", closeModal);
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeModal();
+      });
+
+      // ========== IMAGE UPLOAD HANDLING ==========
+      const imageFileInput = document.getElementById("drug-image-file");
+      const imagePreview = document.getElementById("image-preview");
+      const previewImg = document.getElementById("preview-img");
+      const removeImageBtn = document.getElementById("remove-image-btn");
+      const hiddenImageInput = document.getElementById("drug-image");
+
+      imageFileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const base64 = ev.target.result;
+            previewImg.src = base64;
+            imagePreview.style.display = "block";
+            hiddenImageInput.value = base64;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      removeImageBtn.addEventListener("click", () => {
+        imageFileInput.value = "";
+        hiddenImageInput.value = "";
+        previewImg.src = "";
+        imagePreview.style.display = "none";
       });
 
       // ========== LOAD DATA ==========

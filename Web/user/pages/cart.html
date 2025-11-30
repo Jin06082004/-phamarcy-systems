@@ -48,7 +48,7 @@
               <span style="font-size: 1.2rem; font-weight: 800; color: #d32f2f;" id="total">0₫</span>
             </div>
 
-            <button onclick="window.checkout()" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px;">Tiến hành thanh toán</button>
+            <button onclick="window.checkout()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); transition: all 0.3s ease;">💳 Tiến hành thanh toán</button>
             <a href="/Web/user/pages/drugs.html" style="display: block; width: 100%; padding: 10px; text-align: center; margin-top: 10px; color: #155724; text-decoration: none; border: 1px solid #155724; border-radius: 6px;">Tiếp tục mua sắm</a>
           </div>
         </aside>
@@ -58,12 +58,23 @@
     <div data-include="../../shared/components/footer.html"></div>
 
     <script src="../../shared/include.js"></script>
+    <script src="../../shared/notification.js"></script>
     <script type="module">
       import { orderAPI, invoiceAPI } from "../../shared/api.js";
+      import { cartAPI } from "../../shared/cartApi.js";
 
-      function renderCart() {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      let serverCart = null; // when using server-side cart, store the cart object here
+
+      async function renderCart() {
         const container = document.getElementById('cartItems');
+
+        // prefer server cart if available
+        let cart = [];
+        if (serverCart && Array.isArray(serverCart.items)) {
+          cart = serverCart.items.map(i => ({ ...i, _id: serverCart._id }));
+        } else {
+          cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        }
 
         if (cart.length === 0) {
           container.innerHTML = `
@@ -79,7 +90,7 @@
 
         let subtotal = 0;
         container.innerHTML = cart.map((item, idx) => {
-          const total = item.price * item.quantity;
+          const total = (item.price || 0) * (item.quantity || 0);
           subtotal += total;
           return `
             <div style="display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; align-items: center;">
@@ -102,14 +113,41 @@
         document.getElementById('total').textContent = subtotal.toLocaleString() + '₫';
       }
 
-      window.changeQty = (idx, delta) => {
+      window.changeQty = async (idx, delta) => {
+        // if using server cart, call API to update
+        if (serverCart && serverCart._id) {
+          try {
+            const item = serverCart.items[idx];
+            const newQty = Math.max(1, Number(item.quantity) + delta);
+            await cartAPI.updateItem(serverCart._id, { drug_id: item.drug_id, quantity: newQty });
+            // reload server cart
+            const res = await cartAPI.get(serverCart.user_id ? serverCart.user_id : serverCart.guest_token);
+            serverCart = res.data || res;
+            renderCart();
+            return;
+          } catch (err) {
+            console.warn('Update server cart failed, falling back', err);
+          }
+        }
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
         localStorage.setItem('cart', JSON.stringify(cart));
         renderCart();
       };
 
-      window.removeFromCart = (idx) => {
+      window.removeFromCart = async (idx) => {
+        if (serverCart && serverCart._id) {
+          try {
+            const item = serverCart.items[idx];
+            await cartAPI.removeItem(serverCart._id, { drug_id: item.drug_id });
+            const res = await cartAPI.get(serverCart.user_id ? serverCart.user_id : serverCart.guest_token);
+            serverCart = res.data || res;
+            renderCart();
+            return;
+          } catch (err) {
+            console.warn('Remove server cart item failed, falling back', err);
+          }
+        }
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         cart.splice(idx, 1);
         localStorage.setItem('cart', JSON.stringify(cart));
@@ -118,12 +156,18 @@
 
       window.checkout = async () => {
         const user = JSON.parse(localStorage.getItem('user') || 'null');
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
         if (!user) {
           alert('Vui lòng đăng nhập để thanh toán');
           window.location.href = '/Web/user/pages/login.html';
           return;
+        }
+
+        // prefer server cart
+        let cart = [];
+        if (serverCart && Array.isArray(serverCart.items)) {
+          cart = serverCart.items;
+        } else {
+          cart = JSON.parse(localStorage.getItem('cart') || '[]');
         }
 
         if (cart.length === 0) {
@@ -131,46 +175,43 @@
           return;
         }
 
-        try {
-          const total = cart.reduce((s, item) => s + item.price * item.quantity, 0);
-
-          // Tạo order
-          const orderRes = await orderAPI.create({
-            customer_id: user.user_id,
-            order_items: cart.map(item => ({
-              drug_id: item.drug_id,
-              drug_name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            })),
-            total_amount: total,
-            payment_method: 'cash',
-            status: 'Pending',
-            notes: 'Đơn hàng từ web'
-          });
-
-          console.log('Order created:', orderRes);
-
-          // Tạo invoice
-          const invoiceRes = await invoiceAPI.create({
-            order_id: orderRes.data?.order_id || orderRes.order_id,
-            customer_id: user.user_id,
-            total: total,
-            status: 'pending'
-          });
-
-          console.log('Invoice created:', invoiceRes);
-
-          alert('✅ Đơn hàng được tạo thành công! Mã đơn: ORD-' + (orderRes.data?.order_id || orderRes.order_id));
-          localStorage.removeItem('cart');
-          window.location.href = '/Web/user/index.html';
-        } catch (error) {
-          console.error('Checkout error:', error);
-          alert('❌ Lỗi khi thanh toán: ' + error.message);
-        }
+        // Redirect to checkout page
+        window.location.href = '/Web/user/pages/checkout.html';
       };
 
-      document.addEventListener('DOMContentLoaded', renderCart);
+      // load server cart first if possible
+      document.addEventListener('DOMContentLoaded', async () => {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        
+        // Try to load from server
+        let serverSuccess = false;
+        try {
+          if (user && user.user_id) {
+            const res = await cartAPI.get(user.user_id);
+            serverCart = res.data || res;
+            serverSuccess = true;
+          } else {
+            const guest = localStorage.getItem('guest_token');
+            if (guest) {
+              const res = await cartAPI.get(guest);
+              serverCart = res.data || res;
+              serverSuccess = true;
+            }
+          }
+        } catch (err) {
+          console.warn('Load server cart failed, using localStorage', err);
+          serverCart = null;
+        }
+        
+        // If server cart is empty but localStorage has items, use localStorage
+        const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if ((!serverCart || !serverCart.items || serverCart.items.length === 0) && localCart.length > 0) {
+          console.log('Server cart empty, using localStorage cart');
+          serverCart = null;
+        }
+        
+        await renderCart();
+      });
     </script>
   </body>
 </html>

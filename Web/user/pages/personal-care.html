@@ -15,6 +15,7 @@
         <h2>Chăm sóc cá nhân</h2>
         <p>Sản phẩm chăm sóc da, tóc, vệ sinh cá nhân.</p>
       </section>
+
       <section style="padding: 30px 10%;">
         <div id="personalCareList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
           <div style="grid-column: 1/-1; text-align: center; padding: 40px;">Đang tải sản phẩm...</div>
@@ -24,24 +25,35 @@
 
     <div data-include="../../shared/components/footer.html"></div>
     <script src="../../shared/include.js"></script>
+
     <script type="module">
       import { drugAPI, categoryAPI } from "../../shared/api.js";
       async function loadPersonalCare() {
         try {
-          const categoriesRes = await categoryAPI.getAll();
+          const [categoriesRes, drugsRes] = await Promise.all([categoryAPI.getAll(), drugAPI.getAll()]);
           const categories = Array.isArray(categoriesRes) ? categoriesRes : (categoriesRes.data || []);
-          const careCat = categories.find(c => c.name.toLowerCase().includes('cá nhân') || c.name.toLowerCase().includes('personal'));
-          const drugsRes = await drugAPI.getAll();
+          const careCat = categories.find(c => c.name && (c.name.toLowerCase().includes('chăm') || c.name.toLowerCase().includes('cá nhân') || c.name.toLowerCase().includes('personal')));
+
           let products = Array.isArray(drugsRes) ? drugsRes : (drugsRes.data || []);
-          if (careCat) products = products.filter(p => p.category_id == careCat.category_id);
+          if (careCat && careCat.category_id) {
+            products = products.filter(p => Number(p.category_id) === Number(careCat.category_id));
+          }
+
           const list = document.getElementById('personalCareList');
           if (products.length === 0) {
             list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">Chưa có sản phẩm</div>';
             return;
           }
-          list.innerHTML = products.map(p => `
+          list.innerHTML = products.map(p => {
+            let imgTag = "";
+            if (p.image) {
+              const isAbsolute = p.image.startsWith("http") || p.image.startsWith("/");
+              const src = isAbsolute ? p.image : ("/shared/" + p.image.replace(/^\.\//, "").replace(/^\//, ""));
+              imgTag = `<img src="${src}" alt="${p.name}" style="width:100%;height:180px;object-fit:cover;" />`;
+            }
+            return `
             <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              <img src="${p.image || '../../shared/images/drug2.jpg'}" alt="${p.name}" style="width: 100%; height: 180px; object-fit: cover;" onerror="this.src='../../shared/images/drug2.jpg'" />
+              ${imgTag}
               <div style="padding: 15px;">
                 <h4 style="margin: 0 0 8px; color: #155724;">${p.name}</h4>
                 <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${p.description || 'Sản phẩm chất lượng'}</p>
@@ -51,7 +63,8 @@
                 </div>
               </div>
             </div>
-          `).join('');
+          `;
+            }).join('');
         } catch (error) {
           document.getElementById('personalCareList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
         }

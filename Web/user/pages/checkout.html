@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán - DrugStore</title>
+    <link rel="stylesheet" href="../css/dashboard.css" />
+    <link rel="stylesheet" href="../css/checkout.css" />
+  </head>
+
+  <body>
+    <div data-include="../../shared/components/topbar.html"></div>
+    <div data-include="../../shared/components/navbar.html"></div>
+
+    <main class="content">
+      <div class="checkout-container">
+        <div class="checkout-header">
+          <h2>🛒 Thanh toán đơn hàng</h2>
+          <div class="checkout-steps">
+            <div class="step active">
+              <div class="step-number">1</div>
+              <span>Giỏ hàng</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step active">
+              <div class="step-number">2</div>
+              <span>Thanh toán</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <span>Hoàn tất</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkout-content">
+          <!-- Left: Form thông tin -->
+          <div class="checkout-form">
+            <div class="form-section">
+              <h3>📍 Thông tin giao hàng</h3>
+              <div class="form-group">
+                <label for="fullName">Họ và tên <span class="required">*</span></label>
+                <input type="text" id="fullName" placeholder="Nguyễn Văn A" required />
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phone">Số điện thoại <span class="required">*</span></label>
+                  <input type="tel" id="phone" placeholder="0123456789" required />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" placeholder="email@example.com" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="address">Địa chỉ giao hàng <span class="required">*</span></label>
+                <input type="text" id="address" placeholder="Số nhà, tên đường" required />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="city">Tỉnh/Thành phố <span class="required">*</span></label>
+                  <select id="city" required>
+                    <option value="">Chọn tỉnh/thành</option>
+                    <option value="Hà Nội">Hà Nội</option>
+                    <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                    <option value="Đà Nẵng">Đà Nẵng</option>
+                    <option value="Hải Phòng">Hải Phòng</option>
+                    <option value="Cần Thơ">Cần Thơ</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="district">Quận/Huyện <span class="required">*</span></label>
+                  <select id="district" required>
+                    <option value="">Chọn quận/huyện</option>
+                    <option value="Quận 1">Quận 1</option>
+                    <option value="Quận 3">Quận 3</option>
+                    <option value="Quận 5">Quận 5</option>
+                    <option value="Quận 10">Quận 10</option>
+                    <option value="Thủ Đức">Thủ Đức</option>
+                    <option value="Bình Thạnh">Bình Thạnh</option>
+                    <option value="Gò Vấp">Gò Vấp</option>
+                    <option value="Tân Bình">Tân Bình</option>
+                    <option value="Phú Nhuận">Phú Nhuận</option>
+                    <option value="Bình Tân">Bình Tân</option>
+                    <option value="Tân Phú">Tân Phú</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="notes">Ghi chú</label>
+                <textarea id="notes" rows="3" placeholder="Ghi chú thêm cho đơn hàng (không bắt buộc)"></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>💳 Phương thức thanh toán</h3>
+              <div class="payment-methods">
+                <label class="payment-method active">
+                  <input type="radio" name="payment" value="cash" checked />
+                  <div class="payment-content">
+                    <div class="payment-icon">💵</div>
+                    <div class="payment-info">
+                      <h4>Tiền mặt (COD)</h4>
+                      <p>Thanh toán khi nhận hàng</p>
+                    </div>
+                  </div>
+                </label>
+
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="card" />
+                  <div class="payment-content">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-info">
+                      <h4>Thẻ tín dụng/Ghi nợ</h4>
+                      <p>Visa, Mastercard, JCB</p>
+                    </div>
+                  </div>
+                </label>
+
+                <label class="payment-method">
+                  <input type="radio" name="payment" value="online" />
+                  <div class="payment-content">
+                    <div class="payment-icon">📱</div>
+                    <div class="payment-info">
+                      <h4>Ví điện tử</h4>
+                      <p>MoMo, ZaloPay, VNPay</p>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Order Summary -->
+          <div class="order-summary">
+            <div class="summary-card">
+              <h3>📦 Đơn hàng của bạn</h3>
+              
+              <div id="orderItems" class="order-items">
+                <div style="text-align: center; padding: 20px; color: #999;">Đang tải...</div>
+              </div>
+
+              <div class="summary-row">
+                <span>Tạm tính</span>
+                <span id="subtotal">0₫</span>
+              </div>
+
+              <div class="summary-row">
+                <span>Phí vận chuyển</span>
+                <span id="shippingFee">Miễn phí</span>
+              </div>
+
+              <div class="summary-row discount-row">
+                <input type="text" id="couponCode" placeholder="Mã giảm giá" />
+                <button onclick="window.applyCoupon()" class="apply-btn">Áp dụng</button>
+              </div>
+
+              <div class="summary-row discount-applied" id="discountRow" style="display: none;">
+                <span>Giảm giá</span>
+                <span id="discountAmount" style="color: #10b981;">-0₫</span>
+              </div>
+
+              <div class="summary-divider"></div>
+
+              <div class="summary-row total">
+                <span>Tổng thanh toán</span>
+                <span id="totalAmount">0₫</span>
+              </div>
+
+              <button onclick="window.completeCheckout()" class="checkout-btn">
+                <span>Đặt hàng</span>
+                <span>→</span>
+              </button>
+
+              <div class="security-note">
+                🔒 Thông tin của bạn được bảo mật
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div data-include="../../shared/components/footer.html"></div>
+
+    <script src="../../shared/include.js"></script>
+    <script src="../../shared/notification.js"></script>
+    <script type="module">
+      import { orderAPI, invoiceAPI } from "../../shared/api.js";
+      import { cartAPI } from "../../shared/cartApi.js";
+
+      let cart = [];
+      let subtotal = 0;
+      let discount = 0;
+      let shippingFee = 0;
+
+      // Load cart items
+      async function loadCart() {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        
+        // Try to get cart from server or localStorage
+        try {
+          if (user && user.user_id) {
+            const res = await cartAPI.get(user.user_id);
+            const serverCart = res.data || res;
+            if (serverCart && serverCart.items && serverCart.items.length > 0) {
+              cart = serverCart.items;
+            } else {
+              cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            }
+          } else {
+            const guest = localStorage.getItem('guest_token');
+            if (guest) {
+              const res = await cartAPI.get(guest);
+              const serverCart = res.data || res;
+              if (serverCart && serverCart.items && serverCart.items.length > 0) {
+                cart = serverCart.items;
+              } else {
+                cart = JSON.parse(localStorage.getItem('cart') || '[]');
+              }
+            } else {
+              cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            }
+          }
+        } catch (err) {
+          console.warn('Load cart failed, using localStorage', err);
+          cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        }
+
+        if (cart.length === 0) {
+          alert('Giỏ hàng trống!');
+          window.location.href = '/Web/user/pages/cart.html';
+          return;
+        }
+
+        renderOrderItems();
+        updateTotals();
+      }
+
+      function renderOrderItems() {
+        const container = document.getElementById('orderItems');
+        container.innerHTML = cart.map(item => {
+          const itemTotal = (item.price || 0) * (item.quantity || 1);
+          return `
+            <div class="order-item">
+              <div class="item-info">
+                <h4>${item.name}</h4>
+                <p>Số lượng: ${item.quantity}</p>
+              </div>
+              <div class="item-price">${itemTotal.toLocaleString()}₫</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function updateTotals() {
+        subtotal = cart.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
+        const total = subtotal - discount + shippingFee;
+
+        document.getElementById('subtotal').textContent = subtotal.toLocaleString() + '₫';
+        document.getElementById('totalAmount').textContent = total.toLocaleString() + '₫';
+      }
+
+      window.applyCoupon = async () => {
+        const code = document.getElementById('couponCode').value.trim();
+        if (!code) {
+          alert('Vui lòng nhập mã giảm giá');
+          return;
+        }
+
+        // TODO: Call coupon API to validate and get discount
+        alert('Tính năng mã giảm giá đang được phát triển');
+      };
+
+      window.completeCheckout = async () => {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (!user) {
+          alert('Vui lòng đăng nhập để thanh toán');
+          window.location.href = '/Web/user/pages/login.html';
+          return;
+        }
+
+        // Validate form
+        const fullName = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const city = document.getElementById('city').value;
+        const district = document.getElementById('district').value;
+        const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+        const notes = document.getElementById('notes').value.trim();
+
+        if (!fullName || !phone || !address || !city || !district) {
+          alert('Vui lòng điền đầy đủ thông tin giao hàng');
+          return;
+        }
+
+        const shippingInfo = {
+          fullName,
+          phone,
+          address: `${address}, ${district}, ${city}`,
+          notes
+        };
+
+        try {
+          const total = subtotal - discount + shippingFee;
+
+          // Create order
+          const orderRes = await orderAPI.create({
+            customer_id: user.user_id,
+            order_items: cart.map(item => ({
+              drug_id: item.drug_id,
+              drug_name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            })),
+            total_amount: total,
+            payment_method: paymentMethod,
+            status: 'Pending',
+            notes: JSON.stringify(shippingInfo)
+          });
+
+          const orderId = orderRes.data?.order_id || orderRes.order_id;
+
+          // Create invoice
+          const invoiceRes = await invoiceAPI.create({
+            order_id: orderId,
+            customer_id: user.user_id,
+            items: cart.map(item => ({
+              medicine_id: item.drug_id,
+              name: item.name,
+              quantity: item.quantity,
+              unit_price: item.price,
+              total_price: item.price * item.quantity
+            })),
+            subtotal: subtotal,
+            discount: discount,
+            tax: 0,
+            shipping_fee: shippingFee,
+            total: total,
+            payment_method: paymentMethod,
+            status: 'pending'
+          });
+
+          // Clear cart
+          try {
+            const guestToken = localStorage.getItem('guest_token');
+            if (user.user_id) {
+              const res = await cartAPI.get(user.user_id);
+              if (res.data?._id || res._id) {
+                await cartAPI.clear(res.data?._id || res._id);
+              }
+            } else if (guestToken) {
+              const res = await cartAPI.get(guestToken);
+              if (res.data?._id || res._id) {
+                await cartAPI.clear(res.data?._id || res._id);
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to clear server cart', err);
+          }
+          
+          localStorage.removeItem('cart');
+
+          // Redirect to success page
+          localStorage.setItem('lastOrder', JSON.stringify({
+            orderId,
+            total,
+            shippingInfo,
+            items: cart
+          }));
+
+          window.location.href = '/Web/user/pages/order-success.html';
+        } catch (error) {
+          console.error('Checkout error:', error);
+          alert('❌ Lỗi khi thanh toán: ' + (error.message || JSON.stringify(error)));
+        }
+      };
+
+      // Payment method selection
+      document.addEventListener('DOMContentLoaded', () => {
+        loadCart();
+
+        // Handle payment method click
+        document.querySelectorAll('.payment-method').forEach(method => {
+          method.addEventListener('click', function() {
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+            this.classList.add('active');
+          });
+        });
+
+        // Auto-fill user info if available
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (user) {
+          if (user.username) document.getElementById('fullName').value = user.username;
+          if (user.email) document.getElementById('email').value = user.email;
+        }
+      });
+    </script>
+  </body>
+</html>

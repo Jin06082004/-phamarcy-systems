@@ -8,6 +8,7 @@ import {
     updateUser,
     deleteUser,
 } from "../controllers/userController.js";
+import { authenticate, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -21,9 +22,10 @@ router.post("/activate-admin", activateAdmin);
 router.post("/login", loginUser);
 
 // CRUD
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+// Protect sensitive user routes: list & delete require admin
+router.get("/", authenticate, authorizeRoles('admin'), getAllUsers);
+router.get("/:id", authenticate, getUserById);
+router.put("/:id", authenticate, updateUser);
+router.delete("/:id", authenticate, authorizeRoles('admin'), deleteUser);
 
 export default router;
