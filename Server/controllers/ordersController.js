@@ -7,22 +7,19 @@ import orderService from "../services/ordersServices.js";
 export const createOrder = async (req, res) => {
   try {
     let { customer_id, order_items, payment_method, notes, status } = req.body;
-    // if request is authenticated, prefer token's user_id
     if (req.user && req.user.user_id) {
       customer_id = Number(req.user.user_id);
     }
 
-    // Lấy order cuối cùng để tự tăng ID
     const lastOrder = await Order.findOne().sort({ order_id: -1 });
     const newOrderId = lastOrder ? lastOrder.order_id + 1 : 1;
 
-    // Tính tổng tiền
     const total_amount = order_items.reduce(
       (sum, item) => sum + item.quantity * item.price,
       0
     );
 
-    // Giảm số lượng tồn kho của từng thuốc
+    // CHỈ validate stock, KHÔNG giảm ở đây (để invoiceController xử lý)
     const Drug = (await import('../models/drugModel.js')).default;
     for (const item of order_items) {
       const drug = await Drug.findOne({ drug_id: item.drug_id });
@@ -32,8 +29,7 @@ export const createOrder = async (req, res) => {
       if (drug.stock < item.quantity) {
         return res.status(400).json({ success: false, message: `Thuốc ${drug.name} không đủ số lượng trong kho` });
       }
-      drug.stock -= item.quantity;
-      await drug.save();
+      // KHÔNG giảm stock ở đây nữa
     }
 
     const newOrder = new Order({
@@ -55,14 +51,13 @@ export const createOrder = async (req, res) => {
       customer_id: newOrder.customer_id,
       order_items: newOrder.order_items,
       total_amount: newOrder.total_amount,
-      status: newOrder.status,
       payment_method: newOrder.payment_method,
       notes: newOrder.notes,
-      order_date: newOrder.order_date,
-    }});
+      status: newOrder.status
+    } });
   } catch (error) {
     console.error("❌ Lỗi tạo đơn hàng:", error);
-    res.status(500).json({ success: false, message: "Không thể tạo đơn hàng" });
+    res.status(500).json({ success: false, message: "Lỗi khi tạo đơn hàng", error: error.message });
   }
 };
 
