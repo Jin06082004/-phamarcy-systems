@@ -165,7 +165,7 @@ JWT_EXPIRES=7d
 # Thời gian hết hạn token (7 ngày)
 
 # ========== ADMIN ACTIVATION ==========
-ADMIN_ACTIVATION_KEY=MyS3cr3tAdm1nK3y
+ADMIN_ACTIVATION_KEY=your_secret_key
 # Key bảo mật để kích hoạt tài khoản Admin
 # Thay đổi key này trong production!
 
@@ -183,7 +183,7 @@ NODE_ENV=development
 | `PORT` | Cổng server chạy | `5000` |
 | `JWT_SECRET` | Khóa bí mật mã hóa JWT token | `your_32_char_random_string` |
 | `JWT_EXPIRES` | Thời gian token hết hạn | `7d` (7 ngày) |
-| `ADMIN_ACTIVATION_KEY` | Key kích hoạt Admin | `MyS3cr3tAdm1nK3y` |
+| `ADMIN_ACTIVATION_KEY` | Key kích hoạt Admin | `your_secret_key` |
 | `NODE_ENV` | Môi trường | `development` hoặc `production` |
 
 ### Lưu ý bảo mật:
@@ -673,9 +673,8 @@ MIT License - Xem file [LICENSE](LICENSE) để biết chi tiết.
 
 ## 👥 Team
 
-- **Developer**: [Your Name]
-- **Email**: your.email@example.com
-- **GitHub**: [@yourusername](https://github.com/yourusername)
+- **Developer**: [Nguyễn Nguyên Phúc, Võ Hoàng Quân]
+- **Email**: [Phucnguyenn0608@gmail.com]
 
 ---
 
