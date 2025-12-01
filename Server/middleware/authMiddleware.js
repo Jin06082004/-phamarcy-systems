@@ -1,29 +1,45 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 
-dotenv.config();
+export const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
-const JWT_SECRET = process.env.JWT_SECRET || "changeme";
-
-export const authenticate = (req, res, next) => {
-  const auth = req.headers.authorization || req.headers.Authorization;
-  if (!auth) return res.status(401).json({ success: false, message: "No authorization token provided" });
-
-  const parts = auth.split(" ");
-  if (parts.length !== 2 || parts[0] !== "Bearer") return res.status(401).json({ success: false, message: "Invalid authorization format" });
-
-  const token = parts[1];
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    return next();
-  } catch (err) {
-    return res.status(401).json({ success: false, message: "Invalid or expired token" });
+  if (!token) {
+    console.warn("⚠️ No token provided for:", req.path);
+    return res.status(401).json({
+      success: false,
+      message: "Token không hợp lệ hoặc đã hết hạn",
+    });
   }
+
+  const JWT_SECRET = process.env.JWT_SECRET || "changeme";
+  
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      console.error("❌ Token verification failed:", err.message);
+      console.error("   Token:", token.substring(0, 20) + "...");
+      console.error("   Secret:", JWT_SECRET);
+      console.error("   Path:", req.path);
+      
+      return res.status(403).json({
+        success: false,
+        message: "Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại",
+      });
+    }
+
+    console.log("✅ Authenticated user:", user.user_id, "accessing", req.path);
+    req.user = user;
+    next();
+  });
 };
 
-export const authorizeRoles = (...roles) => (req, res, next) => {
-  if (!req.user) return res.status(401).json({ success: false, message: "Not authenticated" });
-  if (!roles.includes(req.user.role)) return res.status(403).json({ success: false, message: "Forbidden: insufficient role" });
+export const isAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== "admin") {
+    console.warn("⚠️ Access denied - not admin:", req.user?.username);
+    return res.status(403).json({
+      success: false,
+      message: "Yêu cầu quyền admin",
+    });
+  }
   next();
 };

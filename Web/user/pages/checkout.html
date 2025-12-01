@@ -39,6 +39,14 @@
           <div class="checkout-form">
             <div class="form-section">
               <h3>📍 Thông tin giao hàng</h3>
+              
+              <div class="form-group" id="savedAddressGroup" style="display: none; margin-bottom: 1.5rem;">
+                <label for="savedAddress" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Chọn địa chỉ đã lưu</label>
+                <select id="savedAddress" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                  <option value="">-- Nhập địa chỉ mới --</option>
+                </select>
+              </div>
+
               <div class="form-group">
                 <label for="fullName">Họ và tên <span class="required">*</span></label>
                 <input type="text" id="fullName" placeholder="Nguyễn Văn A" required />
@@ -64,29 +72,13 @@
                 <div class="form-group">
                   <label for="city">Tỉnh/Thành phố <span class="required">*</span></label>
                   <select id="city" required>
-                    <option value="">Chọn tỉnh/thành</option>
-                    <option value="Hà Nội">Hà Nội</option>
-                    <option value="Hồ Chí Minh">Hồ Chí Minh</option>
-                    <option value="Đà Nẵng">Đà Nẵng</option>
-                    <option value="Hải Phòng">Hải Phòng</option>
-                    <option value="Cần Thơ">Cần Thơ</option>
+                    <option value="">-- Chọn tỉnh/thành --</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label for="district">Quận/Huyện <span class="required">*</span></label>
-                  <select id="district" required>
-                    <option value="">Chọn quận/huyện</option>
-                    <option value="Quận 1">Quận 1</option>
-                    <option value="Quận 3">Quận 3</option>
-                    <option value="Quận 5">Quận 5</option>
-                    <option value="Quận 10">Quận 10</option>
-                    <option value="Thủ Đức">Thủ Đức</option>
-                    <option value="Bình Thạnh">Bình Thạnh</option>
-                    <option value="Gò Vấp">Gò Vấp</option>
-                    <option value="Tân Bình">Tân Bình</option>
-                    <option value="Phú Nhuận">Phú Nhuận</option>
-                    <option value="Bình Tân">Bình Tân</option>
-                    <option value="Tân Phú">Tân Phú</option>
+                  <select id="district" required disabled>
+                    <option value="">-- Chọn quận/huyện --</option>
                   </select>
                 </div>
               </div>
@@ -127,11 +119,121 @@
                   <div class="payment-content">
                     <div class="payment-icon">📱</div>
                     <div class="payment-info">
-                      <h4>Ví điện tử</h4>
-                      <p>MoMo, ZaloPay, VNPay</p>
+                      <h4>Chuyển khoản QR</h4>
+                      <p>Quét mã QR để thanh toán</p>
                     </div>
                   </div>
                 </label>
+              </div>
+
+              <!-- Card Payment Details -->
+              <div id="cardDetails" class="payment-details">
+                <h4>💳 Thông tin thẻ</h4>
+                
+                <div class="card-form-group">
+                  <label for="cardNumber">Số thẻ <span class="required">*</span></label>
+                  <input 
+                    type="text" 
+                    id="cardNumber" 
+                    placeholder="1234 5678 9012 3456"
+                    maxlength="19"
+                    pattern="[0-9\s]*"
+                  />
+                  <div class="card-icons">
+                    <div class="card-icon">VISA</div>
+                    <div class="card-icon">MC</div>
+                    <div class="card-icon">JCB</div>
+                  </div>
+                </div>
+
+                <div class="card-form-group">
+                  <label for="cardHolder">Tên chủ thẻ <span class="required">*</span></label>
+                  <input 
+                    type="text" 
+                    id="cardHolder" 
+                    placeholder="NGUYEN VAN A"
+                    style="text-transform: uppercase;"
+                  />
+                </div>
+
+                <div class="card-row">
+                  <div class="card-form-group">
+                    <label for="cardExpiry">Ngày hết hạn <span class="required">*</span></label>
+                    <input 
+                      type="text" 
+                      id="cardExpiry" 
+                      placeholder="MM/YY"
+                      maxlength="5"
+                    />
+                  </div>
+                  <div class="card-form-group">
+                    <label for="cardCVV">CVV <span class="required">*</span></label>
+                    <input 
+                      type="text" 
+                      id="cardCVV" 
+                      placeholder="123"
+                      maxlength="4"
+                      pattern="[0-9]*"
+                    />
+                  </div>
+                </div>
+
+                <div class="security-badge">
+                  <span>🔒</span>
+                  <span>Giao dịch được mã hóa SSL 256-bit</span>
+                </div>
+              </div>
+
+              <!-- QR Code Payment Details -->
+              <div id="qrDetails" class="payment-details">
+                <h4>📱 Quét mã QR để thanh toán</h4>
+                
+                <div class="qr-section">
+                  <div class="qr-code">
+                    <img id="qrImage" 
+                         src="https://img.vietqr.io/image/BIDV-8897180034-compact.png" 
+                         alt="QR Payment"
+                         style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;" />
+                  </div>
+
+                  <div class="qr-info">
+                    <div style="background: #f9fafb; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="color: #6b7280; font-size: 0.875rem;">Ngân hàng:</span>
+                        <strong style="color: #1f2937;">BIDV</strong>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="color: #6b7280; font-size: 0.875rem;">Số tài khoản:</span>
+                        <strong style="color: #1f2937;">8897180034</strong>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="color: #6b7280; font-size: 0.875rem;">Chủ tài khoản:</span>
+                        <strong style="color: #1f2937;">DRUGSTORE PHARMACY</strong>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #6b7280; font-size: 0.875rem;">Số tiền:</span>
+                        <strong id="qrAmount" style="color: #10b981; font-size: 1.25rem;">0₫</strong>
+                      </div>
+                    </div>
+
+                    <div style="background: #fef3c7; padding: 0.875rem; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 1rem;">
+                      <p style="margin: 0; font-size: 0.875rem; color: #92400e;">
+                        ⚠️ <strong>Nội dung chuyển khoản:</strong> <span id="qrContent" style="font-weight: 700; color: #b45309;">ORD-XXXX</span>
+                      </p>
+                    </div>
+
+                    <div style="background: #dbeafe; padding: 0.875rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                      <p style="margin: 0; font-size: 0.875rem; color: #1e40af;">
+                        💡 Quét mã QR bằng app ngân hàng của bạn để thanh toán tự động với đầy đủ thông tin
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="security-badge" style="margin-top: 1rem;">
+                  <span>🔒</span>
+                  <span>Thanh toán an toàn qua VietQR</span>
+                </div>
               </div>
             </div>
           </div>
@@ -191,7 +293,7 @@
     <script src="../../shared/include.js"></script>
     <script src="../../shared/notification.js"></script>
     <script type="module">
-      import { orderAPI, invoiceAPI } from "../../shared/api.js";
+      import { orderAPI, invoiceAPI, discountAPI } from "../../shared/api.js";
       import { cartAPI } from "../../shared/cartApi.js";
 
       let cart = [];
@@ -199,83 +301,346 @@
       let discount = 0;
       let shippingFee = 0;
 
+      // VietQR Configuration
+      const VIETQR_CONFIG = {
+        bankId: 'BIDV',
+        accountNo: '8897180034',
+        accountName: 'NGUYEN NGUYEN PHUC',
+        template: 'compact'
+      };
+
+      // Dữ liệu 63 tỉnh/thành phố Việt Nam và quận/huyện
+      const vietnamData = {
+        "An Giang": ["TP. Long Xuyên", "TP. Châu Đốc", "TX. Tân Châu", "An Phú", "Châu Phú", "Châu Thành", "Chợ Mới", "Phú Tân", "Thoại Sơn", "Tịnh Biên", "Tri Tôn"],
+        
+        "Bà Rịa - Vũng Tàu": ["TP. Vũng Tàu", "TP. Bà Rịa", "TX. Phú Mỹ", "Châu Đức", "Côn Đảo", "Đất Đỏ", "Long Điền", "Tân Thành", "Xuyên Mộc"],
+        
+        "Bạc Liêu": ["TP. Bạc Liêu", "TX. Giá Rai", "Đông Hải", "Hòa Bình", "Hồng Dân", "Phước Long", "Vĩnh Lợi"],
+        
+        "Bắc Giang": ["TP. Bắc Giang", "Hiệp Hòa", "Lạng Giang", "Lục Nam", "Lục Ngạn", "Sơn Động", "Tân Yên", "Việt Yên", "Yên Dũng", "Yên Thế"],
+        
+        "Bắc Kạn": ["TP. Bắc Kạn", "Ba Bể", "Bạch Thông", "Chợ Đồn", "Chợ Mới", "Na Rì", "Ngân Sơn", "Pác Nặm"],
+        
+        "Bắc Ninh": ["TP. Bắc Ninh", "TX. Từ Sơn", "Gia Bình", "Lương Tài", "Quế Võ", "Thuận Thành", "Tiên Du", "Yên Phong"],
+        
+        "Bến Tre": ["TP. Bến Tre", "Ba Tri", "Bình Đại", "Châu Thành", "Chợ Lách", "Giồng Trôm", "Mỏ Cày Bắc", "Mỏ Cày Nam", "Thạnh Phú"],
+        
+        "Bình Dương": ["TP. Thủ Dầu Một", "TP. Thuận An", "TP. Dĩ An", "TX. Tân Uyên", "TX. Bến Cát", "Bàu Bàng", "Dầu Tiếng", "Phú Giáo"],
+        
+        "Bình Định": ["TP. Quy Nhơn", "TX. An Nhơn", "TX. Hoài Nhơn", "An Lão", "Hoài Ân", "Phú Cát", "Phú Mỹ", "Tây Sơn", "Tuy Phước", "Vân Canh", "Vĩnh Thạnh"],
+        
+        "Bình Phước": ["TP. Đồng Xoài", "TX. Bình Long", "TX. Phước Long", "Bù Đăng", "Bù Đốp", "Bù Gia Mập", "Chơn Thành", "Đồng Phú", "Hớn Quản", "Lộc Ninh", "Phú Riềng"],
+        
+        "Bình Thuận": ["TP. Phan Thiết", "TX. La Gi", "Bắc Bình", "Đức Linh", "Hàm Thuận Bắc", "Hàm Thuận Nam", "Hàm Tân", "Phú Quí", "Tánh Linh", "Tuy Phong"],
+        
+        "Cà Mau": ["TP. Cà Mau", "Cái Nước", "Đầm Dơi", "Năm Căn", "Ngọc Hiển", "Phú Tân", "Thới Bình", "Trần Văn Thời", "U Minh"],
+        
+        "Cần Thơ": ["Ninh Kiều", "Ô Môn", "Bình Thuỷ", "Cái Răng", "Thốt Nốt", "Vĩnh Thạnh", "Cờ Đỏ", "Phong Điền", "Thới Lai"],
+        
+        "Cao Bằng": ["TP. Cao Bằng", "Bảo Lạc", "Bảo Lâm", "Hà Quảng", "Hạ Lang", "Hòa An", "Nguyên Bình", "Phục Hòa", "Quảng Uyên", "Thạch An", "Thông Nông", "Trà Lĩnh", "Trùng Khánh"],
+        
+        "Đà Nẵng": ["Hải Châu", "Thanh Khê", "Sơn Trà", "Ngũ Hành Sơn", "Liên Chiểu", "Cẩm Lệ", "Hòa Vang", "Hoàng Sa"],
+        
+        "Đắk Lắk": ["TP. Buôn Ma Thuột", "TX. Buôn Hồ", "Buôn Đôn", "Cư Kuin", "Cư M'gar", "Ea H'leo", "Ea Kar", "Ea Súp", "Krông Ana", "Krông Bông", "Krông Buk", "Krông Năng", "Krông Pắc", "Lắk", "M'Đrắk"],
+        
+        "Đắk Nông": ["TP. Gia Nghĩa", "Cú Jút", "Đắk Glong", "Đắk Mil", "Đắk R'Lấp", "Đắk Song", "Krông Nô", "Tuy Đức"],
+        
+        "Điện Biên": ["TP. Điện Biên Phủ", "TX. Mường Lay", "Điện Biên", "Điện Biên Đông", "Mường Ảng", "Mường Chà", "Mường Nhé", "Nậm Pồ", "Tủa Chùa", "Tuần Giáo"],
+        
+        "Đồng Nai": ["TP. Biên Hòa", "TP. Long Khánh", "Cẩm Mỹ", "Định Quán", "Long Thành", "Nhơn Trạch", "Tân Phú", "Thống Nhất", "Trảng Bom", "Vĩnh Cửu", "Xuân Lộc"],
+        
+        "Đồng Tháp": ["TP. Cao Lãnh", "TP. Sa Đéc", "TX. Hồng Ngự", "Cao Lãnh", "Châu Thành", "Hồng Ngự", "Lai Vung", "Lấp Vò", "Tam Nông", "Tân Hồng", "Thanh Bình", "Tháp Mười"],
+        
+        "Gia Lai": ["TP. Pleiku", "TX. An Khê", "TX. Ayun Pa", "Chư Păh", "Chư Prông", "Chư Pưh", "Chư Sê", "Đắk Đoa", "Đắk Pơ", "Đức Cơ", "Ia Grai", "Ia Pa", "K'Bang", "Kông Chro", "Krông Pa", "Mang Yang", "Phú Thiện"],
+        
+        "Hà Giang": ["TP. Hà Giang", "Bắc Mê", "Bắc Quang", "Đồng Văn", "Hoàng Su Phì", "Mèo Vạc", "Quản Bạ", "Quảng Bình", "Vị Xuyên", "Xín Mần", "Yên Minh"],
+        
+        "Hà Nam": ["TP. Phủ Lý", "TX. Duy Tiên", "Bình Lục", "Kim Bảng", "Lý Nhân", "Thanh Liêm"],
+        
+        "Hà Nội": ["Ba Đình", "Hoàn Kiếm", "Hai Bà Trưng", "Đống Đa", "Tây Hồ", "Cầu Giấy", "Thanh Xuân", "Hoàng Mai", "Long Biên", "Nam Từ Liêm", "Bắc Từ Liêm", "Hà Đông", "TX. Sơn Tây", "Ba Vì", "Chương Mỹ", "Đan Phượng", "Đông Anh", "Gia Lâm", "Hoài Đức", "Mê Linh", "Mỹ Đức", "Phú Xuyên", "Phúc Thọ", "Quốc Oai", "Sóc Sơn", "Thạch Thất", "Thanh Oai", "Thanh Trì", "Thường Tín", "Ứng Hòa"],
+        
+        "Hà Tĩnh": ["TP. Hà Tĩnh", "TX. Hồng Lĩnh", "TX. Kỳ Anh", "Cẩm Xuyên", "Can Lộc", "Đức Thọ", "Hương Khê", "Hương Sơn", "Kỳ Anh", "Lộc Hà", "Nghi Xuân", "Thạch Hà", "Vũ Quang"],
+        
+        "Hải Dương": ["TP. Hải Dương", "TP. Chí Linh", "TX. Kinh Môn", "Bình Giang", "Cẩm Giàng", "Gia Lộc", "Kim Thành", "Nam Sách", "Ninh Giang", "Thanh Hà", "Thanh Miện", "Tứ Kỳ"],
+        
+        "Hải Phòng": ["Hồng Bàng", "Ngô Quyền", "Lê Chân", "Hải An", "Kiến An", "Đồ Sơn", "Dương Kinh", "An Dương", "An Lão", "Kiến Thuỵ", "Tiên Lãng", "Vĩnh Bảo", "Cát Hải", "Bạch Long Vĩ"],
+        
+        "Hậu Giang": ["TP. Vị Thanh", "TP. Ngã Bảy", "TX. Long Mỹ", "Châu Thành", "Châu Thành A", "Long Mỹ", "Phụng Hiệp", "Vị Thuỷ"],
+        
+        "Hòa Bình": ["TP. Hòa Bình", "Cao Phong", "Đà Bắc", "Kim Bôi", "Kỳ Sơn", "Lạc Sơn", "Lạc Thuỷ", "Lương Sơn", "Mai Châu", "Tân Lạc", "Yên Thuỷ"],
+        
+        "Hưng Yên": ["TP. Hưng Yên", "Ân Thi", "Khoái Châu", "Kim Động", "Mỹ Hào", "Phù Cừ", "Tiên Lữ", "Văn Giang", "Văn Lâm", "Yên Mỹ"],
+        
+        "Khánh Hòa": ["TP. Nha Trang", "TP. Cam Ranh", "TX. Ninh Hòa", "Cam Lâm", "Diên Khánh", "Khánh Sơn", "Khánh Vĩnh", "Trường Sa", "Vạn Ninh"],
+        
+        "Kiên Giang": ["TP. Rạch Giá", "TP. Hà Tiên", "TX. Kiên Lương", "An Biên", "An Minh", "Châu Thành", "Giang Thành", "Giồng Riềng", "Gò Quao", "Hòn Đất", "Kiên Hải", "Phú Quốc", "Tân Hiệp", "U Minh Thượng", "Vĩnh Thuận"],
+        
+        "Kon Tum": ["TP. Kon Tum", "Đắk Glei", "Đắk Hà", "Đắk Tô", "Ia H' Drai", "Kon Plông", "Kon Rẫy", "Ngọc Hồi", "Sa Thầy", "Tu Mơ Rông"],
+        
+        "Lai Châu": ["TP. Lai Châu", "Mường Tè", "Nậm Nhùn", "Phong Thổ", "Sìn Hồ", "Tam Đường", "Tân Uyên", "Than Uyên"],
+        
+        "Lâm Đồng": ["TP. Đà Lạt", "TP. Bảo Lộc", "Bảo Lâm", "Cát Tiên", "Đạ Huoai", "Đạ Tẻh", "Đam Rông", "Di Linh", "Đơn Dương", "Đức Trọng", "Lạc Dương", "Lâm Hà"],
+        
+        "Lạng Sơn": ["TP. Lạng Sơn", "Bắc Sơn", "Bình Gia", "Cao Lộc", "Chi Lăng", "Đình Lập", "Hữu Lũng", "Lộc Bình", "Trang Định", "Văn Lãng", "Văn Quan"],
+        
+        "Lào Cai": ["TP. Lào Cai", "Bắc Hà", "Bảo Thắng", "Bảo Yên", "Bát Xát", "Mường Khương", "Sa Pa", "Si Ma Cai", "Văn Bàn"],
+        
+        "Long An": ["TP. Tân An", "TX. Kiến Tường", "Bến Lức", "Cần Đước", "Cần Giuộc", "Châu Thành", "Đức Hòa", "Đức Huệ", "Mộc Hóa", "Tân Hưng", "Tân Thạnh", "Tân Trụ", "Thạnh Hóa", "Thủ Thừa", "Vĩnh Hưng"],
+        
+        "Nam Định": ["TP. Nam Định", "Giao Thuỷ", "Hải Hậu", "Mỹ Lộc", "Nam Trực", "Nghĩa Hưng", "Trực Ninh", "Vụ Bản", "Xuân Trường", "Ý Yên"],
+        
+        "Nghệ An": ["TP. Vinh", "TX. Cửa Lò", "TX. Thái Hoà", "TX. Hoàng Mai", "Anh Sơn", "Con Cuông", "Diễn Châu", "Đô Lương", "Hưng Nguyên", "Kỳ Sơn", "Nam Đàn", "Nghĩa Đàn", "Nghi Lộc", "Quế Phong", "Quỳ Châu", "Quỳ Hợp", "Quỳnh Lưu", "Tân Kỳ", "Thanh Chương", "Tương Dương", "Yên Thành"],
+        
+        "Ninh Bình": ["TP. Ninh Bình", "TP. Tam Điệp", "Gia Viễn", "Hoa Lư", "Kim Sơn", "Nho Quan", "Yên Khánh", "Yên Mô"],
+        
+        "Ninh Thuận": ["TP. Phan Rang-Tháp Chàm", "Bác Ái", "Ninh Hải", "Ninh Phước", "Ninh Sơn", "Thuận Bắc", "Thuận Nam"],
+        
+        "Phú Thọ": ["TP. Việt Trì", "TX. Phú Thọ", "Cẩm Khê", "Đoan Hùng", "Hạ Hoà", "Lâm Thao", "Phù Ninh", "Tam Nông", "Tân Sơn", "Thanh Ba", "Thanh Sơn", "Thanh Thuỷ", "Yên Lập"],
+        
+        "Phú Yên": ["TP. Tuy Hòa", "TX. Sông Cầu", "Đông Hòa", "Đồng Xuân", "Phú Hòa", "Sơn Hòa", "Sông Hinh", "Tây Hòa", "Tuy An"],
+        
+        "Quảng Bình": ["TP. Đồng Hới", "TX. Ba Đồn", "Bố Trạch", "Lệ Thuỷ", "Minh Hóa", "Quảng Ninh", "Quảng Trạch", "Tuyên Hóa"],
+        
+        "Quảng Nam": ["TP. Tam Kỳ", "TP. Hội An", "TX. Điện Bàn", "Bắc Trà My", "Đại Lộc", "Duy Xuyên", "Hiệp Đức", "Nam Giang", "Nam Trà My", "Nông Sơn", "Núi Thành", "Phú Ninh", "Phước Sơn", "Quế Sơn", "Tây Giang", "Thăng Bình", "Tiên Phước"],
+        
+        "Quảng Ngãi": ["TP. Quảng Ngãi", "Bình Sơn", "Đức Phổ", "Ba Tơ", "Lý Sơn", "Minh Long", "Mộ Đức", "Nghĩa Hành", "Sơn Hà", "Sơn Tây", "Sơn Tịnh", "Tây Trà", "Trà Bồng", "Tư Nghĩa"],
+        
+        "Quảng Ninh": ["TP. Hạ Long", "TP. Móng Cái", "TP. Cẩm Phả", "TP. Uông Bí", "TX. Đông Triều", "TX. Quảng Yên", "Ba Chẽ", "Bình Liêu", "Cô Tô", "Đầm Hà", "Hải Hà", "Hoành Bồ", "Tiên Yên", "Vân Đồn"],
+        
+        "Quảng Trị": ["TP. Đông Hà", "TX. Quảng Trị", "Cam Lộ", "Cồn Cỏ", "Đa Krông", "Gio Linh", "Hải Lăng", "Hướng Hóa", "Triệu Phong", "Vĩnh Linh"],
+        
+        "Sóc Trăng": ["TP. Sóc Trăng", "TX. Vĩnh Châu", "TX. Ngã Năm", "Châu Thành", "Cù Lao Dung", "Kế Sách", "Long Phú", "Mỹ Tú", "Mỹ Xuyên", "Thạnh Trị", "Trần Đề"],
+        
+        "Sơn La": ["TP. Sơn La", "Bắc Yên", "Mai Sơn", "Mộc Châu", "Mường La", "Phù Yên", "Quỳnh Nhai", "Sông Mã", "Sốp Cộp", "Thuận Châu", "Vân Hồ", "Yên Châu"],
+        
+        "Tây Ninh": ["TP. Tây Ninh", "Bến Cầu", "Châu Thành", "Dương Minh Châu", "Gò Dầu", "Hòa Thành", "Tân Biên", "Tân Châu", "Trảng Bàng"],
+        
+        "Thái Bình": ["TP. Thái Bình", "Đông Hưng", "Hưng Hà", "Kiến Xương", "Quỳnh Phụ", "Thái Thuỵ", "Tiền Hải", "Vũ Thư"],
+        
+        "Thái Nguyên": ["TP. Thái Nguyên", "TP. Sông Công", "TX. Phổ Yên", "Định Hóa", "Đại Từ", "Đồng Hỷ", "Phú Bình", "Phú Lương", "Võ Nhai"],
+        
+        "Thanh Hóa": ["TP. Thanh Hóa", "TP. Sầm Sơn", "TX. Bỉm Sơn", "Bá Thước", "Cẩm Thuỷ", "Đông Sơn", "Hà Trung", "Hậu Lộc", "Hoằng Hóa", "Lang Chánh", "Mường Lát", "Nga Sơn", "Ngọc Lặc", "Như Thanh", "Như Xuân", "Nông Cống", "Quan Hóa", "Quan Sơn", "Quảng Xương", "Thiệu Hóa", "Thọ Xuân", "Thường Xuân", "Tĩnh Gia", "Triệu Sơn", "Vĩnh Lộc", "Yên Định"],
+        
+        "TP. Hồ Chí Minh": ["Quận 1", "Quận 3", "Quận 4", "Quận 5", "Quận 6", "Quận 7", "Quận 8", "Quận 10", "Quận 11", "Quận 12", "Gò Vấp", "Tân Bình", "Tân Phú", "Bình Thạnh", "Phú Nhuận", "Thủ Đức", "Bình Tân", "Bình Chánh", "Cần Giờ", "Củ Chi", "Hóc Môn", "Nhà Bè"],
+        
+        "Thừa Thiên Huế": ["TP. Huế", "TX. Hương Thủy", "TX. Hương Trà", "A Lưới", "Nam Đông", "Phong Điền", "Phú Lộc", "Phú Vang", "Quảng Điền"],
+        
+        "Tiền Giang": ["TP. Mỹ Tho", "TX. Gò Công", "TX. Cai Lậy", "Cái Bè", "Châu Thành", "Chợ Gạo", "Gò Công Đông", "Gò Công Tây", "Tân Phú Đông", "Tân Phước"],
+        
+        "Trà Vinh": ["TP. Trà Vinh", "Càng Long", "Cầu Kè", "Cầu Ngang", "Châu Thành", "Duyên Hải", "Tiểu Cần", "Trà Cú"],
+        
+        "Tuyên Quang": ["TP. Tuyên Quang", "Chiêm Hóa", "Hàm Yên", "Lâm Bình", "Na Hang", "Sơn Dương", "Yên Sơn"],
+        
+        "Vĩnh Long": ["TP. Vĩnh Long", "Bình Minh", "Bình Tân", "Long Hồ", "Mang Thít", "Tam Bình", "Trà Ôn", "Vũng Liêm"],
+        
+        "Vĩnh Phúc": ["TP. Vĩnh Yên", "TP. Phúc Yên", "Bình Xuyên", "Lập Thạch", "Sông Lô", "Tam Đảo", "Tam Dương", "Vĩnh Tường", "Yên Lạc"],
+        
+        "Yên Bái": ["TP. Yên Bái", "TX. Nghĩa Lộ", "Lục Yên", "Mù Cang Chải", "Trạm Tấu", "Trấn Yên", "Văn Chấn", "Văn Yên", "Yên Bình"]
+      };
+
       // Load cart items
       async function loadCart() {
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        
-        // Try to get cart from server or localStorage
         try {
+          const user = JSON.parse(localStorage.getItem('user') || 'null');
+          
           if (user && user.user_id) {
             const res = await cartAPI.get(user.user_id);
-            const serverCart = res.data || res;
-            if (serverCart && serverCart.items && serverCart.items.length > 0) {
-              cart = serverCart.items;
-            } else {
-              cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            }
+            cart = res.data?.items || res.items || [];
           } else {
-            const guest = localStorage.getItem('guest_token');
-            if (guest) {
-              const res = await cartAPI.get(guest);
-              const serverCart = res.data || res;
-              if (serverCart && serverCart.items && serverCart.items.length > 0) {
-                cart = serverCart.items;
-              } else {
-                cart = JSON.parse(localStorage.getItem('cart') || '[]');
-              }
-            } else {
-              cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const guestToken = localStorage.getItem('guest_token');
+            if (guestToken) {
+              const res = await cartAPI.get(guestToken);
+              cart = res.data?.items || res.items || [];
             }
           }
-        } catch (err) {
-          console.warn('Load cart failed, using localStorage', err);
-          cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        }
 
+          if (cart.length === 0) {
+            cart = JSON.parse(localStorage.getItem('cart') || '[]');
+          }
+
+          renderCart();
+        } catch (error) {
+          console.error('Error loading cart:', error);
+          cart = JSON.parse(localStorage.getItem('cart') || '[]');
+          renderCart();
+        }
+      }
+
+      function renderCart() {
+        const container = document.getElementById('orderItems');
+        
         if (cart.length === 0) {
-          alert('Giỏ hàng trống!');
-          window.location.href = '/Web/user/pages/cart.html';
+          container.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Giỏ hàng trống</div>';
+          updateSummary();
           return;
         }
 
-        renderOrderItems();
-        updateTotals();
-      }
-
-      function renderOrderItems() {
-        const container = document.getElementById('orderItems');
-        container.innerHTML = cart.map(item => {
-          const itemTotal = (item.price || 0) * (item.quantity || 1);
-          return `
-            <div class="order-item">
-              <div class="item-info">
-                <h4>${item.name}</h4>
-                <p>Số lượng: ${item.quantity}</p>
-              </div>
-              <div class="item-price">${itemTotal.toLocaleString()}₫</div>
+        container.innerHTML = cart.map(item => `
+          <div class="order-item">
+            <div class="item-info">
+              <h4>${item.name}</h4>
+              <p>Số lượng: ${item.quantity}</p>
             </div>
-          `;
-        }).join('');
+            <div class="item-price">${(item.price * item.quantity).toLocaleString()}₫</div>
+          </div>
+        `).join('');
+
+        updateSummary();
       }
 
-      function updateTotals() {
-        subtotal = cart.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
+      function updateSummary() {
+        subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const total = subtotal - discount + shippingFee;
 
         document.getElementById('subtotal').textContent = subtotal.toLocaleString() + '₫';
         document.getElementById('totalAmount').textContent = total.toLocaleString() + '₫';
+        
+        // Update QR amount and order ID
+        document.getElementById('qrAmount').textContent = total.toLocaleString() + '₫';
+        
+        // Generate temporary order ID for QR content
+        const tempOrderId = `ORD${Date.now().toString().slice(-6)}`;
+        document.getElementById('qrContent').textContent = tempOrderId;
+        
+        // Update QR code with amount and order info
+        updateQRCode(total, tempOrderId);
       }
 
+      // Update QR Code with VietQR API
+      function updateQRCode(amount, orderId) {
+        const qrUrl = `https://img.vietqr.io/image/${VIETQR_CONFIG.bankId}-${VIETQR_CONFIG.accountNo}-${VIETQR_CONFIG.template}.png?amount=${amount}&addInfo=${encodeURIComponent(orderId)}&accountName=${encodeURIComponent(VIETQR_CONFIG.accountName)}`;
+        
+        const qrImage = document.getElementById('qrImage');
+        qrImage.src = qrUrl;
+        
+        console.log('✅ QR Code updated:', qrUrl);
+      }
+
+      let appliedDiscount = null;
+
       window.applyCoupon = async () => {
-        const code = document.getElementById('couponCode').value.trim();
+        const codeInput = document.getElementById('couponCode');
+        const code = codeInput.value.trim().toUpperCase();
+        
         if (!code) {
-          alert('Vui lòng nhập mã giảm giá');
+          notification.error('Vui lòng nhập mã giảm giá');
           return;
         }
 
-        // TODO: Call coupon API to validate and get discount
-        alert('Tính năng mã giảm giá đang được phát triển');
+        // Show loading
+        const applyBtn = event.target;
+        const originalText = applyBtn.innerHTML;
+        applyBtn.innerHTML = '⏳';
+        applyBtn.disabled = true;
+
+        try {
+          // Validate discount code
+          const response = await discountAPI.validateCode(code);
+          
+          if (!response.success) {
+            notification.error(response.message || 'Mã giảm giá không hợp lệ');
+            applyBtn.innerHTML = originalText;
+            applyBtn.disabled = false;
+            return;
+          }
+
+          const discountData = response.data;
+          
+          // Check if discount is active
+          if (!discountData.is_active) {
+            notification.error('Mã giảm giá đã bị vô hiệu hóa');
+            applyBtn.innerHTML = originalText;
+            applyBtn.disabled = false;
+            return;
+          }
+
+          // Check usage limit
+          if (discountData.usage_limit && discountData.used_count >= discountData.usage_limit) {
+            notification.error('Mã giảm giá đã hết lượt sử dụng');
+            applyBtn.innerHTML = originalText;
+            applyBtn.disabled = false;
+            return;
+          }
+
+          // Check date range
+          const now = new Date();
+          const startDate = new Date(discountData.start_date);
+          const endDate = new Date(discountData.end_date);
+          
+          if (now < startDate) {
+            notification.error('Mã giảm giá chưa có hiệu lực');
+            applyBtn.innerHTML = originalText;
+            applyBtn.disabled = false;
+            return;
+          }
+          
+          if (now > endDate) {
+            notification.error('Mã giảm giá đã hết hạn');
+            applyBtn.innerHTML = originalText;
+            applyBtn.disabled = false;
+            return;
+          }
+
+          // Apply discount
+          appliedDiscount = discountData;
+          discount = Math.round((subtotal * discountData.percentage) / 100);
+          
+          // Update UI
+          document.getElementById('discountRow').style.display = 'flex';
+          document.getElementById('discountAmount').textContent = `-${discount.toLocaleString()}₫`;
+          
+          // Disable input and button
+          codeInput.value = code;
+          codeInput.disabled = true;
+          applyBtn.innerHTML = '✓';
+          applyBtn.style.background = '#10b981';
+          applyBtn.style.cursor = 'not-allowed';
+          
+          // Add remove button
+          if (!document.getElementById('removeCouponBtn')) {
+            const removeBtn = document.createElement('button');
+            removeBtn.id = 'removeCouponBtn';
+            removeBtn.textContent = '✕';
+            removeBtn.className = 'remove-coupon-btn';
+            removeBtn.style.cssText = 'margin-left: 8px; padding: 8px 12px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;';
+            removeBtn.onmouseover = () => removeBtn.style.background = '#dc2626';
+            removeBtn.onmouseout = () => removeBtn.style.background = '#ef4444';
+            removeBtn.onclick = removeCoupon;
+            applyBtn.parentElement.appendChild(removeBtn);
+          }
+          
+          updateSummary();
+          notification.success(`✨ Đã áp dụng mã giảm giá ${discountData.percentage}%!`);
+          
+        } catch (error) {
+          console.error('Apply coupon error:', error);
+          notification.error(error.message || 'Không thể kiểm tra mã giảm giá');
+          applyBtn.innerHTML = originalText;
+          applyBtn.disabled = false;
+        }
       };
+
+      function removeCoupon() {
+        appliedDiscount = null;
+        discount = 0;
+        
+        // Reset UI
+        document.getElementById('discountRow').style.display = 'none';
+        document.getElementById('couponCode').value = '';
+        document.getElementById('couponCode').disabled = false;
+        
+        const applyBtn = document.querySelector('.apply-btn');
+        applyBtn.innerHTML = 'Áp dụng';
+        applyBtn.disabled = false;
+        applyBtn.style.background = '';
+        applyBtn.style.cursor = 'pointer';
+        
+        const removeBtn = document.getElementById('removeCouponBtn');
+        if (removeBtn) removeBtn.remove();
+        
+        updateSummary();
+        notification.info('Đã xóa mã giảm giá');
+      }
 
       window.completeCheckout = async () => {
         const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -299,12 +664,46 @@
           return;
         }
 
+        // Validate card details if card payment
+        if (paymentMethod === 'card') {
+          const cardNumber = document.getElementById('cardNumber').value.trim();
+          const cardHolder = document.getElementById('cardHolder').value.trim();
+          const cardExpiry = document.getElementById('cardExpiry').value.trim();
+          const cardCVV = document.getElementById('cardCVV').value.trim();
+
+          if (!cardNumber || !cardHolder || !cardExpiry || !cardCVV) {
+            alert('Vui lòng điền đầy đủ thông tin thẻ');
+            return;
+          }
+
+          if (!/^\d{13,19}$/.test(cardNumber.replace(/\s/g, ''))) {
+            alert('Số thẻ không hợp lệ');
+            return;
+          }
+
+          if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+            alert('Ngày hết hạn không hợp lệ (MM/YY)');
+            return;
+          }
+
+          if (!/^\d{3,4}$/.test(cardCVV)) {
+            alert('CVV không hợp lệ');
+            return;
+          }
+        }
+
         const shippingInfo = {
           fullName,
           phone,
           address: `${address}, ${district}, ${city}`,
           notes
         };
+
+        // Show loading
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<span>Đang xử lý...</span>';
+        btn.disabled = true;
 
         try {
           const total = subtotal - discount + shippingFee;
@@ -320,7 +719,7 @@
             })),
             total_amount: total,
             payment_method: paymentMethod,
-            status: 'Pending',
+            status: paymentMethod === 'online' ? 'Pending' : 'Pending',
             notes: JSON.stringify(shippingInfo)
           });
 
@@ -360,45 +759,198 @@
                 await cartAPI.clear(res.data?._id || res._id);
               }
             }
-          } catch (err) {
-            console.warn('Failed to clear server cart', err);
+          } catch (clearErr) {
+            console.warn('Clear cart error:', clearErr);
           }
-          
+
           localStorage.removeItem('cart');
 
-          // Redirect to success page
+          // Store order info and redirect
           localStorage.setItem('lastOrder', JSON.stringify({
-            orderId,
-            total,
+            orderId: `ORD-${orderId}`,
             shippingInfo,
+            total,
+            paymentMethod,
             items: cart
           }));
 
           window.location.href = '/Web/user/pages/order-success.html';
         } catch (error) {
           console.error('Checkout error:', error);
-          alert('❌ Lỗi khi thanh toán: ' + (error.message || JSON.stringify(error)));
+          alert('❌ Lỗi khi đặt hàng: ' + error.message);
+          btn.innerHTML = originalHTML;
+          btn.disabled = false;
         }
       };
 
-      // Payment method selection
-      document.addEventListener('DOMContentLoaded', () => {
-        loadCart();
+      // Initialize Vietnam location data
+      function initLocationSelects() {
+        const citySelect = document.getElementById('city');
+        const districtSelect = document.getElementById('district');
 
-        // Handle payment method click
-        document.querySelectorAll('.payment-method').forEach(method => {
-          method.addEventListener('click', function() {
-            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
-            this.classList.add('active');
-          });
+        Object.keys(vietnamData).sort().forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
         });
 
-        // Auto-fill user info if available
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        if (user) {
-          if (user.username) document.getElementById('fullName').value = user.username;
-          if (user.email) document.getElementById('email').value = user.email;
+        citySelect.addEventListener('change', function() {
+          const selectedCity = this.value;
+          districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+          
+          if (selectedCity && vietnamData[selectedCity]) {
+            districtSelect.disabled = false;
+            vietnamData[selectedCity].forEach(district => {
+              const option = document.createElement('option');
+              option.value = district;
+              option.textContent = district;
+              districtSelect.appendChild(option);
+            });
+          } else {
+            districtSelect.disabled = true;
+          }
+        });
+      }
+
+      // Handle payment method selection
+      document.querySelectorAll('.payment-method input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          document.querySelectorAll('.payment-method').forEach(method => {
+            method.classList.remove('active');
+          });
+          this.closest('.payment-method').classList.add('active');
+
+          const cardDetails = document.getElementById('cardDetails');
+          const qrDetails = document.getElementById('qrDetails');
+
+          cardDetails.classList.remove('active');
+          qrDetails.classList.remove('active');
+
+          if (this.value === 'card') {
+            cardDetails.classList.add('active');
+          } else if (this.value === 'online') {
+            qrDetails.classList.add('active');
+            // Update QR when switching to online payment
+            const total = subtotal - discount + shippingFee;
+            const tempOrderId = document.getElementById('qrContent').textContent;
+            updateQRCode(total, tempOrderId);
+          }
+        });
+      });
+
+      // Card number formatting
+      document.getElementById('cardNumber')?.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+      });
+
+      // Card expiry formatting
+      document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
         }
+        e.target.value = value;
+      });
+
+      // CVV - numbers only
+      document.getElementById('cardCVV')?.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+      });
+
+      // Load user profile and addresses
+      function loadUserProfile() {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            
+            // Auto-fill user info
+            if (user.full_name) document.getElementById('fullName').value = user.full_name;
+            if (user.phone) document.getElementById('phone').value = user.phone;
+            if (user.email) document.getElementById('email').value = user.email;
+            
+            // Load saved addresses
+            const savedAddresses = localStorage.getItem('user_addresses_' + user.user_id);
+            if (savedAddresses) {
+              const addresses = JSON.parse(savedAddresses);
+              
+              if (addresses.length > 0) {
+                const savedAddressSelect = document.getElementById('savedAddress');
+                const savedAddressGroup = document.getElementById('savedAddressGroup');
+                
+                // Show address dropdown
+                savedAddressGroup.style.display = 'block';
+                
+                // Add options
+                addresses.forEach(addr => {
+                  const option = document.createElement('option');
+                  option.value = addr.id;
+                  option.textContent = `${addr.fullName} - ${addr.phone} - ${addr.district}, ${addr.city}`;
+                  if (addr.isDefault) option.selected = true;
+                  savedAddressSelect.appendChild(option);
+                });
+                
+                // Auto-fill default address
+                const defaultAddr = addresses.find(a => a.isDefault);
+                if (defaultAddr) {
+                  fillAddressForm(defaultAddr);
+                }
+                
+                // Handle address change
+                savedAddressSelect.addEventListener('change', (e) => {
+                  const selectedId = e.target.value;
+                  if (selectedId) {
+                    const addr = addresses.find(a => a.id === selectedId);
+                    if (addr) fillAddressForm(addr);
+                  } else {
+                    // Clear form when selecting "new address"
+                    document.getElementById('address').value = '';
+                    document.getElementById('city').value = '';
+                    document.getElementById('district').innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+                    document.getElementById('district').disabled = true;
+                  }
+                });
+              }
+            }
+          } catch (e) {
+            console.error('Error loading user profile:', e);
+          }
+        }
+      }
+
+      function fillAddressForm(addr) {
+        document.getElementById('fullName').value = addr.fullName || '';
+        document.getElementById('phone').value = addr.phone || '';
+        document.getElementById('address').value = addr.detail || '';
+        
+        // Set city
+        const citySelect = document.getElementById('city');
+        citySelect.value = addr.city || '';
+        
+        // Trigger city change to load districts
+        if (addr.city && vietnamData[addr.city]) {
+          const districtSelect = document.getElementById('district');
+          districtSelect.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+          districtSelect.disabled = false;
+          
+          vietnamData[addr.city].forEach(district => {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            if (district === addr.district) option.selected = true;
+            districtSelect.appendChild(option);
+          });
+        }
+      }
+
+      // Init
+      document.addEventListener('DOMContentLoaded', () => {
+        loadCart();
+        initLocationSelects();
+        loadUserProfile();
       });
     </script>
   </body>

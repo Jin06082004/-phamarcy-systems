@@ -1,13 +1,12 @@
 /** @format */
 
 import dotenv from "dotenv";
-
 dotenv.config();
 
 import express from "express";
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cors from "cors";  // Thêm dòng này
+import cors from "cors";
 import { connectDB } from "./src/dbConfig.js";
 import drugRouter from "./routers/drugRoutes.js";
 import categoryRouter from "./routers/categoryRoutes.js";
@@ -19,32 +18,29 @@ import ordersRouter from './routers/ordersRouter.js';
 import discountRouter from "./routers/discountRouters.js";
 import cartRouter from "./routers/cartRoutes.js";
 import couponRouter from "./routers/couponRoutes.js";
+import uploadRouter from './routers/uploadRoutes.js';
 
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve only the `shared` folder from the frontend as `/shared` so image paths like
-// `/shared/images/logo.png` resolve, without exposing the entire `Web` folder.
+// Serve static files từ thư mục Web/shared
 app.use('/shared', express.static(path.join(__dirname, '../Web/shared')));
 
-// Thêm CORS middleware TRƯỚC các route
-// Configure CORS to allow local development origins and handle preflight properly
+// Configure CORS
 const allowedOrigins = [
     "http://localhost:5000",
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5500",
-    "http://127.0.0.1:5500",
+    "http://127.0.0.1:5000",
     "http://127.0.0.1:5500",
 ];
 
 const corsOptions = {
     origin: function (origin, callback) {
-        // allow requests with no origin (like curl, server-to-server)
         if (!origin) return callback(null, true);
-        // allow if origin is in allowed list or is localhost with any port
         if (allowedOrigins.indexOf(origin) !== -1 || /^(https?:\/\/localhost(:\d+)?|https?:\/\/127\.0\.0\.1(:\d+)?)/.test(origin)) {
             return callback(null, true);
         }
@@ -57,7 +53,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Set CORS response headers explicitly for extra compatibility
+
+// Set CORS headers explicitly
 app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (origin && (allowedOrigins.indexOf(origin) !== -1 || /^(https?:\/\/localhost(:\d+)?|https?:\/\/127\.0\.0\.1(:\d+)?)/.test(origin))) {
@@ -69,12 +66,15 @@ app.use((req, res, next) => {
     next();
 });
 
-// Body parsers: JSON, urlencoded and a text fallback for requests missing Content-Type
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Mount upload router TRƯỚC body parsers (vì multer cần xử lý multipart/form-data)
+app.use("/uploads", uploadRouter);
+
+// Body parsers
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.text({ type: '*/*' }));
 
-// If body was parsed as text (fallback), try to parse as JSON so req.body becomes an object
+// Parse text body as JSON if possible
 app.use((req, res, next) => {
     if (typeof req.body === 'string') {
         const s = req.body.trim();
@@ -91,7 +91,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Mount routers after body parsers
+// Mount API routers
 app.use("/drugs", drugRouter);
 app.use("/categories", categoryRouter);
 app.use('/inventories', inventoryRouter);
@@ -103,19 +103,81 @@ app.use("/discounts", discountRouter);
 app.use("/carts", cartRouter);
 app.use("/coupons", couponRouter);
 
-app.get('/', (req, res) => res.send('Pharmacy management server is running'));
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Pharmacy management server is running',
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+            drugs: '/drugs',
+            categories: '/categories',
+            orders: '/orders',
+            users: '/users',
+            uploads: '/uploads/drug-image'
+        }
+    });
+});
 
+// Test endpoint
+app.get('/test', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Server is working!',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('❌ Server error:', err);
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: `Cannot ${req.method} ${req.url}`
+    });
+});
+
+// Connect to MongoDB and start server
 connectDB()
     .then(() => {
         const PORT = process.env.PORT || 5000;
         app.listen(PORT, (error) => {
             if (error) {
-                console.error('Error listen starting the server', error);
+                console.error('❌ Error starting the server:', error);
             } else {
-                console.log(`Server is running on http://localhost:${PORT}`);
+                console.log('='.repeat(70));
+                console.log('🏥 PHARMACY MANAGEMENT SYSTEM - SERVER');
+                console.log('='.repeat(70));
+                console.log(`✅ Server running at: http://localhost:${PORT}`);
+                console.log(`📁 Static files: /shared`);
+                console.log(`🖼️  Upload endpoint: POST /uploads/drug-image`);
+                console.log(`🧪 Test endpoint: GET /test`);
+                console.log(`🌐 CORS: Enabled for development origins`);
+                console.log(`📊 Database: MongoDB connected`);
+                console.log('='.repeat(70));
+                console.log('\n📋 Available Routes:');
+                console.log('   - GET    /drugs             (Get all drugs)');
+                console.log('   - POST   /drugs/add         (Add new drug)');
+                console.log('   - PUT    /drugs/:id         (Update drug)');
+                console.log('   - DELETE /drugs/:id         (Delete drug)');
+                console.log('   - GET    /categories        (Get all categories)');
+                console.log('   - GET    /orders            (Get all orders)');
+                console.log('   - POST   /uploads/drug-image (Upload drug image)');
+                console.log('='.repeat(70));
             }
         });
     })
     .catch((error) => {
-        console.error('Error connecting to MongoDB:', error);
+        console.error('❌ Error connecting to MongoDB:', error);
+        console.error('💡 Tip: Check your .env file for correct MongoDB credentials');
+        process.exit(1);
     });

@@ -254,54 +254,64 @@
             // --- basic form handling (client-side demo) ---
             const loginError = document.getElementById('loginError');
 
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const data = new FormData(loginForm);
-                const identity = data.get("identity")?.trim();
-                const password = data.get("password")?.trim();
+            // Login form handler
+            loginForm.addEventListener("submit", async (e) => {
+              e.preventDefault();
 
-                if (!identity || !password) {
-                    loginError.textContent = "Vui lòng nhập đầy đủ thông tin.";
-                    loginError.hidden = false;
-                    return;
-                }
+              const data = new FormData(loginForm);
+              const identity = data.get("identity")?.trim();
+              const password = data.get("password")?.trim();
 
-                try {
-                    const response = await userAPI.login({ username: identity, password });
+              if (!identity || !password) {
+                loginError.textContent = "Vui lòng nhập đầy đủ thông tin.";
+                loginError.hidden = false;
+                return;
+              }
 
-                    if (response.success) {
-                        // save user info + token
-                        localStorage.setItem("user", JSON.stringify(response.data));
-                        if (response.token) localStorage.setItem("token", response.token);
+              try {
+                const response = await userAPI.login({ username: identity, password });
 
-                        // if there is a guest cart, attempt to merge it on the server
-                        const guestToken = localStorage.getItem('guest_token');
-                        try {
-                            if (guestToken) {
-                                await cartAPI.merge({ guest_token: guestToken, user_id: Number(response.data.user_id) });
-                                // remove local guest cart after merge
-                                localStorage.removeItem('cart');
-                                localStorage.removeItem('guest_token');
-                            }
-                        } catch (mergeErr) {
-                            console.warn('Merge guest cart failed:', mergeErr);
-                        }
+                if (response.success) {
+                  console.log('✅ Login response:', response);
+                  
+                  // ✅ Lưu user và token
+                  localStorage.setItem("user", JSON.stringify(response.data));
+                  
+                  if (response.token) {
+                    localStorage.setItem("token", response.token);
+                    console.log('✅ Token saved:', response.token.substring(0, 20) + '...');
+                  } else {
+                    console.warn('⚠️ No token in response');
+                  }
 
-                        // Redirect based on user role
-                        if (response.data.role === 'admin') {
-                            window.location.href = "/Web/admin/index.html";
-                        } else {
-                            window.location.href = "/Web/user/index.html";
-                        }
-                    } else {
-                        loginError.textContent = response.message || "Đăng nhập thất bại";
-                        loginError.hidden = false;
+                  // Merge guest cart
+                  const guestToken = localStorage.getItem('guest_token');
+                  try {
+                    if (guestToken) {
+                      await cartAPI.merge({ guest_token: guestToken, user_id: Number(response.data.user_id) });
+                      localStorage.removeItem('cart');
+                      localStorage.removeItem('guest_token');
                     }
-                } catch (error) {
-                    console.error("Login error:", error);
-                    loginError.textContent = "Lỗi kết nối server";
-                    loginError.hidden = false;
+                  } catch (mergeErr) {
+                    console.warn('Merge guest cart failed:', mergeErr);
+                  }
+
+                  // Redirect
+                  const redirectPath = response.data.role === "admin" 
+                    ? "/Web/admin/index.html" 
+                    : "/Web/user/index.html";
+                  
+                  console.log('➡️ Redirecting to:', redirectPath);
+                  window.location.href = redirectPath;
+                } else {
+                  loginError.textContent = response.message || "Đăng nhập thất bại.";
+                  loginError.hidden = false;
                 }
+              } catch (error) {
+                console.error("❌ Login error:", error);
+                loginError.textContent = error.message || "Lỗi kết nối server";
+                loginError.hidden = false;
+              }
             });
 
             registerForm.addEventListener('submit', async (e) => {

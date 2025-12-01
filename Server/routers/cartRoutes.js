@@ -7,7 +7,7 @@ import {
   clearCart,
   mergeGuestCart,
 } from "../controllers/cartController.js";
-import { authenticate } from "../middleware/authMiddleware.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -28,6 +28,6 @@ router.delete("/clear/:id", clearCart);
 
 // Merge guest -> user
 // Merge guest -> user (requires authentication)
-router.post("/merge", authenticate, mergeGuestCart);
+router.post("/merge", authenticateToken, mergeGuestCart);
 
 export default router;

@@ -7,10 +7,9 @@ import {
     updateInvoice,
     payInvoice,
     cancelInvoice,
-    deleteAllInvoices,
     deleteInvoice,
 } from "../controllers/invoiceController.js";
-import { authenticate, authorizeRoles } from "../middleware/authMiddleware.js";
+import { authenticateToken, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -18,7 +17,7 @@ const router = Router();
 router.post("/", createInvoice);
 
 // List invoices (admin)
-router.get("/", authenticate, authorizeRoles('admin'), getAllInvoices);
+router.get("/", authenticateToken, isAdmin, getAllInvoices);
 
 // Get by invoice number
 router.get("/number/:number", getInvoiceByNumber);
@@ -30,15 +29,12 @@ router.get("/:id", getInvoiceById);
 router.put("/:id", updateInvoice);
 
 // Pay invoice (require auth)
-router.post("/:id/pay", authenticate, payInvoice);
+router.post("/:id/pay", authenticateToken, payInvoice);
 
 // Cancel invoice
 router.post("/:id/cancel", cancelInvoice);
 
-// Delete all (dev) - admin only
-router.delete("/all", authenticate, authorizeRoles('admin'), deleteAllInvoices);
-
 // Delete one (permanent) - admin only
-router.delete("/:id", authenticate, authorizeRoles('admin'), deleteInvoice);
+router.delete("/:id", authenticateToken, isAdmin, deleteInvoice);
 
 export default router;

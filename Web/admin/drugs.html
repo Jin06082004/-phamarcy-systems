@@ -60,11 +60,11 @@
         <li>
           <a href="discount.html">
             <i class="bx bx-tag"></i>
-            <span>Khuyễn mãi</span>
+            <span>Khuyến mãi</span>
           </a>
         </li>
         <li class="logout">
-          <a href="#">
+          <a href="#" id="logout-link">
             <i class="bx bx-log-out"></i>
             <span>Đăng xuất</span>
           </a>
@@ -122,166 +122,230 @@
       </section>
     </main>
 
-    <!-- ========== MODAL THÊMC/SỬA THUỐC ========== -->
+    <!-- ========== MODAL THÊM/SỬA THUỐC ========== -->
     <div id="drug-modal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="modal-title">Thêm thuốc mới</h2>
-          <button class="modal-close" id="close-modal">&times;</button>
+      <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 24px; border-radius: 16px 16px 0 0; border-bottom: none;">
+          <h2 id="modal-title" style="margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+            <i class='bx bx-plus-medical' style="font-size: 1.8rem;"></i>
+            <span>Sửa thông tin thuốc</span>
+          </h2>
+          <button class="modal-close" id="close-modal" style="background: rgba(255,255,255,0.2); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='rotate(0deg)'">&times;</button>
         </div>
-        <form id="drug-form">
-          <div class="form-group">
-            <label>Mã thuốc:</label>
-            <input type="text" id="drug-code" required placeholder="VD: DRG001" />
+        <form id="drug-form" style="padding: 32px;">
+          <!-- Mã thuốc -->
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
+              <i class='bx bx-barcode' style="font-size: 1.2rem; color: #10b981;"></i>
+              Mã thuốc:
+            </label>
+            <input type="text" id="drug-code" required placeholder="VD: DRG004" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s; font-family: monospace; font-weight: 600;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'" />
           </div>
 
-          <div class="form-group">
-            <label>Tên thuốc:</label>
-            <input type="text" id="drug-name" required placeholder="VD: Paracetamol 500mg" />
+          <!-- Tên thuốc -->
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
+              <i class='bx bx-capsule' style="font-size: 1.2rem; color: #10b981;"></i>
+              Tên thuốc:
+            </label>
+            <input type="text" id="drug-name" required placeholder="VD: Omeprazole 20mg" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'" />
           </div>
 
-          <div class="form-group">
-            <label>Danh mục:</label>
-            <select id="drug-category" required>
+          <!-- Danh mục -->
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
+              <i class='bx bx-category' style="font-size: 1.2rem; color: #10b981;"></i>
+              Danh mục:
+            </label>
+            <select id="drug-category" required style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; background: white; cursor: pointer; transition: all 0.3s;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
               <option value="">-- Chọn danh mục --</option>
             </select>
           </div>
 
-          <div class="form-group">
-            <label>Giá (₫):</label>
-            <input type="number" id="drug-price" required min="0" placeholder="50000" />
-          </div>
-
-          <div class="form-group">
-            <label>Số lượng:</label>
-            <input type="number" id="drug-stock" required min="0" placeholder="100" />
-          </div>
-
-          <div class="form-group">
-            <label>Mô tả:</label>
-            <textarea id="drug-description" placeholder="Mô tả chi tiết thuốc..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Hình ảnh:</label>
-            <input type="file" id="drug-image-file" accept="image/*" />
-            <div id="image-preview" style="margin-top: 10px; display: none;">
-              <img id="preview-img" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px;" />
-              <button type="button" id="remove-image-btn" style="display: block; margin-top: 5px; padding: 4px 8px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">Xóa ảnh</button>
+          <!-- Giá và Số lượng (Grid 2 cột) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+            <div class="form-group">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
+                <i class='bx bx-money' style="font-size: 1.2rem; color: #10b981;"></i>
+                Giá (₫):
+              </label>
+              <input type="number" id="drug-price" required min="0" placeholder="150000" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s; font-weight: 600;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'" />
             </div>
-            <input type="hidden" id="drug-image" />
+
+            <div class="form-group">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
+                <i class='bx bx-package' style="font-size: 1.2rem; color: #10b981;"></i>
+                Số lượng:
+              </label>
+              <input type="number" id="drug-stock" required min="0" placeholder="58" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s; font-weight: 600;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'" />
+            </div>
           </div>
 
-          <div class="form-actions">
-            <button type="submit" class="btn-green">Lưu</button>
-            <button type="button" class="btn-gray" id="cancel-btn">Hủy</button>
+          <!-- Mô tả -->
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
+              <i class='bx bx-note' style="font-size: 1.2rem; color: #10b981;"></i>
+              Mô tả:
+            </label>
+            <textarea id="drug-description" rows="4" placeholder="Thuốc điều trị loét dạ dày; tráo ngược dạ dày thực quản..." style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; background: #f9fafb; transition: all 0.3s; resize: vertical; line-height: 1.6;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'; this.style.background='#ffffff'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'; this.style.background='#f9fafb'"></textarea>
+          </div>
+
+          <!-- Hình ảnh -->
+          <div class="form-group" style="margin-bottom: 32px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
+              <i class='bx bx-image-add' style="font-size: 1.2rem; color: #10b981;"></i>
+              Hình ảnh:
+            </label>
+            <div style="border: 2px dashed #d1d5db; border-radius: 12px; padding: 20px; text-align: center; background: #f9fafb; transition: all 0.3s;" onmouseover="this.style.borderColor='#10b981'; this.style.background='#f0fdf4'" onmouseout="this.style.borderColor='#d1d5db'; this.style.background='#f9fafb'">
+              <input type="file" id="drug-image-file" accept="image/*" style="display: none;" />
+              <label for="drug-image-file" style="cursor: pointer; display: inline-block;">
+                <div style="font-size: 3rem; color: #9ca3af; margin-bottom: 8px;">📷</div>
+                <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">Click để chọn ảnh</div>
+                <div style="font-size: 0.875rem; color: #6b7280;">hoặc kéo thả file vào đây</div>
+              </label>
+            </div>
+            
+            <div id="image-preview" style="margin-top: 16px; display: none;">
+              <div style="position: relative; display: inline-block;">
+                <img id="preview-img" src="" alt="Preview" style="max-width: 100%; max-height: 300px; border: 3px solid #10b981; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+                <button type="button" id="remove-image-btn" style="position: absolute; top: -10px; right: -10px; width: 36px; height: 36px; background: #ef4444; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239,68,68,0.4); transition: all 0.3s;" onmouseover="this.style.transform='scale(1.1)'; this.style.background='#dc2626'" onmouseout="this.style.transform='scale(1)'; this.style.background='#ef4444'">
+                  ✕
+                </button>
+              </div>
+            </div>
+            
+            <input type="hidden" id="drug-image" />
+            <small style="color: #6b7280; display: block; margin-top: 8px; font-size: 0.875rem;">
+              💡 Chọn ảnh từ máy tính (tối đa 5MB, định dạng: JPG, PNG, GIF, WebP)
+            </small>
+          </div>
+
+          <!-- Actions -->
+          <div class="form-actions" style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 2px solid #f3f4f6;">
+            <button type="button" class="btn-gray" id="cancel-btn" style="padding: 12px 28px; border: 2px solid #d1d5db; background: white; color: #6b7280; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#f9fafb'; this.style.borderColor='#9ca3af'" onmouseout="this.style.background='white'; this.style.borderColor='#d1d5db'">
+              ✖️ Hủy
+            </button>
+            <button type="submit" class="btn-green" style="padding: 12px 32px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(16,185,129,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
+              💾 Lưu thay đổi
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- ========== SCRIPT ========== -->
+    <script src="../shared/notification.js"></script>
     <script type="module">
-      import { drugAPI, categoryAPI } from "../shared/api.js";
+      import { drugAPI, categoryAPI, uploadAPI } from "../shared/api.js";
 
       // ========== STATE ==========
       let allDrugs = [];
       let allCategories = [];
       let editingDrugId = null;
+      let uploadedImageFilename = null;
 
-      // ========== DOM ELEMENTS ==========
-      const modal = document.getElementById("drug-modal");
-      const modalTitle = document.getElementById("modal-title");
-      const drugForm = document.getElementById("drug-form");
-      const closeModalBtn = document.getElementById("close-modal");
-      const cancelBtn = document.getElementById("cancel-btn");
-      const addDrugBtn = document.getElementById("add-drug-btn");
-      const searchInput = document.getElementById("search-input");
+      // ========== NOTIFICATION HELPERS ==========
+      function showSuccess(message) {
+        notification.success(message);
+      }
 
-      // ========== MODAL CONTROL ==========
-      function openModal(title = "Thêm thuốc mới", drugId = null) {
-        modalTitle.textContent = title;
-        editingDrugId = drugId;
-        
-        if (drugId) {
-          // Edit mode
-          const drug = allDrugs.find(d => d.drug_id === drugId);
-          if (drug) {
-            document.getElementById("drug-code").value = drug.drug_code || "";
-            document.getElementById("drug-name").value = drug.name || "";
-            document.getElementById("drug-category").value = drug.category_id || "";
-            document.getElementById("drug-price").value = drug.price || "";
-            document.getElementById("drug-stock").value = drug.stock || "";
-            document.getElementById("drug-description").value = drug.description || "";
-            hiddenImageInput.value = drug.image || "";
-            // Show preview if image exists
-            if (drug.image) {
-              previewImg.src = drug.image;
-              imagePreview.style.display = "block";
-            }
+      function showError(message) {
+        notification.error(message);
+      }
+
+      function showInfo(message) {
+        notification.info(message);
+      }
+
+      // ========== KHỞI TẠO ==========
+      (async function init() {
+        try {
+          console.log("🚀 Đang khởi tạo trang Quản lý thuốc...");
+          
+          const user = JSON.parse(localStorage.getItem('user') || 'null');
+          if (!user || user.role !== 'admin') {
+            await notification.error('Bạn không có quyền truy cập trang này', '🔒 Từ chối truy cập');
+            window.location.href = '/Web/user/pages/login.html';
+            return;
           }
-        } else {
-          // Add mode
-          drugForm.reset();
-          imagePreview.style.display = "none";
-          previewImg.src = "";
-          hiddenImageInput.value = "";
+
+          setupEventListeners();
+          await loadCategories();
+          await loadDrugs();
+          
+          console.log("✅ Khởi tạo trang thành công!");
+        } catch (error) {
+          console.error("❌ Lỗi khởi tạo:", error);
+          showError("Lỗi khởi tạo trang: " + error.message);
         }
-        
-        modal.style.display = "flex";
+      })();
+
+      // ========== SETUP EVENT LISTENERS ==========
+      function setupEventListeners() {
+        // Sidebar toggle
+        document.getElementById("toggleSidebar").addEventListener("click", () => {
+          document.querySelector(".sidebar").classList.toggle("collapsed");
+          document.querySelector("#toggleSidebar i").classList.toggle("bx-chevron-right");
+        });
+
+        // Modal controls
+        document.getElementById("add-drug-btn").addEventListener("click", () => openModal());
+        document.getElementById("close-modal").addEventListener("click", closeModal);
+        document.getElementById("cancel-btn").addEventListener("click", closeModal);
+        document.getElementById("drug-modal").addEventListener("click", (e) => {
+          if (e.target.id === "drug-modal") closeModal();
+        });
+
+        // Search
+        document.getElementById("search-input").addEventListener("input", handleSearch);
+
+        // Form submit
+        document.getElementById("drug-form").addEventListener("submit", handleFormSubmit);
+
+        // Image upload
+        document.getElementById("drug-image-file").addEventListener("change", handleImageUpload);
+        document.getElementById("remove-image-btn").addEventListener("click", handleRemoveImage);
+
+        // Logout
+        document.getElementById("logout-link").addEventListener("click", async (e) => {
+          e.preventDefault();
+          
+          const confirmed = await notification.confirm(
+            'Bạn có chắc muốn đăng xuất khỏi hệ thống?',
+            '🚪 Xác nhận đăng xuất'
+          );
+          
+          if (confirmed) {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            showInfo('Đã đăng xuất thành công!');
+            setTimeout(() => {
+              window.location.href = '/Web/user/pages/login.html';
+            }, 1000);
+          }
+        });
       }
 
-      function closeModal() {
-        modal.style.display = "none";
-        editingDrugId = null;
-        drugForm.reset();
-      }
-
-      addDrugBtn.addEventListener("click", () => openModal());
-      closeModalBtn.addEventListener("click", closeModal);
-      cancelBtn.addEventListener("click", closeModal);
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal();
-      });
-
-      // ========== IMAGE UPLOAD HANDLING ==========
-      const imageFileInput = document.getElementById("drug-image-file");
-      const imagePreview = document.getElementById("image-preview");
-      const previewImg = document.getElementById("preview-img");
-      const removeImageBtn = document.getElementById("remove-image-btn");
-      const hiddenImageInput = document.getElementById("drug-image");
-
-      imageFileInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            const base64 = ev.target.result;
-            previewImg.src = base64;
-            imagePreview.style.display = "block";
-            hiddenImageInput.value = base64;
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      removeImageBtn.addEventListener("click", () => {
-        imageFileInput.value = "";
-        hiddenImageInput.value = "";
-        previewImg.src = "";
-        imagePreview.style.display = "none";
-      });
-
-      // ========== LOAD DATA ==========
+      // ========== LOAD CATEGORIES ==========
       async function loadCategories() {
         try {
+          console.log("🔄 Đang tải danh mục...");
           const response = await categoryAPI.getAll();
+          
           if (response.success && response.data) {
             allCategories = response.data;
-            updateCategorySelect();
+          } else if (Array.isArray(response)) {
+            allCategories = response;
+          } else {
+            console.warn("Unexpected categories response:", response);
+            allCategories = [];
           }
+          
+          console.log(`✅ Đã tải ${allCategories.length} danh mục`);
+          updateCategorySelect();
         } catch (error) {
-          console.error("Lỗi tải danh mục:", error);
+          console.error("❌ Lỗi tải danh mục:", error);
+          showError("Không thể tải danh mục: " + error.message);
         }
       }
 
@@ -290,62 +354,90 @@
         const currentValue = select.value;
         
         select.innerHTML = '<option value="">-- Chọn danh mục --</option>';
+        
         allCategories.forEach(cat => {
           const option = document.createElement("option");
-          // Use numeric category_id to match server schema
-          option.value = cat.category_id ?? "";
+          option.value = cat.category_id || "";
           option.textContent = cat.name || cat.category_name || "Không xác định";
           select.appendChild(option);
         });
         
-        select.value = currentValue;
+        if (currentValue) {
+          select.value = currentValue;
+        }
       }
 
+      // ========== LOAD DRUGS ==========
       async function loadDrugs() {
         try {
           console.log("🔄 Đang tải danh sách thuốc...");
           const response = await drugAPI.getAll();
-          console.log("📦 Response:", response);
           
           if (response.success && response.data) {
             allDrugs = response.data;
-            renderDrugs(allDrugs);
+          } else if (Array.isArray(response)) {
+            allDrugs = response;
           } else {
-            console.error("❌ Lỗi: Response không hợp lệ", response);
-            showError("Không thể tải danh sách thuốc");
+            console.warn("Unexpected drugs response:", response);
+            allDrugs = [];
           }
+          
+          console.log(`✅ Đã tải ${allDrugs.length} thuốc`);
+          renderDrugs();
         } catch (error) {
           console.error("❌ Lỗi tải thuốc:", error);
-          showError("Lỗi kết nối server: " + error.message);
+          const tbody = document.querySelector("table tbody");
+          tbody.innerHTML = `
+            <tr style="text-align: center;">
+              <td colspan="7" style="padding: 30px; color: #ef4444;">
+                <div style="font-size: 1.2rem; margin-bottom: 10px;">❌ Lỗi tải dữ liệu</div>
+                <div style="font-size: 0.9rem;">${error.message}</div>
+                <button onclick="location.reload()" style="margin-top: 15px; padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                  Thử lại
+                </button>
+              </td>
+            </tr>
+          `;
         }
       }
 
-      // ========== RENDER TABLE ==========
-      function renderDrugs(drugs = allDrugs) {
+      // ========== RENDER DRUGS ==========
+      function renderDrugs(drugsToRender = allDrugs) {
         const tbody = document.querySelector("table tbody");
         
-        if (!drugs || drugs.length === 0) {
-          tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; padding: 20px;'>Không có dữ liệu</td></tr>";
+        if (!drugsToRender || drugsToRender.length === 0) {
+          tbody.innerHTML = `
+            <tr style="text-align: center;">
+              <td colspan="7" style="padding: 30px; color: #666;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">📦</div>
+                <div style="font-size: 1.1rem;">Chưa có thuốc nào</div>
+                <div style="font-size: 0.9rem; margin-top: 5px;">Nhấn "Thêm thuốc mới" để bắt đầu</div>
+              </td>
+            </tr>
+          `;
           return;
         }
 
-        tbody.innerHTML = drugs.map(drug => {
+        tbody.innerHTML = drugsToRender.map(drug => {
           const categoryName = allCategories.find(c =>
             Number(c.category_id) === Number(drug.category_id)
           )?.name || `ID: ${drug.category_id}`;
+
+          const stockColor = drug.stock < 20 ? '#fef2f2' : drug.stock < 50 ? '#fff3cd' : '#d4edda';
+          const stockTextColor = drug.stock < 20 ? '#dc2626' : drug.stock < 50 ? '#92400e' : '#065f46';
 
           return `
             <tr>
               <td><strong>${drug.drug_code || "N/A"}</strong></td>
               <td>${drug.name || "N/A"}</td>
               <td>${categoryName}</td>
-              <td>${drug.price ? drug.price.toLocaleString() : "N/A"}₫</td>
+              <td><strong>${drug.price ? drug.price.toLocaleString('vi-VN') : "0"}₫</strong></td>
               <td>
-                <span style="background-color: ${drug.stock < 50 ? '#fff3cd' : '#d4edda'}; padding: 5px 10px; border-radius: 4px;">
+                <span style="background-color: ${stockColor}; color: ${stockTextColor}; padding: 5px 10px; border-radius: 4px; font-weight: 600;">
                   ${drug.stock || 0}
                 </span>
               </td>
-              <td>${drug.description || "-"}</td>
+              <td>${drug.description || "—"}</td>
               <td>
                 <button class="btn-edit" onclick="window.editDrug(${drug.drug_id})" title="Sửa">
                   <i class="bx bx-edit"></i>
@@ -360,116 +452,219 @@
       }
 
       // ========== SEARCH ==========
-      searchInput.addEventListener("keyup", () => {
-        const keyword = searchInput.value.toLowerCase();
+      function handleSearch(e) {
+        const keyword = e.target.value.toLowerCase().trim();
+        
+        if (!keyword) {
+          renderDrugs(allDrugs);
+          return;
+        }
+
         const filtered = allDrugs.filter(drug =>
-          drug.name.toLowerCase().includes(keyword) ||
-          drug.drug_code.toLowerCase().includes(keyword)
+          (drug.drug_code && drug.drug_code.toLowerCase().includes(keyword)) ||
+          (drug.name && drug.name.toLowerCase().includes(keyword)) ||
+          (drug.description && drug.description.toLowerCase().includes(keyword))
         );
+        
         renderDrugs(filtered);
-      });
+      }
+
+      // ========== MODAL CONTROL ==========
+      function openModal(drugId = null) {
+        const modal = document.getElementById("drug-modal");
+        const modalTitle = document.getElementById("modal-title");
+        const form = document.getElementById("drug-form");
+        
+        editingDrugId = drugId;
+        
+        if (drugId) {
+          modalTitle.textContent = "Sửa thông tin thuốc";
+          const drug = allDrugs.find(d => d.drug_id === drugId);
+          
+          if (drug) {
+            document.getElementById("drug-code").value = drug.drug_code || "";
+            document.getElementById("drug-name").value = drug.name || "";
+            document.getElementById("drug-category").value = drug.category_id || "";
+            document.getElementById("drug-price").value = drug.price || "";
+            document.getElementById("drug-stock").value = drug.stock || "";
+            document.getElementById("drug-description").value = drug.description || "";
+            document.getElementById("drug-image").value = drug.image || "";
+            
+            // Preview existing image
+            if (drug.image) {
+              const previewImg = document.getElementById("preview-img");
+              const imagePreview = document.getElementById("image-preview");
+              previewImg.src = drug.image.startsWith('http') ? drug.image : `http://localhost:5000${drug.image}`;
+              imagePreview.style.display = "block";
+              
+              const match = drug.image.match(/\/drugs\/(.+)$/);
+              if (match) {
+                uploadedImageFilename = match[1];
+              }
+            }
+          }
+        } else {
+          modalTitle.textContent = "Thêm thuốc mới";
+          form.reset();
+          document.getElementById("image-preview").style.display = "none";
+          document.getElementById("preview-img").src = "";
+          document.getElementById("drug-image").value = "";
+          uploadedImageFilename = null;
+        }
+        
+        modal.style.display = "flex";
+      }
+
+      function closeModal() {
+        const modal = document.getElementById("drug-modal");
+        const form = document.getElementById("drug-form");
+        
+        modal.style.display = "none";
+        form.reset();
+        document.getElementById("image-preview").style.display = "none";
+        editingDrugId = null;
+        uploadedImageFilename = null;
+      }
+
+      // ========== IMAGE UPLOAD ==========
+      async function handleImageUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate
+        if (file.size > 5 * 1024 * 1024) {
+          showError("File quá lớn! Vui lòng chọn ảnh dưới 5MB");
+          e.target.value = '';
+          return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+          showError("Vui lòng chọn file ảnh hợp lệ");
+          e.target.value = '';
+          return;
+        }
+
+        try {
+          // Show preview immediately
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            document.getElementById("preview-img").src = ev.target.result;
+            document.getElementById("image-preview").style.display = "block";
+          };
+          reader.readAsDataURL(file);
+
+          // Upload to server
+          console.log("⏳ Đang upload ảnh...");
+          const response = await uploadAPI.drugImage(file);
+
+          if (response.success) {
+            uploadedImageFilename = response.data.filename;
+            document.getElementById("drug-image").value = response.data.url;
+            showSuccess("Upload ảnh thành công!");
+          } else {
+            throw new Error(response.message || 'Upload failed');
+          }
+        } catch (error) {
+          console.error('❌ Upload error:', error);
+          showError("Lỗi upload: " + error.message);
+          e.target.value = '';
+          document.getElementById("image-preview").style.display = "none";
+          document.getElementById("drug-image").value = '';
+        }
+      }
+
+      async function handleRemoveImage() {
+        if (uploadedImageFilename) {
+          try {
+            await uploadAPI.deleteDrugImage(uploadedImageFilename);
+          } catch (error) {
+            console.warn('Delete image error:', error);
+          }
+        }
+
+        document.getElementById("drug-image-file").value = "";
+        document.getElementById("drug-image").value = "";
+        document.getElementById("preview-img").src = "";
+        document.getElementById("image-preview").style.display = "none";
+        uploadedImageFilename = null;
+      }
 
       // ========== FORM SUBMIT ==========
-      drugForm.addEventListener("submit", async (e) => {
+      async function handleFormSubmit(e) {
         e.preventDefault();
 
-          const formData = {
-          drug_code: document.getElementById("drug-code").value.trim(),
+        const formData = {
+          drug_code: document.getElementById("drug-code").value.trim().toUpperCase(),
           name: document.getElementById("drug-name").value.trim(),
-          category_id: parseInt(document.getElementById("drug-category").value),
-          price: parseFloat(document.getElementById("drug-price").value),
-          stock: parseInt(document.getElementById("drug-stock").value),
+          category_id: Number(document.getElementById("drug-category").value),
+          price: Number(document.getElementById("drug-price").value),
+          stock: Number(document.getElementById("drug-stock").value),
           description: document.getElementById("drug-description").value.trim(),
           image: document.getElementById("drug-image").value.trim(),
         };
 
         // Validate
-        if (!formData.drug_code || !formData.name || !formData.category_id || !formData.price || !formData.stock) {
-          showError("Vui lòng điền đầy đủ thông tin bắt buộc");
+        if (!formData.drug_code || !formData.name || !formData.category_id) {
+          showError("Vui lòng điền đầy đủ thông tin bắt buộc (Mã thuốc, Tên thuốc, Danh mục)");
           return;
         }
 
+        if (formData.price < 0 || formData.stock < 0) {
+          showError("Giá và số lượng phải lớn hơn hoặc bằng 0");
+          return;
+        }
+
+        console.log("💾 Đang lưu thuốc...", formData);
+
         try {
           let response;
+          
           if (editingDrugId) {
-            // Update
             response = await drugAPI.update(editingDrugId, formData);
-            showSuccess("✅ Cập nhật thuốc thành công");
+            showSuccess("Cập nhật thuốc thành công!");
           } else {
-            // Create
             response = await drugAPI.create(formData);
-            showSuccess("✅ Thêm thuốc thành công");
+            showSuccess("Thêm thuốc mới thành công!");
           }
 
+          console.log("Response:", response);
           closeModal();
           await loadDrugs();
         } catch (error) {
-          showError("❌ Lỗi: " + error.message);
+          console.error("❌ Lỗi lưu thuốc:", error);
+          showError("Lỗi: " + error.message);
         }
-      });
-
-      // ========== ACTIONS ==========
-      window.editDrug = (id) => {
-        openModal("Sửa thông tin thuốc", id);
-      };
-
-      window.deleteDrug = async (id) => {
-        if (confirm("Bạn chắc chắn muốn xóa thuốc này?")) {
-          try {
-            await drugAPI.delete(id);
-            showSuccess("✅ Xóa thuốc thành công");
-            await loadDrugs();
-          } catch (error) {
-            showError("❌ Lỗi khi xóa: " + error.message);
-          }
-        }
-      };
-
-      // ========== NOTIFICATIONS ==========
-      function showError(message) {
-        const msg = document.createElement("div");
-        msg.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background-color: #f44336;
-          color: white;
-          padding: 15px 20px;
-          border-radius: 6px;
-          box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-          z-index: 2000;
-          max-width: 400px;
-        `;
-        msg.textContent = message;
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 4000);
       }
 
-      function showSuccess(message) {
-        const msg = document.createElement("div");
-        msg.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background-color: #4CAF50;
-          color: white;
-          padding: 15px 20px;
-          border-radius: 6px;
-          box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-          z-index: 2000;
-          max-width: 400px;
-        `;
-        msg.textContent = message;
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 3000);
-      }
+      // ========== EXPOSE FUNCTIONS TO GLOBAL SCOPE ==========
+      // ✅ FIX: Expose editDrug và deleteDrug ra window object
+      window.editDrug = function(drugId) {
+        console.log("✏️ Chỉnh sửa thuốc ID:", drugId);
+        openModal(drugId);
+      };
 
-      // ========== INIT ==========
-      document.addEventListener("DOMContentLoaded", async () => {
-        console.log("🚀 Khởi tạo trang...");
-        await loadCategories();
-        await loadDrugs();
-      });
+      window.deleteDrug = async function(drugId) {
+        const drug = allDrugs.find(d => d.drug_id === drugId);
+        const drugName = drug ? drug.name : `ID: ${drugId}`;
+        
+        const confirmed = await notification.confirm(
+          `Bạn có chắc muốn xóa thuốc <strong>"${drugName}"</strong>?<br><br>` +
+          `<span style="color: #ef4444;">⚠️ Hành động này không thể hoàn tác!</span>`,
+          '🗑️ Xác nhận xóa'
+        );
+
+        if (!confirmed) return;
+
+        try {
+          console.log("🗑️ Đang xóa thuốc ID:", drugId);
+          await drugAPI.delete(drugId);
+          showSuccess("Xóa thuốc thành công!");
+          await loadDrugs();
+        } catch (error) {
+          console.error("❌ Lỗi xóa thuốc:", error);
+          showError("Lỗi khi xóa: " + error.message);
+        }
+      };
     </script>
   </body>
 </html>

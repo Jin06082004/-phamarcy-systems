@@ -127,37 +127,60 @@ export const payInvoice = async (req, res) => {
     }
 };
 
+// Cancel invoice - hoàn trả stock
 export const cancelInvoice = async (req, res) => {
     try {
         const { id } = req.params;
         const inv = await invoiceModel.findOne({ invoice_id: Number(id) });
-    if (!inv) return res.status(404).json({ success: false, message: "Không tìm thấy hóa đơn" });
-
-        // restore stock for items
-        for (const it of inv.items) {
-            await drugModel.findOneAndUpdate({ drug_id: Number(it.medicine_id) }, { $inc: { stock: Number(it.quantity) } });
+        
+        if (!inv) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Không tìm thấy hóa đơn" 
+            });
         }
 
-    inv.status = "cancelled";
-    await inv.save();
+        // Chỉ hoàn trả nếu hóa đơn chưa bị hủy
+        if (inv.status !== "cancelled") {
+            console.log("🔄 Hoàn trả stock cho hóa đơn bị hủy:", inv.invoice_id);
+            
+            // Hoàn trả stock cho từng item
+            for (const it of inv.items) {
+                try {
+                    const drug = await drugModel.findOne({ drug_id: Number(it.medicine_id) });
+                    if (drug) {
+                        const oldStock = drug.stock;
+                        drug.stock = Number(drug.stock) + Number(it.quantity);
+                        await drug.save();
+                        console.log(`✅ Hoàn trả ${it.quantity} ${drug.name} (${oldStock} → ${drug.stock})`);
+                    } else {
+                        console.warn(`⚠️ Không tìm thấy thuốc ID ${it.medicine_id}`);
+                    }
+                } catch (error) {
+                    console.error(`❌ Lỗi hoàn trả stock cho medicine_id ${it.medicine_id}:`, error);
+                }
+            }
+        }
 
-    res.status(200).json({ success: true, message: "Hủy hóa đơn thành công", data: inv });
+        inv.status = "cancelled";
+        await inv.save();
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Hủy hóa đơn thành công", 
+            data: inv 
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Failed to cancel invoice", error: error.message });
+        console.error("❌ Lỗi hủy hóa đơn:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Failed to cancel invoice", 
+            error: error.message 
+        });
     }
 };
 
-// Delete all invoices (dev)
-export const deleteAllInvoices = async (req, res) => {
-    try {
-        const result = await invoiceModel.deleteMany({});
-    res.status(200).json({ success: true, message: `Đã xóa ${result.deletedCount} hóa đơn`, deletedCount: result.deletedCount });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Failed to delete all invoices", error: error.message });
-    }
-};
-
-// Xóa một hóa đơn (xóa vĩnh viễn). Nếu hóa đơn chưa bị hủy, khôi phục tồn kho trước khi xóa.
+// Delete invoice - xóa vĩnh viễn
 export const deleteInvoice = async (req, res) => {
     try {
         const { id } = req.params;
@@ -168,19 +191,51 @@ export const deleteInvoice = async (req, res) => {
         } else {
             inv = await invoiceModel.findOne({ invoice_number: id });
         }
-        if (!inv) return res.status(404).json({ success: false, message: "Không tìm thấy hóa đơn" });
+        
+        if (!inv) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Không tìm thấy hóa đơn" 
+            });
+        }
 
-        // Nếu hóa đơn chưa bị hủy thì khôi phục tồn kho
+        // Nếu hóa đơn chưa bị hủy thì hoàn trả tồn kho trước khi xóa
         if (inv.status !== "cancelled") {
+            console.log("🔄 Hoàn trả stock trước khi xóa hóa đơn:", inv.invoice_id);
+            
             for (const it of inv.items) {
-                await drugModel.findOneAndUpdate({ drug_id: Number(it.medicine_id) }, { $inc: { stock: Number(it.quantity) } });
+                try {
+                    const drug = await drugModel.findOne({ drug_id: Number(it.medicine_id) });
+                    if (drug) {
+                        const oldStock = drug.stock;
+                        drug.stock = Number(drug.stock) + Number(it.quantity);
+                        await drug.save();
+                        console.log(`✅ Hoàn trả ${it.quantity} ${drug.name} (${oldStock} → ${drug.stock})`);
+                    }
+                } catch (error) {
+                    console.error(`❌ Lỗi hoàn trả stock:`, error);
+                }
             }
         }
 
-        await invoiceModel.deleteOne({ invoice_id: Number(id) });
+        // Xóa hóa đơn
+        if (/^\d+$/.test(id)) {
+            await invoiceModel.findOneAndDelete({ invoice_id: Number(id) });
+        } else {
+            await invoiceModel.findOneAndDelete({ invoice_number: id });
+        }
 
-        res.status(200).json({ success: true, message: "Xóa hóa đơn thành công", data: inv });
+        res.status(200).json({ 
+            success: true, 
+            message: "Xóa hóa đơn thành công", 
+            data: inv
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Xóa hóa đơn thất bại", error: error.message });
+        console.error("❌ Lỗi xóa hóa đơn:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Xóa hóa đơn thất bại", 
+            error: error.message 
+        });
     }
 };

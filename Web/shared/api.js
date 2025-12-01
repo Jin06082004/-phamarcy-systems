@@ -1,6 +1,9 @@
+// Tự động detect API URL
 const API_BASE_URL = "http://localhost:5000";
 
-// Call API chuẩn
+console.log('🌐 API Base URL:', API_BASE_URL);
+
+// Call API chuẩn với error handling tốt hơn
 export const apiCall = async (endpoint, method = "GET", data = null) => {
     const token = (typeof window !== 'undefined' && localStorage.getItem('token'))
         ? localStorage.getItem('token')
@@ -37,6 +40,21 @@ export const apiCall = async (endpoint, method = "GET", data = null) => {
 
         console.log(`📥 Status: ${response.status}`, parsed);
 
+        // ✅ Tự động clear token cũ khi gặp lỗi 403 (Forbidden)
+        if (response.status === 403 || response.status === 401) {
+            console.warn('⚠️ Token không hợp lệ, đang xóa...');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            // Chỉ redirect nếu không phải trang login
+            if (!window.location.pathname.includes('login')) {
+                alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+                setTimeout(() => {
+                    window.location.href = '/Web/user/pages/login.html';
+                }, 1000);
+            }
+        }
+
         if (!response.ok) {
             const err = new Error(parsed?.message || `HTTP ${response.status}`);
             err.status = response.status;
@@ -44,16 +62,38 @@ export const apiCall = async (endpoint, method = "GET", data = null) => {
             throw err;
         }
 
-        // Return the parsed payload directly so callers receive the actual
-        // server response (array or object). Previously we wrapped the
-        // parsed value in { success, data } which caused nested data
-        // structures and made consumers mis-handle the result.
         return parsed;
 
     } catch (err) {
         console.error("❌ API Error:", err);
+        if (err.message.includes('Failed to fetch')) {
+            throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra server đang chạy tại http://localhost:5000');
+        }
         throw err;
     }
+};
+
+// ========== USER API ==========
+export const userAPI = {
+    register: (payload) => apiCall("/users/register", "POST", payload),
+    login: (payload) => apiCall("/users/login", "POST", payload),
+    activateAdmin: (payload) => apiCall("/users/activate-admin", "POST", payload),
+    getAll: () => apiCall("/users"), // ✅ Cần token
+    getById: (id) => apiCall(`/users/${id}`), // ✅ Cần token
+    update: (id, data) => apiCall(`/users/${id}`, "PUT", data),
+    delete: (id) => apiCall(`/users/${id}`, "DELETE"),
+};
+
+// ========== ORDER API ==========
+export const orderAPI = {
+    getAll: () => apiCall("/orders"), // ✅ Cần token
+    getById: (id) => apiCall(`/orders/${id}`),
+    getMyOrders: () => apiCall("/orders/my-orders"), // ✅ Cần token
+    getTopSellers: (period) => apiCall(`/orders/top/${period}`),
+    create: (data) => apiCall("/orders", "POST", data),
+    update: (id, data) => apiCall(`/orders/${id}`, "PUT", data),
+    updateStatus: (id, status) => apiCall(`/orders/${id}/status`, "PUT", { status }),
+    delete: (id) => apiCall(`/orders/${id}`, "DELETE"),
 };
 
 // =============================
@@ -62,11 +102,12 @@ export const apiCall = async (endpoint, method = "GET", data = null) => {
 export const drugAPI = {
     getAll: () => apiCall("/drugs"),
     getById: (id) => apiCall(`/drugs/${id}`),
-    search: (name) => apiCall(`/drugs/search?name=${encodeURIComponent(name)}`),
-    create: (data) => apiCall("/drugs/add", "POST", data),
+    create: (data) => apiCall("/drugs", "POST", data),
     update: (id, data) => apiCall(`/drugs/${id}`, "PUT", data),
     delete: (id) => apiCall(`/drugs/${id}`, "DELETE"),
+    search: (q) => apiCall(`/drugs/search?q=${encodeURIComponent(q)}`),
     getByCategory: (categoryId) => apiCall(`/drugs/category/${categoryId}`),
+    getLowStock: (threshold = 10) => apiCall(`/drugs/low-stock?threshold=${threshold}`),
 };
 
 // =============================
@@ -75,36 +116,9 @@ export const drugAPI = {
 export const categoryAPI = {
     getAll: () => apiCall("/categories"),
     getById: (id) => apiCall(`/categories/${id}`),
-    create: (data) => apiCall("/categories/add", "POST", data),
+    create: (data) => apiCall("/categories", "POST", data),
     update: (id, data) => apiCall(`/categories/${id}`, "PUT", data),
     delete: (id) => apiCall(`/categories/${id}`, "DELETE"),
-};
-
-// =============================
-//        USER API
-// =============================
-export const userAPI = {
-    register: (payload) => apiCall("/users/register", "POST", payload),
-    login: (payload) => apiCall("/users/login", "POST", payload),
-    activateAdmin: (payload) => apiCall("/users/activate-admin", "POST", payload),
-    getAll: () => apiCall("/users"),
-    getById: (id) => apiCall(`/users/${id}`),
-    update: (id, payload) => apiCall(`/users/${id}`, "PUT", payload),
-    delete: (id) => apiCall(`/users/${id}`, "DELETE"),
-};
-
-// =============================
-//        ORDER API
-// =============================
-export const orderAPI = {
-    getAll: () => apiCall("/orders"),
-    getMyOrders: () => apiCall("/orders/my-orders"),
-    getById: (id) => apiCall(`/orders/${id}`),
-    create: (payload) => apiCall("/orders", "POST", payload),
-    update: (id, payload) => apiCall(`/orders/${id}`, "PUT", payload),
-    updateStatus: (id, status) => apiCall(`/orders/${id}/status`, "PUT", { status }),
-    delete: (id) => apiCall(`/orders/${id}`, "DELETE"),
-    getTopSellers: (period) => apiCall(`/orders/top/${period}`),
 };
 
 // =============================
@@ -114,17 +128,53 @@ export const invoiceAPI = {
     getAll: () => apiCall("/invoices"),
     getById: (id) => apiCall(`/invoices/${id}`),
     create: (data) => apiCall("/invoices", "POST", data),
-    pay: (id, amount) => apiCall(`/invoices/${id}/pay`, "POST", { amount }),
+    update: (id, data) => apiCall(`/invoices/${id}`, "PUT", data),
     delete: (id) => apiCall(`/invoices/${id}`, "DELETE"),
+    cancel: (id) => apiCall(`/invoices/${id}/cancel`, "PUT"),
 };
 
 // =============================
 //        DISCOUNT API
 // =============================
 export const discountAPI = {
-  getAll: () => apiCall("/discounts"),
-  getById: (id) => apiCall(`/discounts/${id}`),
-  create: (payload) => apiCall("/discounts", "POST", payload),
-  update: (id, payload) => apiCall(`/discounts/${id}`, "PUT", payload),
-  delete: (id) => apiCall(`/discounts/${id}`, "DELETE"),
+    getAll: () => apiCall("/discounts"),
+    getById: (id) => apiCall(`/discounts/${id}`),
+    validateCode: (code) => apiCall(`/discounts/validate/${code}`),
+    create: (data) => apiCall("/discounts", "POST", data),
+    update: (id, data) => apiCall(`/discounts/${id}`, "PUT", data),
+    delete: (id) => apiCall(`/discounts/${id}`, "DELETE"),
+};
+
+// =============================
+//        UPLOAD API
+// =============================
+export const uploadAPI = {
+    drugImage: async (file) => {
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const token = localStorage.getItem("token");
+        const headers = {};
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const response = await fetch(`${API_BASE_URL}/upload/drug-image`, {
+            method: "POST",
+            headers,
+            body: formData,
+        });
+
+        return response.json();
+    },
+    deleteDrugImage: async (filename) => {
+        const token = localStorage.getItem("token");
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
+        const response = await fetch(`${API_BASE_URL}/upload/drug-image/${filename}`, {
+            method: "DELETE",
+            headers,
+        });
+
+        return response.json();
+    },
 };

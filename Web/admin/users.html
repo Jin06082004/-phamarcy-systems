@@ -67,62 +67,166 @@
 
     <!-- ========== MODAL ADD/EDIT USER ========== -->
     <div id="user-modal" class="modal" style="display:none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="user-modal-title">Thêm người dùng mới</h2>
-          <button class="modal-close" id="user-close">&times;</button>
+      <div class="modal-content" style="max-width: 700px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; border: none;">
+          <h2 id="user-modal-title" style="color: white; font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px; margin: 0;">
+            <i class='bx bx-user-plus' style="font-size: 28px;"></i>
+            Thêm người dùng mới
+          </h2>
+          <button class="modal-close" id="user-close" style="background: rgba(255,255,255,0.2); color: white; border: none; font-size: 28px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">&times;</button>
         </div>
-        <form id="user-form">
-          <div class="form-group">
-            <label>Tên đăng nhập:</label>
-            <input type="text" id="user-username" required placeholder="VD: nguyenvana" />
+        
+        <form id="user-form" style="padding: 32px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div class="form-group" style="margin: 0;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+                <i class='bx bx-user' style="font-size: 20px; color: #06b6d4;"></i>
+                Tên đăng nhập
+              </label>
+              <input 
+                type="text" 
+                id="user-username" 
+                required 
+                placeholder="VD: nguyenvana" 
+                style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box;"
+                onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+              />
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+                <i class='bx bx-lock-alt' style="font-size: 20px; color: #06b6d4;"></i>
+                Mật khẩu
+              </label>
+              <input 
+                type="password" 
+                id="user-password" 
+                placeholder="Để trống nếu không muốn đổi" 
+                style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box;"
+                onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+              />
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Mật khẩu:</label>
-            <input type="password" id="user-password" placeholder="Để trống nếu không muốn đổi" />
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div class="form-group" style="margin: 0;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+                <i class='bx bx-id-card' style="font-size: 20px; color: #06b6d4;"></i>
+                Họ và tên
+              </label>
+              <input 
+                type="text" 
+                id="user-fullname" 
+                placeholder="VD: Nguyễn Văn A" 
+                style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box;"
+                onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+              />
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+                <i class='bx bx-envelope' style="font-size: 20px; color: #06b6d4;"></i>
+                Email
+              </label>
+              <input 
+                type="email" 
+                id="user-email" 
+                placeholder="VD: vana@gmail.com" 
+                style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box;"
+                onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+              />
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Họ và tên:</label>
-            <input type="text" id="user-fullname" placeholder="VD: Nguyễn Văn A" />
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+              <i class='bx bx-phone' style="font-size: 20px; color: #06b6d4;"></i>
+              Số điện thoại
+            </label>
+            <input 
+              type="tel" 
+              id="user-phone" 
+              placeholder="VD: 0912345678" 
+              style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box;"
+              onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+              onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+            />
           </div>
 
-          <div class="form-group">
-            <label>Email:</label>
-            <input type="email" id="user-email" placeholder="VD: vana@gmail.com" />
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+              <i class='bx bx-map' style="font-size: 20px; color: #06b6d4;"></i>
+              Địa chỉ
+            </label>
+            <textarea 
+              id="user-address" 
+              placeholder="Địa chỉ đầy đủ..." 
+              rows="3"
+              style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; resize: vertical; font-family: inherit; transition: all 0.3s ease; box-sizing: border-box;"
+              onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+              onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+            ></textarea>
           </div>
 
-          <div class="form-group">
-            <label>Số điện thoại:</label>
-            <input type="tel" id="user-phone" placeholder="VD: 0912345678" />
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div class="form-group" style="margin: 0;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+                <i class='bx bx-shield' style="font-size: 20px; color: #06b6d4;"></i>
+                Vai trò
+              </label>
+              <select 
+                id="user-role"
+                style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box; cursor: pointer;"
+                onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+              >
+                <option value="user">Người dùng (User)</option>
+                <option value="pharmacist">Dược sĩ (Pharmacist)</option>
+                <option value="admin">Quản trị viên (Admin)</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+              <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+                <i class='bx bx-check-circle' style="font-size: 20px; color: #06b6d4;"></i>
+                Trạng thái
+              </label>
+              <select 
+                id="user-status"
+                style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box; cursor: pointer;"
+                onfocus="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)'"
+                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+              >
+                <option value="false">Chưa kích hoạt</option>
+                <option value="true">Đã kích hoạt</option>
+              </select>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Địa chỉ:</label>
-            <textarea id="user-address" placeholder="Địa chỉ đầy đủ..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Vai trò:</label>
-            <select id="user-role">
-              <option value="user">Người dùng (User)</option>
-              <option value="pharmacist">Dược sĩ (Pharmacist)</option>
-              <option value="admin">Quản trị viên (Admin)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Trạng thái:</label>
-            <select id="user-status">
-              <option value="false">Chưa kích hoạt</option>
-              <option value="true">Đã kích hoạt</option>
-            </select>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn-green">Lưu</button>
-            <button type="button" class="btn-gray" id="user-cancel">Hủy</button>
+          <div class="form-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
+            <button 
+              type="button" 
+              class="btn-gray" 
+              id="user-cancel"
+              style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s ease; border: 2px solid #e5e7eb; background: white; color: #6b7280;"
+              onmouseover="this.style.background='#f3f4f6'"
+              onmouseout="this.style.background='white'"
+            >
+              Hủy
+            </button>
+            <button 
+              type="submit" 
+              class="btn-green"
+              style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s ease; border: none; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; box-shadow: 0 4px 12px rgba(6,182,212,0.3);"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(6,182,212,0.4)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(6,182,212,0.3)'"
+            >
+              <i class='bx bx-save' style="margin-right: 8px;"></i>Lưu
+            </button>
           </div>
         </form>
       </div>
@@ -200,21 +304,65 @@
       async function loadUsers() {
         try {
           console.log("🔄 Đang tải danh sách người dùng...");
+          
+          const token = localStorage.getItem('token');
+          const user = JSON.parse(localStorage.getItem('user') || 'null');
+          
+          console.log('📋 Token:', token ? `${token.substring(0, 20)}...` : 'KHÔNG CÓ');
+          console.log('👤 User:', user);
+          
+          if (!token || !user || user.role !== 'admin') {
+            console.warn('⚠️ Không có token hoặc không phải admin');
+            showError('Vui lòng đăng nhập lại với tài khoản admin');
+            setTimeout(() => {
+              localStorage.clear();
+              window.location.href = '/Web/user/pages/login.html';
+            }, 2000);
+            return;
+          }
+          
           const res = await userAPI.getAll();
           console.log("📦 Response:", res);
 
           if (res.success && res.data) {
             users = res.data;
-            renderTable(users);
           } else if (Array.isArray(res)) {
             users = res;
-            renderTable(users);
           } else {
+            console.error('Unexpected response format:', res);
             showError("Không thể tải danh sách người dùng");
+            return;
           }
+
+          renderTable(users);
+          console.log(`✅ Đã load ${users.length} người dùng`);
+          
         } catch (error) {
           console.error("❌ Lỗi tải người dùng:", error);
-          showError("Lỗi kết nối server: " + error.message);
+          
+          // Auto clear invalid token
+          if (error.status === 401 || error.status === 403) {
+            showError("Token không hợp lệ. Đang đăng xuất...");
+            setTimeout(() => {
+              localStorage.clear();
+              window.location.href = '/Web/user/pages/login.html';
+            }, 2000);
+          } else {
+            showError("Lỗi kết nối server: " + error.message);
+            // Show retry button
+            const tbody = document.querySelector("table tbody");
+            tbody.innerHTML = `
+              <tr style="text-align: center;">
+                <td colspan="8" style="padding: 40px;">
+                  <div style="font-size: 1.2rem; margin-bottom: 10px; color: #ef4444;">❌ Lỗi tải dữ liệu</div>
+                  <div style="font-size: 0.9rem; margin-bottom: 20px; color: #666;">${error.message}</div>
+                  <button onclick="location.reload()" style="padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;">
+                    🔄 Thử lại
+                  </button>
+                </td>
+              </tr>
+            `;
+          }
         }
       }
 
@@ -263,26 +411,40 @@
         renderTable(filtered);
       });
 
+      // Notification helpers
+      function showSuccess(message) {
+        notification.success(message);
+      }
+
+      function showError(message) {
+        notification.error(message);
+      }
+
       // ========== FORM SUBMIT ==========
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        
+        const username = document.getElementById("user-username").value.trim();
+        const password = document.getElementById("user-password").value.trim();
+        const full_name = document.getElementById("user-fullname").value.trim();
+        const email = document.getElementById("user-email").value.trim();
+        const phone = document.getElementById("user-phone").value.trim();
+        const address = document.getElementById("user-address").value.trim();
+        const role = document.getElementById("user-role").value;
+        const is_active = document.getElementById("user-status").value === "true";
 
         const payload = {
-          username: document.getElementById("user-username").value.trim(),
-          full_name: document.getElementById("user-fullname").value.trim(),
-          email: document.getElementById("user-email").value.trim(),
-          phone: document.getElementById("user-phone").value.trim(),
-          address: document.getElementById("user-address").value.trim(),
-          role: document.getElementById("user-role").value,
-          is_active: document.getElementById("user-status").value === "true",
+          username,
+          full_name,
+          email,
+          phone,
+          address,
+          role,
+          is_active
         };
 
-        const password = document.getElementById("user-password").value.trim();
-        if (password) {
-          payload.password = password;
-        }
+        if (password) payload.password = password;
 
-        // Validate
         if (!payload.username || !payload.full_name) {
           showError("Vui lòng điền đầy đủ thông tin bắt buộc");
           return;
@@ -291,17 +453,15 @@
         try {
           let res;
           if (editingUserId) {
-            // Update
             res = await userAPI.update(editingUserId, payload);
-            showSuccess("✅ Cập nhật người dùng thành công");
+            showSuccess("Cập nhật người dùng thành công");
           } else {
-            // Create (need password for new user)
             if (!password) {
               showError("Mật khẩu là bắt buộc khi tạo người dùng mới");
               return;
             }
             res = await userAPI.register(payload);
-            showSuccess("✅ Thêm người dùng thành công");
+            showSuccess("Thêm người dùng thành công");
           }
 
           console.log("Response:", res);
@@ -309,7 +469,7 @@
           await loadUsers();
         } catch (error) {
           console.error("Error:", error);
-          showError("❌ Lỗi: " + error.message);
+          showError("Lỗi: " + error.message);
         }
       });
 
@@ -318,70 +478,111 @@
         openModal("Sửa thông tin người dùng", id);
       };
 
+      // ========== DELETE USER ==========
       window.deleteUser = async (id) => {
-        if (confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
-          try {
-            const res = await userAPI.delete(id);
-            showSuccess("✅ Xóa người dùng thành công");
-            await loadUsers();
-          } catch (error) {
-            showError("❌ Lỗi khi xóa: " + error.message);
-          }
+        const user = users.find(u => u.user_id === id);
+        if (!user) return;
+
+        const confirmed = await notification.confirm(
+          `
+          <div style="text-align: left;">
+            <div style="background: #fef2f2; padding: 16px; border-radius: 12px; border-left: 4px solid #ef4444; margin-bottom: 20px;">
+              <div style="font-weight: 700; color: #dc2626; margin-bottom: 8px;">Xóa người dùng</div>
+              <div style="font-size: 0.875rem; color: #991b1b;">⚠️ Hành động này không thể hoàn tác!</div>
+            </div>
+            
+            <div style="background: #f9fafb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+              <div style="margin-bottom: 8px;"><strong>Tên đăng nhập:</strong> ${user.username}</div>
+              <div style="margin-bottom: 8px;"><strong>Họ tên:</strong> ${user.full_name || 'N/A'}</div>
+              <div style="margin-bottom: 8px;"><strong>Email:</strong> ${user.email || 'N/A'}</div>
+              <div><strong>Vai trò:</strong> <span style="background: ${user.role === 'admin' ? '#ffd700' : '#e3f2fd'}; padding: 4px 12px; border-radius: 4px; font-weight: 600;">${user.role === 'admin' ? 'Admin' : user.role === 'pharmacist' ? 'Dược sĩ' : 'Người dùng'}</span></div>
+            </div>
+            
+            <div style="font-weight: 600; color: #1f2937;">Bạn có chắc muốn xóa người dùng này?</div>
+          </div>
+          `,
+          '🗑️ Xác nhận xóa'
+        );
+
+        if (!confirmed) return;
+
+        try {
+          const res = await userAPI.delete(id);
+          showSuccess("Xóa người dùng thành công");
+          await loadUsers();
+        } catch (error) {
+          showError("Lỗi khi xóa: " + error.message);
         }
       };
 
-      // ========== NOTIFICATIONS ==========
-      function showError(message) {
-        const msg = document.createElement("div");
-        msg.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: #f44336;
-          color: white;
-          padding: 15px 20px;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-          z-index: 9999;
-          animation: slideIn 0.3s ease;
-        `;
-        msg.textContent = message;
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 3000);
-      }
-
-      function showSuccess(message) {
-        const msg = document.createElement("div");
-        msg.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          background: #4CAF50;
-          color: white;
-          padding: 15px 20px;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-          z-index: 9999;
-          animation: slideIn 0.3s ease;
-        `;
-        msg.textContent = message;
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 3000);
-      }
-
-      // ========== INIT ==========
-      document.addEventListener("DOMContentLoaded", loadUsers);
-
       // ========== LOGOUT ==========
-      document.getElementById("logout-link").addEventListener("click", (e) => {
+      document.getElementById("logout-link").addEventListener("click", async (e) => {
         e.preventDefault();
-        if (confirm("Bạn có chắc muốn đăng xuất?")) {
+        
+        const confirmed = await notification.confirm(
+          'Bạn có chắc muốn đăng xuất khỏi hệ thống?',
+          '🚪 Xác nhận đăng xuất'
+        );
+        
+        if (confirmed) {
           localStorage.removeItem("user");
-          window.location.href = "/Web/user/pages/login.html";
+          localStorage.removeItem("token");
+          notification.info('Đã đăng xuất thành công!');
+          setTimeout(() => {
+            window.location.href = "/Web/user/pages/login.html";
+          }, 1000);
         }
       });
+
+      // ========== INITIALIZATION ==========
+      (async function init() {
+        try {
+          console.log("🚀 Khởi tạo trang Quản lý người dùng...");
+          
+          // Check authentication
+          const token = localStorage.getItem('token');
+          const user = JSON.parse(localStorage.getItem('user') || 'null');
+          
+          if (!token || !user) {
+            console.warn('⚠️ Chưa đăng nhập');
+            alert('Vui lòng đăng nhập để tiếp tục');
+            window.location.href = '/Web/user/pages/login.html';
+            return;
+          }
+          
+          if (user.role !== 'admin') {
+            console.warn('⚠️ Không phải admin');
+            alert('Bạn không có quyền truy cập trang này');
+            window.location.href = '/Web/user/index.html';
+            return;
+          }
+          
+          console.log('✅ User authenticated:', user.username);
+          
+          // Load data
+          await loadUsers();
+          
+          console.log("✅ Khởi tạo thành công!");
+          
+        } catch (error) {
+          console.error("❌ Lỗi khởi tạo:", error);
+          const tbody = document.querySelector("table tbody");
+          tbody.innerHTML = `
+            <tr style="text-align: center;">
+              <td colspan="8" style="padding: 40px;">
+                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #ef4444;">❌ Lỗi khởi tạo trang</div>
+                <div style="font-size: 0.9rem; margin-bottom: 20px; color: #666;">${error.message}</div>
+                <button onclick="localStorage.clear(); location.reload();" style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;">
+                  🔄 Đăng nhập lại
+                </button>
+              </td>
+            </tr>
+          `;
+        }
+      })();
     </script>
 
+    <script src="../shared/notification.js"></script>
     <style>
       @keyframes slideIn {
         from {

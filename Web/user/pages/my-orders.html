@@ -525,19 +525,62 @@
         });
       });
 
-      // Cancel order
+      // Cancel order - với thông báo hoàn trả stock
       window.cancelOrder = async (orderId) => {
-        if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
+        const order = allOrders.find(o => o.order_id === orderId);
+        if (!order) return;
+
+        // Hiển thị thông tin đơn hàng sẽ bị hủy
+        const itemsList = order.order_items.map(item => 
+          `• ${item.drug_name} x${item.quantity}`
+        ).join('\n');
+
+        const confirmMessage = `Bạn có chắc muốn hủy đơn hàng này?\n\n` +
+          `Mã đơn: ORD-${orderId}\n` +
+          `Tổng tiền: ${order.total_amount.toLocaleString()}₫\n\n` +
+          `Sản phẩm:\n${itemsList}\n\n` +
+          `✅ Số lượng thuốc sẽ được hoàn trả vào kho`;
+
+        if (!confirm(confirmMessage)) return;
 
         try {
-          await orderAPI.updateStatus(orderId, 'Cancelled');
-          alert('✅ Đã hủy đơn hàng thành công');
-          loadOrders();
+          const response = await orderAPI.updateStatus(orderId, 'Cancelled');
+          
+          // Hiển thị thông báo thành công
+          showNotification('success', '✅ Đã hủy đơn hàng thành công! Số lượng thuốc đã được hoàn trả.');
+          
+          // Reload orders
+          await loadOrders();
         } catch (error) {
           console.error('Cancel order error:', error);
-          alert('❌ Không thể hủy đơn hàng: ' + (error.message || 'Lỗi không xác định'));
+          showNotification('error', '❌ Không thể hủy đơn hàng: ' + (error.message || 'Lỗi không xác định'));
         }
       };
+
+      // Helper function để hiển thị notification
+      function showNotification(type, message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 16px 24px;
+          background: ${type === 'success' ? '#10b981' : '#ef4444'};
+          color: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 9999;
+          animation: slideIn 0.3s ease;
+          max-width: 400px;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.style.animation = 'slideOut 0.3s ease';
+          setTimeout(() => notification.remove(), 300);
+        }, 5000);
+      }
 
       // View order detail
       window.viewOrderDetail = (orderId) => {

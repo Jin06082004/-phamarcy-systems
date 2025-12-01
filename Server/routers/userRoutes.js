@@ -1,31 +1,20 @@
 import { Router } from "express";
-import {
-    registerUser,
-    activateAdmin,
-    loginUser,
-    getAllUsers,
-    getUserById,
-    updateUser,
-    deleteUser,
-} from "../controllers/userController.js";
-import { authenticate, authorizeRoles } from "../middleware/authMiddleware.js";
+import * as userController from "../controllers/userController.js";
+import { authenticateToken, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-// Register (create) user
-router.post("/register", registerUser);
+// Public routes
+router.post("/register", userController.register);
+router.post("/login", userController.login);
+router.post("/activate-admin", userController.activateAdmin);
 
-// Activate admin (requires key)
-router.post("/activate-admin", activateAdmin);
+// Protected routes (cần authentication + admin)
+router.use(authenticateToken); // ✅ Apply middleware
 
-// Login
-router.post("/login", loginUser);
-
-// CRUD
-// Protect sensitive user routes: list & delete require admin
-router.get("/", authenticate, authorizeRoles('admin'), getAllUsers);
-router.get("/:id", authenticate, getUserById);
-router.put("/:id", authenticate, updateUser);
-router.delete("/:id", authenticate, authorizeRoles('admin'), deleteUser);
+router.get("/", isAdmin, userController.getAllUsers);
+router.get("/:id", userController.getUserById);
+router.put("/:id", userController.updateUser);
+router.delete("/:id", isAdmin, userController.deleteUser);
 
 export default router;

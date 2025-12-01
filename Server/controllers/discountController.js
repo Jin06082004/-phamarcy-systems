@@ -73,3 +73,81 @@ export const deleteDiscount = async (req, res) => {
     res.status(500).json({ message: "Lỗi khi xóa discount", error: error.message });
   }
 };
+
+// Validate mã giảm giá theo code
+export const validateDiscountCode = async (req, res) => {
+  try {
+    const { code } = req.params;
+    
+    // Tìm discount theo code (case-insensitive)
+    const discount = await Discount.findOne({ code: code.toUpperCase() });
+    
+    if (!discount) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Mã giảm giá không tồn tại" 
+      });
+    }
+
+    // Kiểm tra trạng thái active
+    if (!discount.is_active) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Mã giảm giá đã bị vô hiệu hóa" 
+      });
+    }
+
+    // Kiểm tra ngày bắt đầu
+    const now = new Date();
+    const startDate = new Date(discount.start_date);
+    const endDate = new Date(discount.end_date);
+    
+    if (now < startDate) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Mã giảm giá chưa có hiệu lực" 
+      });
+    }
+
+    // Kiểm tra ngày kết thúc
+    if (now > endDate) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Mã giảm giá đã hết hạn" 
+      });
+    }
+
+    // Kiểm tra số lượt sử dụng
+    if (discount.usage_limit && discount.used_count >= discount.usage_limit) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Mã giảm giá đã hết lượt sử dụng" 
+      });
+    }
+
+    // Mã giảm giá hợp lệ
+    return res.status(200).json({ 
+      success: true, 
+      message: "Mã giảm giá hợp lệ",
+      data: {
+        _id: discount._id,
+        code: discount.code,
+        description: discount.description,
+        percentage: discount.percentage,
+        start_date: discount.start_date,
+        end_date: discount.end_date,
+        usage_limit: discount.usage_limit,
+        used_count: discount.used_count,
+        is_active: discount.is_active
+      }
+    });
+
+  } catch (error) {
+    console.error("❌ Lỗi validate discount:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Lỗi khi kiểm tra mã giảm giá", 
+      error: error.message 
+    });
+  }
+};

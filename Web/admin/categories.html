@@ -144,23 +144,67 @@
 
     <!-- ========== MODAL ADD/EDIT CATEGORY ========== -->
     <div id="category-modal" class="modal" style="display:none;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="category-modal-title">Thêm danh mục</h2>
-          <button class="modal-close" id="category-close">&times;</button>
+      <div class="modal-content" style="max-width: 600px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; border: none;">
+          <h2 id="category-modal-title" style="color: white; font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px; margin: 0;">
+            <i class='bx bx-category' style="font-size: 28px;"></i>
+            Thêm danh mục
+          </h2>
+          <button class="modal-close" id="category-close" style="background: rgba(255,255,255,0.2); color: white; border: none; font-size: 28px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">&times;</button>
         </div>
-        <form id="category-form">
-          <div class="form-group">
-            <label>Tên danh mục:</label>
-            <input type="text" id="category-name" required placeholder="VD: Kháng sinh" />
+        
+        <form id="category-form" style="padding: 32px;">
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+              <i class='bx bx-tag' style="font-size: 20px; color: #8b5cf6;"></i>
+              Tên danh mục
+            </label>
+            <input 
+              type="text" 
+              id="category-name" 
+              required 
+              placeholder="VD: Kháng sinh" 
+              style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; transition: all 0.3s ease; box-sizing: border-box;"
+              onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)'"
+              onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+            />
           </div>
-          <div class="form-group">
-            <label>Mô tả:</label>
-            <textarea id="category-description" placeholder="Mô tả danh mục..."></textarea>
+
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151; margin-bottom: 10px; font-size: 14px;">
+              <i class='bx bx-note' style="font-size: 20px; color: #8b5cf6;"></i>
+              Mô tả
+            </label>
+            <textarea 
+              id="category-description" 
+              placeholder="Mô tả chi tiết về danh mục..." 
+              rows="4"
+              style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 15px; resize: vertical; font-family: inherit; transition: all 0.3s ease; box-sizing: border-box;"
+              onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.1)'"
+              onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+            ></textarea>
           </div>
-          <div class="form-actions">
-            <button type="submit" class="btn-green">Lưu</button>
-            <button type="button" class="btn-gray" id="category-cancel">Hủy</button>
+
+          <div class="form-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
+            <button 
+              type="button" 
+              class="btn-gray" 
+              id="category-cancel"
+              style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s ease; border: 2px solid #e5e7eb; background: white; color: #6b7280;"
+              onmouseover="this.style.background='#f3f4f6'"
+              onmouseout="this.style.background='white'"
+            >
+              Hủy
+            </button>
+            <button 
+              type="submit" 
+              class="btn-green"
+              style="padding: 12px 28px; border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s ease; border: none; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.3);"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(139,92,246,0.4)'"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(139,92,246,0.3)'"
+            >
+              <i class='bx bx-save' style="margin-right: 8px;"></i>Lưu
+            </button>
           </div>
         </form>
       </div>
@@ -268,28 +312,23 @@
         if (cat) openModal('Sửa danh mục', cat);
       };
 
-      window.deleteCategory = async (id) => {
-        if (!confirm('Bạn có chắc muốn xóa danh mục này?')) return;
-        try {
-          const res = await categoryAPI.delete(id);
-          if (res.success) {
-            alert('Xóa thành công');
-            await loadCategories();
-          } else {
-            alert('Xóa thất bại: ' + (res.message || ''));
-          }
-        } catch (err) {
-          console.error(err);
-          alert('Lỗi kết nối');
-        }
-      };
+      // Notification helpers
+      function showSuccess(message) {
+        notification.success(message);
+      }
 
+      function showError(message) {
+        notification.error(message);
+      }
+
+      // ========== FORM SUBMIT ==========
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const payload = {
           name: document.getElementById('category-name').value.trim(),
           description: document.getElementById('category-description').value.trim(),
         };
+        
         try {
           let res;
           if (editingCategoryId) {
@@ -297,20 +336,81 @@
           } else {
             res = await categoryAPI.create(payload);
           }
+          
           if (res.success) {
             closeModal();
             await loadCategories();
-            alert('Lưu thành công');
+            showSuccess(editingCategoryId ? 'Cập nhật danh mục thành công' : 'Thêm danh mục thành công');
           } else {
-            alert('Lỗi: ' + (res.message || ''));
+            showError('Lỗi: ' + (res.message || ''));
           }
         } catch (err) {
           console.error(err);
-          alert('Lỗi kết nối');
+          showError('Lỗi kết nối');
+        }
+      });
+
+      // ========== DELETE CATEGORY ==========
+      window.deleteCategory = async (id) => {
+        const category = categories.find(c => Number(c.category_id) === Number(id));
+        if (!category) return;
+
+        const confirmed = await notification.confirm(
+          `
+          <div style="text-align: left;">
+            <div style="background: #fef2f2; padding: 16px; border-radius: 12px; border-left: 4px solid #ef4444; margin-bottom: 20px;">
+              <div style="font-weight: 700; color: #dc2626; margin-bottom: 8px;">Xóa danh mục</div>
+              <div style="font-size: 0.875rem; color: #991b1b;">⚠️ Tất cả thuốc trong danh mục này sẽ bị ảnh hưởng!</div>
+            </div>
+            
+            <div style="background: #f9fafb; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+              <div style="margin-bottom: 8px;"><strong>Tên danh mục:</strong> ${category.name}</div>
+              <div><strong>Mô tả:</strong> ${category.description || 'Không có'}</div>
+            </div>
+            
+            <div style="font-weight: 600; color: #1f2937;">Bạn có chắc muốn xóa danh mục này?</div>
+          </div>
+          `,
+          '🗑️ Xác nhận xóa'
+        );
+
+        if (!confirmed) return;
+
+        try {
+          const res = await categoryAPI.delete(id);
+          if (res.success) {
+            showSuccess('Xóa danh mục thành công');
+            await loadCategories();
+          } else {
+            showError('Xóa thất bại: ' + (res.message || ''));
+          }
+        } catch (err) {
+          console.error(err);
+          showError('Lỗi kết nối');
+        }
+      };
+
+      // ========== LOGOUT ==========
+      document.querySelector('.logout a').addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const confirmed = await notification.confirm(
+          'Bạn có chắc muốn đăng xuất khỏi hệ thống?',
+          '🚪 Xác nhận đăng xuất'
+        );
+        
+        if (confirmed) {
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          notification.info('Đã đăng xuất thành công!');
+          setTimeout(() => {
+            window.location.href = '/Web/user/pages/login.html';
+          }, 1000);
         }
       });
 
       document.addEventListener('DOMContentLoaded', loadCategories);
     </script>
+    <script src="../shared/notification.js"></script>
   </body>
 </html>

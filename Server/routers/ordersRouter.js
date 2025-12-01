@@ -1,25 +1,21 @@
-import express from "express";
-import {
-  createOrder,
-  getAllOrders,
-  getMyOrders,
-  getOrderByOrderId,
-  updateOrderStatus,
-  deleteOrder,
-  getTopSellers,
-  updateOrder,
-} from "../controllers/ordersController.js";
-import { authenticate, authorizeRoles } from "../middleware/authMiddleware.js";
+import { Router } from "express";
+import * as ordersController from "../controllers/ordersController.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/", authenticate, createOrder);
-router.get("/", authenticate, authorizeRoles('admin'), getAllOrders);
-router.get("/my-orders", authenticate, getMyOrders);
-router.get("/:order_id", getOrderByOrderId);
-router.put("/:order_id", authenticate, updateOrder);
-router.put("/:order_id/status", authenticate, updateOrderStatus);
-router.delete("/:order_id", authenticate, authorizeRoles('admin'), deleteOrder);
-router.get("/top/:period", getTopSellers);
+// Public routes
+router.get("/top/:period", ordersController.getTopSellers);
+
+// Protected routes (cần authentication)
+router.use(authenticateToken); // ✅ Apply middleware cho tất cả routes phía dưới
+
+router.get("/", ordersController.getAllOrders);
+router.get("/my-orders", ordersController.getMyOrders);
+router.get("/:order_id", ordersController.getOrderByOrderId);
+router.post("/", ordersController.createOrder);
+router.put("/:order_id", ordersController.updateOrder);
+router.put("/:order_id/status", ordersController.updateOrderStatus);
+router.delete("/:order_id", ordersController.deleteOrder);
 
 export default router;
