@@ -146,6 +146,13 @@ export const discountAPI = {
 };
 
 // =============================
+//        COUPON API
+// =============================
+export const couponAPI = {
+    redeem: (payload) => apiCall("/coupons/redeem", "POST", payload),
+};
+
+// =============================
 //        UPLOAD API
 // =============================
 export const uploadAPI = {

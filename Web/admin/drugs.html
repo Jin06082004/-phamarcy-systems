@@ -237,6 +237,10 @@
     <script src="../shared/notification.js"></script>
     <script type="module">
       import { drugAPI, categoryAPI, uploadAPI } from "../shared/api.js";
+      import { initUserBackButton } from "../shared/userBackButton.js";
+
+      // 🏠 Khởi tạo nút quay lại trang user
+      initUserBackButton('/Web/user/pages/drugs.html');
 
       // ========== STATE ==========
       let allDrugs = [];

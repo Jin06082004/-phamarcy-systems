@@ -72,6 +72,10 @@
 
     <script type="module">
       import { orderAPI, invoiceAPI, drugAPI } from "../shared/api.js";
+      import { initUserBackButton } from "../shared/userBackButton.js";
+
+      // 🏠 Khởi tạo nút quay lại trang user
+      initUserBackButton('/Web/user/index.html');
 
       function fmtVND(n) { return n ? n.toLocaleString('vi-VN') + '₫' : '0₫'; }
 

@@ -62,6 +62,10 @@
     <script type="module">
       import { orderAPI, invoiceAPI } from "../../shared/api.js";
       import { cartAPI } from "../../shared/cartApi.js";
+      import { initAdminSecretButton } from "../../shared/adminButton.js";
+
+      // 🔒 Khởi tạo nút admin ẩn
+      initAdminSecretButton('/Web/admin/orders.html');
 
       let serverCart = null; // when using server-side cart, store the cart object here
 

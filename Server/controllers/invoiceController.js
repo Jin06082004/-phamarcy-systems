@@ -20,6 +20,38 @@ export const createInvoice = async (req, res) => {
             return res.status(400).json({ success: false, message: "Hóa đơn phải có ít nhất một mặt hàng" });
         }
 
+        // 🎁 Xử lý mã giảm giá nếu có
+        let appliedDiscount = null;
+        let discountAmount = 0;
+        
+        if (payload.discount_code) {
+            try {
+                const Discount = (await import('../models/discountModel.js')).default;
+                appliedDiscount = await Discount.findOne({ code: payload.discount_code.toUpperCase() });
+                
+                if (appliedDiscount) {
+                    // Validate discount
+                    const now = new Date();
+                    if (!appliedDiscount.is_active) {
+                        return res.status(400).json({ success: false, message: "Mã giảm giá đã bị vô hiệu hóa" });
+                    }
+                    if (now < new Date(appliedDiscount.start_date)) {
+                        return res.status(400).json({ success: false, message: "Mã giảm giá chưa có hiệu lực" });
+                    }
+                    if (now > new Date(appliedDiscount.end_date)) {
+                        return res.status(400).json({ success: false, message: "Mã giảm giá đã hết hạn" });
+                    }
+                    if (appliedDiscount.usage_limit && appliedDiscount.used_count >= appliedDiscount.usage_limit) {
+                        return res.status(400).json({ success: false, message: "Mã giảm giá đã hết lượt sử dụng" });
+                    }
+                    
+                    console.log(`🎁 Áp dụng mã giảm giá ${appliedDiscount.code}: ${appliedDiscount.percentage}%`);
+                }
+            } catch (discountError) {
+                console.error("❌ Lỗi xử lý mã giảm giá:", discountError);
+            }
+        }
+
         // Validate items and check stock
         for (const it of payload.items) {
             if (!it.medicine_id || !it.quantity) {
@@ -44,20 +76,72 @@ export const createInvoice = async (req, res) => {
         // Compute invoice totals
         const totals = computeTotals(payload.items, payload);
         payload.subtotal = totals.subtotal;
-        payload.discount = totals.discount;
+        
+        // 🎁 Tính discount amount từ mã giảm giá
+        if (appliedDiscount) {
+            discountAmount = Math.round((payload.subtotal * appliedDiscount.percentage) / 100);
+            console.log(`🎁 Discount amount: ${discountAmount}₫ (${appliedDiscount.percentage}% của ${payload.subtotal}₫)`);
+        }
+        
+        payload.discount = (payload.discount || 0) + discountAmount;
         payload.tax = totals.tax;
         payload.shipping_fee = totals.shipping_fee;
-        payload.total = totals.total;
+        payload.total = payload.subtotal - payload.discount + payload.tax + payload.shipping_fee;
+        
+        // Lưu thông tin mã giảm giá vào invoice
+        if (appliedDiscount) {
+            payload.discount_info = {
+                code: appliedDiscount.code,
+                percentage: appliedDiscount.percentage,
+                amount: discountAmount
+            };
+        }
 
         const created = await invoiceModel.create(payload);
 
-        // Giảm tồn kho sau khi tạo hóa đơn thành công
+        // ✅ Giảm tồn kho sau khi tạo hóa đơn thành công
+        console.log("🔄 Giảm stock cho hóa đơn:", created.invoice_id);
         for (const it of payload.items) {
-            await drugModel.findOneAndUpdate({ drug_id: Number(it.medicine_id) }, { $inc: { stock: -Number(it.quantity) } });
+            const drug = await drugModel.findOne({ drug_id: Number(it.medicine_id) });
+            if (drug) {
+                const oldStock = drug.stock;
+                drug.stock = Number(drug.stock) - Number(it.quantity);
+                await drug.save();
+                console.log(`✅ Giảm ${it.quantity} ${drug.name} (${oldStock} → ${drug.stock})`);
+            }
         }
 
-        res.status(201).json({ success: true, message: "Tạo hóa đơn thành công", data: created });
+        // 🎁 Tăng used_count của mã giảm giá
+        if (appliedDiscount) {
+            try {
+                appliedDiscount.used_count = (appliedDiscount.used_count || 0) + 1;
+                await appliedDiscount.save();
+                console.log(`🎁 Đã tăng used_count của mã ${appliedDiscount.code}: ${appliedDiscount.used_count}`);
+                
+                // Tạo redemption log
+                const CouponRedemption = (await import('../models/couponRedemptionModel.js')).default;
+                await CouponRedemption.create({
+                    discount_id: appliedDiscount._id,
+                    code: appliedDiscount.code,
+                    user_id: payload.customer_id || null,
+                    guest_token: payload.guest_token || "",
+                    order_id: payload.order_id || null,
+                    invoice_id: created.invoice_id,
+                    amount: discountAmount
+                });
+                console.log(`📝 Đã tạo redemption log cho ${appliedDiscount.code}`);
+            } catch (redeemError) {
+                console.error("❌ Lỗi cập nhật mã giảm giá:", redeemError);
+            }
+        }
+
+        res.status(201).json({ 
+            success: true, 
+            message: "Tạo hóa đơn thành công" + (appliedDiscount ? ` với mã giảm giá ${appliedDiscount.code}` : ""), 
+            data: created 
+        });
     } catch (error) {
+        console.error("❌ Lỗi tạo hóa đơn:", error);
         res.status(500).json({ success: false, message: "Failed to create invoice", error: error.message });
     }
 };

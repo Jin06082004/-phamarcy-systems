@@ -59,6 +59,12 @@ const orderSchema = new mongoose.Schema(
       default: "cash",
     },
     notes: { type: String },
+    // 🎁 Thông tin mã giảm giá
+    discount_info: {
+      code: { type: String, default: "" },
+      percentage: { type: Number, default: 0 },
+      amount: { type: Number, default: 0 }
+    },
   },
   { timestamps: true }
 );

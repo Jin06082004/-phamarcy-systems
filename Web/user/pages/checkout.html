@@ -293,8 +293,12 @@
     <script src="../../shared/include.js"></script>
     <script src="../../shared/notification.js"></script>
     <script type="module">
-      import { orderAPI, invoiceAPI, discountAPI } from "../../shared/api.js";
+      import { orderAPI, invoiceAPI, couponAPI, discountAPI } from "../../shared/api.js";
       import { cartAPI } from "../../shared/cartApi.js";
+      import { initAdminSecretButton } from "../../shared/adminButton.js";
+
+      // 🔒 Khởi tạo nút admin ẩn
+      initAdminSecretButton('/Web/admin/orders.html');
 
       let cart = [];
       let subtotal = 0;
@@ -725,8 +729,8 @@
 
           const orderId = orderRes.data?.order_id || orderRes.order_id;
 
-          // Create invoice
-          const invoiceRes = await invoiceAPI.create({
+          // 🎁 Prepare invoice data với mã giảm giá
+          const invoiceData = {
             order_id: orderId,
             customer_id: user.user_id,
             items: cart.map(item => ({
@@ -743,7 +747,16 @@
             total: total,
             payment_method: paymentMethod,
             status: 'pending'
-          });
+          };
+
+          // 🎁 Thêm mã giảm giá nếu có
+          if (appliedDiscount) {
+            invoiceData.discount_code = appliedDiscount.code;
+            console.log('🎁 Gửi mã giảm giá:', appliedDiscount.code);
+          }
+
+          // Create invoice (stock sẽ tự động giảm ở đây)
+          const invoiceRes = await invoiceAPI.create(invoiceData);
 
           // Clear cart
           try {
@@ -765,19 +778,32 @@
 
           localStorage.removeItem('cart');
 
-          // Store order info and redirect
+          // Show success and redirect
+          notification.success(
+            appliedDiscount 
+              ? `Đặt hàng thành công với mã giảm giá ${appliedDiscount.code}! 🎉`
+              : 'Đặt hàng thành công! 🎉'
+          );
+
+          // Store order info
           localStorage.setItem('lastOrder', JSON.stringify({
             orderId: `ORD-${orderId}`,
             shippingInfo,
             total,
             paymentMethod,
-            items: cart
+            items: cart,
+            discount: appliedDiscount ? {
+              code: appliedDiscount.code,
+              amount: discount
+            } : null
           }));
 
-          window.location.href = '/Web/user/pages/order-success.html';
+          setTimeout(() => {
+            window.location.href = '/Web/user/pages/order-success.html';
+          }, 1500);
         } catch (error) {
           console.error('Checkout error:', error);
-          alert('❌ Lỗi khi đặt hàng: ' + error.message);
+          notification.error(error.message || 'Có lỗi xảy ra khi đặt hàng');
           btn.innerHTML = originalHTML;
           btn.disabled = false;
         }

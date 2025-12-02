@@ -390,6 +390,10 @@
     <script src="../../shared/notification.js"></script>
     <script type="module">
       import { orderAPI } from "../../shared/api.js";
+      import { initAdminSecretButton } from "../../shared/adminButton.js";
+
+      // 🔒 Khởi tạo nút admin ẩn
+      initAdminSecretButton('/Web/admin/orders.html');
 
       let allOrders = [];
       let currentFilter = 'all';

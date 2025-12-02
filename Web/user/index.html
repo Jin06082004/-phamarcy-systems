@@ -43,6 +43,10 @@
     <script type="module">
       import { drugAPI } from '../shared/api.js';
       import { cartAPI } from '../shared/cartApi.js';
+      import { initAdminSecretButton } from '../shared/adminButton.js';
+
+      // 🔒 Khởi tạo nút admin ẩn - chỉ hiển thị với admin
+      initAdminSecretButton('/Web/admin/index.html');
 
       // ensure there's a guest token for anonymous carts
       function ensureGuestToken() {

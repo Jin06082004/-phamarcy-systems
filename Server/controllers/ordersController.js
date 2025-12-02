@@ -7,7 +7,7 @@ import userModel from "../models/userModel.js";
 // Tạo đơn hàng mới (tự tăng order_id)
 export const createOrder = async (req, res) => {
   try {
-    let { customer_id, order_items, payment_method, notes, status } = req.body;
+    let { customer_id, order_items, payment_method, notes, status, discount_code } = req.body;
     if (req.user && req.user.user_id) {
       customer_id = Number(req.user.user_id);
     }
@@ -15,10 +15,39 @@ export const createOrder = async (req, res) => {
     const lastOrder = await Order.findOne().sort({ order_id: -1 });
     const newOrderId = lastOrder ? lastOrder.order_id + 1 : 1;
 
-    const total_amount = order_items.reduce(
+    let total_amount = order_items.reduce(
       (sum, item) => sum + item.quantity * item.price,
       0
     );
+
+    // 🎁 Áp dụng mã giảm giá nếu có
+    let discount_info = null;
+    if (discount_code) {
+      try {
+        const Discount = (await import('../models/discountModel.js')).default;
+        const discount = await Discount.findOne({ code: discount_code.toUpperCase() });
+        
+        if (discount && discount.is_active) {
+          const now = new Date();
+          if (now >= new Date(discount.start_date) && now <= new Date(discount.end_date)) {
+            if (!discount.usage_limit || discount.used_count < discount.usage_limit) {
+              const discountAmount = Math.round((total_amount * discount.percentage) / 100);
+              total_amount -= discountAmount;
+              
+              discount_info = {
+                code: discount.code,
+                percentage: discount.percentage,
+                amount: discountAmount
+              };
+              
+              console.log(`🎁 Đơn hàng #${newOrderId} áp dụng mã ${discount.code}: -${discountAmount}₫`);
+            }
+          }
+        }
+      } catch (discountError) {
+        console.error("❌ Lỗi xử lý mã giảm giá:", discountError);
+      }
+    }
 
     // CHỈ validate stock, KHÔNG giảm ở đây (để invoiceController xử lý)
     const Drug = (await import('../models/drugModel.js')).default;
@@ -43,6 +72,7 @@ export const createOrder = async (req, res) => {
       status: status && ["Pending", "Processing", "Completed", "Cancelled"].includes(status)
         ? status
         : "Pending",
+      discount_info: discount_info
     });
 
     await newOrder.save();
@@ -63,15 +93,22 @@ export const createOrder = async (req, res) => {
       console.error('❌ Lỗi gửi email đặt hàng:', emailError);
     }
 
-    res.status(201).json({ success: true, data: {
-      order_id: newOrder.order_id,
-      customer_id: newOrder.customer_id,
-      order_items: newOrder.order_items,
-      total_amount: newOrder.total_amount,
-      payment_method: newOrder.payment_method,
-      notes: newOrder.notes,
-      status: newOrder.status
-    } });
+    res.status(201).json({ 
+      success: true, 
+      message: discount_info 
+        ? `Đơn hàng đã được tạo thành công với mã giảm giá ${discount_info.code}` 
+        : "Đơn hàng đã được tạo thành công",
+      data: {
+        order_id: newOrder.order_id,
+        customer_id: newOrder.customer_id,
+        order_items: newOrder.order_items,
+        total_amount: newOrder.total_amount,
+        payment_method: newOrder.payment_method,
+        notes: newOrder.notes,
+        status: newOrder.status,
+        discount_info: newOrder.discount_info
+      }
+    });
   } catch (error) {
     console.error("❌ Lỗi tạo đơn hàng:", error);
     res.status(500).json({ success: false, message: "Lỗi khi tạo đơn hàng", error: error.message });

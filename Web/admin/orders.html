@@ -182,6 +182,10 @@
     <!-- ========== SCRIPT ========== -->
     <script type="module">
       import { orderAPI } from "../shared/api.js";
+      import { initUserBackButton } from "../shared/userBackButton.js";
+
+      // 🏠 Khởi tạo nút quay lại trang user
+      initUserBackButton('/Web/user/pages/my-orders.html');
 
       // ========== STATE ==========
       let orders = [];

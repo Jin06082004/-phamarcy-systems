@@ -73,6 +73,10 @@
 
     <script type="module">
       import { drugAPI, orderAPI, userAPI, invoiceAPI } from "../shared/api.js";
+      import { initUserBackButton } from "../shared/userBackButton.js";
+
+      // 🏠 Khởi tạo nút quay lại trang user
+      initUserBackButton('/Web/user/index.html');
 
       // Check admin authentication and role
       function checkAdminAuth() {
