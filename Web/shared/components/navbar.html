@@ -26,55 +26,96 @@
   </ul>
 </nav>
 
-<style>
-  /* Dropdown styles */
-  .navbar .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-
-  .navbar .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: white;
-    min-width: 250px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    z-index: 1000;
-    border-radius: 8px;
-    top: 100%;
-    left: 0;
-  }
-
-  .navbar .dropdown-content a {
-    color: #333;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    transition: background 0.3s;
-  }
-
-  .navbar .dropdown-content a:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-
-  .navbar .dropdown:hover .dropdown-content {
-    display: block;
-  }
-
-  .navbar .dropbtn {
-    cursor: pointer;
-  }
-
-  /* Active state */
-  .navbar .menu a.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-  }
-</style>
-
 <script>
+  // Inject CSS for dropdown
+  (function() {
+    if (!document.getElementById('navbar-dropdown-styles')) {
+      const style = document.createElement('style');
+      style.id = 'navbar-dropdown-styles';
+      style.textContent = `
+        nav.navbar .menu li.dropdown {
+          position: relative;
+          display: inline-block;
+          z-index: 10000;
+        }
+
+        nav.navbar .menu li.dropdown .dropdown-content {
+          display: none;
+          position: fixed;
+          background-color: white;
+          min-width: 250px;
+          box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+          z-index: 10001 !important;
+          border-radius: 8px;
+          margin-top: 0;
+        }
+
+        nav.navbar .menu li.dropdown .dropdown-content a {
+          color: #333 !important;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+          transition: background 0.3s;
+          white-space: nowrap;
+        }
+
+        nav.navbar .menu li.dropdown .dropdown-content a::after {
+          display: none !important;
+        }
+
+        nav.navbar .menu li.dropdown .dropdown-content a:hover {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+          color: white !important;
+        }
+
+        nav.navbar .menu li.dropdown:hover .dropdown-content {
+          display: block !important;
+        }
+
+        nav.navbar .menu li.dropdown .dropbtn {
+          cursor: pointer;
+        }
+
+        nav.navbar .menu a.active {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          font-weight: 600;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Position dropdown on hover
+    const dropdown = document.querySelector('nav.navbar .menu li.dropdown');
+    const dropdownContent = document.querySelector('nav.navbar .menu li.dropdown .dropdown-content');
+    
+    if (dropdown && dropdownContent) {
+      function updateDropdownPosition() {
+        const rect = dropdown.getBoundingClientRect();
+        dropdownContent.style.top = rect.bottom + 'px';
+        dropdownContent.style.left = rect.left + 'px';
+      }
+      
+      dropdown.addEventListener('mouseenter', updateDropdownPosition);
+      
+      // Update position on scroll
+      let scrollTimeout;
+      window.addEventListener('scroll', () => {
+        if (dropdown.matches(':hover')) {
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(updateDropdownPosition, 10);
+        }
+      }, { passive: true });
+      
+      // Update position on window resize
+      window.addEventListener('resize', () => {
+        if (dropdown.matches(':hover')) {
+          updateDropdownPosition();
+        }
+      });
+    }
+  })();
+
   // Highlight active page
   document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;

@@ -1,12 +1,12 @@
 <header class="topbar">
   <div class="container topbar-content">
     <div class="logo">
-      <img src="/shared/images/logo.png" alt="logo" onerror="this.style.display='none'" />
+      <!-- <img src="/shared/images/logo.png" alt="logo" onerror="this.style.display='none'" /> -->
       <h1>Drug<span>Store</span></h1>
     </div>
     <div class="search-box">
-      <input type="text" placeholder="Tìm thuốc, vitamin, thực phẩm..." />
-      <button>🔍</button>
+      <input type="text" id="globalSearchInput" placeholder="Tìm thuốc, vitamin, thực phẩm..." />
+      <button id="globalSearchBtn">🔍</button>
     </div>
     <div class="user-actions" id="userActions">
       <a href="/Web/user/pages/cart.html" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: white; color: #1f2937; text-decoration: none; border-radius: 10px; font-weight: 500; transition: all 0.3s; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
@@ -53,6 +53,29 @@
     box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4) !important;
     background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
   }
+
+  /* Search box styles */
+  .search-box {
+    position: relative;
+  }
+
+  #globalSearchInput {
+    transition: box-shadow 0.3s;
+  }
+
+  #globalSearchInput:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    outline: none;
+  }
+
+  #globalSearchBtn {
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  #globalSearchBtn:hover {
+    transform: scale(1.1);
+  }
 </style>
 
 <script>
@@ -90,5 +113,37 @@
         console.error('Error parsing user data:', e);
       }
     }
+  })();
+
+  // Global search functionality
+  (function() {
+    const searchInput = document.getElementById('globalSearchInput');
+    const searchBtn = document.getElementById('globalSearchBtn');
+
+    // Hàm thực hiện tìm kiếm
+    function performSearch() {
+      const keyword = searchInput.value.trim();
+      
+      if (!keyword) {
+        alert('⚠️ Vui lòng nhập từ khóa tìm kiếm');
+        searchInput.focus();
+        return;
+      }
+
+      // Chuyển đến trang drugs.html với query parameter
+      const searchUrl = `/Web/user/pages/drugs.html?search=${encodeURIComponent(keyword)}`;
+      window.location.href = searchUrl;
+    }
+
+    // Tìm kiếm khi nhấn nút
+    searchBtn.addEventListener('click', performSearch);
+
+    // Tìm kiếm khi nhấn Enter
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performSearch();
+      }
+    });
   })();
 </script>

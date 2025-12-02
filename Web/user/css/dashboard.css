@@ -145,7 +145,7 @@ body {
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 73px;
-  z-index: 99;
+  z-index: 999;
   box-shadow: var(--shadow-sm);
 }
 
@@ -501,6 +501,8 @@ body {
   padding: 3rem 2rem;
   background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .drugs-header h2 {
