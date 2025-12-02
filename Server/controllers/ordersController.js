@@ -205,6 +205,14 @@ export const updateOrderStatus = async (req, res) => {
               console.log('✅ Email hoàn thành đã được gửi đến:', user.email);
             }
           });
+        } else if (status === "Cancelled") {
+          emailService.sendOrderCancelledEmail(order, user).then(result => {
+            if (result.success) {
+              console.log('✅ Email hủy đơn đã được gửi đến:', user.email);
+            } else {
+              console.warn('⚠️ Không thể gửi email hủy đơn:', result.message || result.error);
+            }
+          });
         }
       }
     } catch (emailError) {
@@ -275,6 +283,14 @@ export const updateOrder = async (req, res) => {
                 console.log('✅ Email hoàn thành đã được gửi đến:', user.email);
               } else {
                 console.warn('⚠️ Không thể gửi email:', result.message || result.error);
+              }
+            });
+          } else if (status === "Cancelled") {
+            emailService.sendOrderCancelledEmail(updated, user).then(result => {
+              if (result.success) {
+                console.log('✅ Email hủy đơn đã được gửi đến:', user.email);
+              } else {
+                console.warn('⚠️ Không thể gửi email hủy đơn:', result.message || result.error);
               }
             });
           }

@@ -276,6 +276,98 @@ const orderCompletedTemplate = (order, user) => `
 </html>
 `;
 
+// Template đơn hàng bị hủy
+const orderCancelledTemplate = (order, user) => {
+  const itemsHTML = order.order_items.map(item => `
+    <tr>
+      <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.drug_name || 'Sản phẩm'}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">${item.price.toLocaleString('vi-VN')}₫</td>
+      <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;"><strong>${(item.quantity * item.price).toLocaleString('vi-VN')}₫</strong></td>
+    </tr>
+  `).join('');
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .order-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; margin: 20px 0; }
+    th { background: #fee2e2; padding: 12px; text-align: left; font-weight: bold; color: #991b1b; }
+    .status-badge { display: inline-block; padding: 8px 20px; background: #ef4444; color: white; border-radius: 20px; font-weight: bold; }
+    .refund-info { background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; margin: 20px 0; }
+    .button { display: inline-block; padding: 12px 30px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>❌ Đơn hàng đã bị hủy</h1>
+    </div>
+    <div class="content">
+      <p>Xin chào <strong>${user.full_name || user.username}</strong>,</p>
+      <p>Đơn hàng <strong>#${order.order_id}</strong> của bạn đã bị hủy.</p>
+      <p>Trạng thái: <span class="status-badge">Đã hủy</span></p>
+      
+      <div class="order-info">
+        <h3>Thông tin đơn hàng #${order.order_id}</h3>
+        <p><strong>Ngày đặt:</strong> ${new Date(order.createdAt).toLocaleString('vi-VN')}</p>
+        <p><strong>Ngày hủy:</strong> ${new Date().toLocaleString('vi-VN')}</p>
+        <p><strong>Tổng tiền:</strong> <strong style="color: #ef4444;">${order.total_amount.toLocaleString('vi-VN')}₫</strong></p>
+      </div>
+
+      <h3>Chi tiết sản phẩm đã hủy:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Sản phẩm</th>
+            <th style="text-align: center;">Số lượng</th>
+            <th style="text-align: right;">Đơn giá</th>
+            <th style="text-align: right;">Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsHTML}
+        </tbody>
+      </table>
+
+      <div class="refund-info">
+        <strong>💰 Thông tin hoàn tiền:</strong>
+        <ul style="margin: 10px 0 0 0;">
+          <li>Nếu bạn đã thanh toán, số tiền sẽ được hoàn lại trong <strong>3-5 ngày làm việc</strong></li>
+          <li>Số lượng sản phẩm đã được hoàn trả vào kho</li>
+          <li>Bạn có thể đặt lại đơn hàng bất cứ lúc nào</li>
+        </ul>
+      </div>
+
+      <p>Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua:</p>
+      <ul>
+        <li>📞 Hotline: 1900-xxxx</li>
+        <li>📧 Email: support@nhathuoc.com</li>
+      </ul>
+
+      <p>Cảm ơn bạn đã tin tưởng. Chúng tôi hy vọng được phục vụ bạn trong tương lai!</p>
+      
+      <div style="text-align: center;">
+        <a href="${process.env.WEB_URL || 'http://localhost:5500'}/Web/user/pages/drugs.html" class="button">Tiếp tục mua sắm</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>© 2024 Nhà Thuốc Online. All rights reserved.</p>
+      <p>Email này được gửi tự động, vui lòng không trả lời.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+};
+
 // Hàm gửi email
 const sendEmail = async (to, subject, html) => {
   try {
@@ -350,6 +442,15 @@ export const emailService = {
     
     const subject = `🎉 Đơn hàng #${order.order_id} đã được giao thành công`;
     const html = orderCompletedTemplate(order, user);
+    return await sendEmail(user.email, subject, html);
+  },
+
+  // Gửi email đơn hàng bị hủy
+  sendOrderCancelledEmail: async (order, user) => {
+    if (!user.email) return { success: false, message: 'Không có email' };
+    
+    const subject = `❌ Đơn hàng #${order.order_id} đã bị hủy`;
+    const html = orderCancelledTemplate(order, user);
     return await sendEmail(user.email, subject, html);
   }
 };
