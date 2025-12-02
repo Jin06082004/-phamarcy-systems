@@ -27,17 +27,21 @@
     <script src="../../shared/include.js"></script>
 
     <script type="module">
-      import { drugAPI, categoryAPI } from "../../shared/api.js";
+      import { drugAPI } from "../../shared/api.js";
+      
+      // Category ID cố định cho "Chăm sóc cá nhân"
+      const PERSONAL_CARE_CATEGORY_ID = 7;
+      let allProducts = [];
+      
       async function loadPersonalCare() {
         try {
-          const [categoriesRes, drugsRes] = await Promise.all([categoryAPI.getAll(), drugAPI.getAll()]);
-          const categories = Array.isArray(categoriesRes) ? categoriesRes : (categoriesRes.data || []);
-          const careCat = categories.find(c => c.name && (c.name.toLowerCase().includes('chăm') || c.name.toLowerCase().includes('cá nhân') || c.name.toLowerCase().includes('personal')));
-
+          const drugsRes = await drugAPI.getAll();
           let products = Array.isArray(drugsRes) ? drugsRes : (drugsRes.data || []);
-          if (careCat && careCat.category_id) {
-            products = products.filter(p => Number(p.category_id) === Number(careCat.category_id));
-          }
+          
+          // Lọc theo category_id
+          products = products.filter(p => Number(p.category_id) === PERSONAL_CARE_CATEGORY_ID);
+          
+          allProducts = products;
 
           const list = document.getElementById('personalCareList');
           if (products.length === 0) {
@@ -59,7 +63,7 @@
                 <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${p.description || 'Sản phẩm chất lượng'}</p>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <span style="font-weight: bold; color: #d32f2f;">${(p.price || 0).toLocaleString()}₫</span>
-                  <button onclick="window.addToCart(${p.drug_id}, '${p.name}', ${p.price})" style="background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Thêm giỏ</button>
+                  <button onclick="window.addToCart(${p.drug_id})" style="background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Thêm giỏ</button>
                 </div>
               </div>
             </div>
@@ -69,13 +73,20 @@
           document.getElementById('personalCareList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
         }
       }
-      window.addToCart = (id, name, price) => {
+      
+      window.addToCart = (id) => {
+        const product = allProducts.find(p => p.drug_id === id);
+        if (!product) {
+          alert('Không tìm thấy sản phẩm');
+          return;
+        }
+        
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const existing = cart.find(item => item.drug_id === id);
         if (existing) existing.quantity++;
-        else cart.push({ drug_id: id, name, price, quantity: 1 });
+        else cart.push({ drug_id: id, name: product.name, price: product.price, quantity: 1 });
         localStorage.setItem('cart', JSON.stringify(cart));
-        alert(`✅ Đã thêm "${name}" vào giỏ`);
+        alert(`✅ Đã thêm "${product.name}" vào giỏ`);
       };
       loadPersonalCare();
     </script>

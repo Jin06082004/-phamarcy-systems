@@ -1,3 +1,6 @@
 node_modules/
 .env
 .gitignore
+data/
+scripts/
+CATEGORY_PAGE.md 

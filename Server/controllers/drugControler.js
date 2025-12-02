@@ -24,8 +24,7 @@ export const addDrug = async (req, res) => {
 export const getAllDrugs = async (req, res) => {
     try {
         const drugs = await drugModel
-            .find()
-            .populate("category_id", "name description");
+            .find();
         res.status(200).json({
             success: true,
             count: drugs.length,

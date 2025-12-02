@@ -1,12 +1,90 @@
 <nav class="navbar">
   <ul class="menu">
-  <li><a href="/Web/user/index.html">Trang chủ</a></li>
-  <li><a href="/Web/user/pages/drugs.html">Thuốc</a></li>
-  <li><a href="/Web/user/pages/products.html">Thực phẩm chức năng</a></li>
-  <li><a href="/Web/user/pages/personal-care.html">Chăm sóc cá nhân</a></li>
-  <li><a href="/Web/user/pages/mom-baby.html">Mẹ &amp; Bé</a></li>
-  <li><a href="/Web/user/pages/promotions.html">Khuyến mãi</a></li>
-  <li><a href="/Web/user/pages/my-orders.html">Đơn hàng của tôi</a></li>
-  <li><a href="/Web/user/pages/profile.html">Tài khoản</a></li>
+    <li><a href="/Web/user/index.html">🏠 Trang chủ</a></li>
+    <li><a href="/Web/user/pages/drugs.html">💊 Tất cả thuốc</a></li>
+    
+    <!-- Dropdown Danh mục -->
+    <li class="dropdown">
+      <a href="#" class="dropbtn">📋 Danh mục</a>
+      <div class="dropdown-content">
+        <a href="/Web/user/pages/pain-relief.html">💊 Giảm đau - Hạ sốt</a>
+        <a href="/Web/user/pages/antibiotics.html">💉 Kháng sinh</a>
+        <a href="/Web/user/pages/vitamins.html">🍊 Vitamin & Khoáng chất</a>
+        <a href="/Web/user/pages/digestive.html">🍵 Tiêu hóa</a>
+        <a href="/Web/user/pages/cold-flu.html">🤧 Cảm cúm - Dị ứng</a>
+        <a href="/Web/user/pages/products.html">🌿 Thực phẩm chức năng</a>
+        <a href="/Web/user/pages/personal-care.html">🧴 Chăm sóc cá nhân</a>
+        <a href="/Web/user/pages/mom-baby.html">👶 Mẹ & Bé</a>
+        <a href="/Web/user/pages/cardiovascular.html">❤️ Tim mạch - Huyết áp</a>
+        <a href="/Web/user/pages/stomach.html">🩺 Dạ dày - Đường ruột</a>
+      </div>
+    </li>
+    
+    <li><a href="/Web/user/pages/promotions.html">🎁 Khuyến mãi</a></li>
+    <li><a href="/Web/user/pages/my-orders.html">📦 Đơn hàng</a></li>
+    <li><a href="/Web/user/pages/profile.html">👤 Tài khoản</a></li>
   </ul>
 </nav>
+
+<style>
+  /* Dropdown styles */
+  .navbar .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .navbar .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border-radius: 8px;
+    top: 100%;
+    left: 0;
+  }
+
+  .navbar .dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background 0.3s;
+  }
+
+  .navbar .dropdown-content a:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .navbar .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .navbar .dropbtn {
+    cursor: pointer;
+  }
+
+  /* Active state */
+  .navbar .menu a.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  // Highlight active page
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('.navbar a[href]');
+    
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && currentPath.includes(href.split('/').pop())) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>

@@ -84,23 +84,31 @@
         }
     
         list.innerHTML = drugs.map(drug => {
+          const escapedName = (drug.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          const escapedDesc = (drug.description || 'Thuốc chất lượng cao').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          
           let imgTag = '<div style="width:100%; height:180px; background:linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); display:flex; align-items:center; justify-content:center; flex-direction:column; color:#999; font-size:3rem;">💊<div style="font-size:0.875rem; margin-top:0.5rem; color:#666;">Chưa có ảnh</div></div>';
+          
           if (drug.image) {
             const isAbsolute = drug.image.startsWith("http") || drug.image.startsWith("/");
             const src = isAbsolute ? drug.image : ("/shared/" + drug.image.replace(/^(\.\/|\/)+/, ""));
-            imgTag = `<img src="${src}" alt="${drug.name}" style="width:100%; height:180px; object-fit:cover; background:#f5f5f5;" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\\"width:100%; height:180px; background:linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); display:flex; align-items:center; justify-content:center; flex-direction:column; color:#999; font-size:3rem;\\">💊<div style=\\"font-size:0.875rem; margin-top:0.5rem; color:#666;\\">Ảnh lỗi</div></div>';" />`;
+            imgTag = `<img src="${src}" alt="${escapedName}" style="width:100%; height:180px; object-fit:cover; background:#f5f5f5;" onerror="this.style.display='none'; this.parentElement.querySelector('.img-placeholder').style.display='flex';" />
+                      <div class="img-placeholder" style="display:none; width:100%; height:180px; background:linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); align-items:center; justify-content:center; flex-direction:column; color:#999; font-size:3rem;">💊<div style="font-size:0.875rem; margin-top:0.5rem; color:#666;">Ảnh lỗi</div></div>`;
           }
+          
           return `
             <div class="drug-card" style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.3s;">
-              ${imgTag}
+              <div style="position: relative; width: 100%; height: 180px;">
+                ${imgTag}
+              </div>
               <div style="padding: 15px;">
                 <h3 style="margin: 0 0 8px; font-size: 16px; color: #155724;">${drug.name}</h3>
-                <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${drug.description || 'Thuốc chất lượng cao'}</p>
+                <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${escapedDesc}</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
                   <span style="font-size: 18px; font-weight: bold; color: #d32f2f;">${drug.price ? drug.price.toLocaleString() : '0'}₫</span>
                   <span style="font-size: 12px; color: ${drug.stock > 0 ? '#4CAF50' : '#f44336'};">${drug.stock > 0 ? 'Còn hàng' : 'Hết hàng'}</span>
                 </div>
-                <button onclick="window.addToCart(${drug.drug_id}, '${drug.name}', ${drug.price})" ${drug.stock <= 0 ? 'disabled' : ''} style="width: 100%; padding: 10px; background: ${drug.stock > 0 ? '#4CAF50' : '#ccc'}; color: white; border: none; border-radius: 4px; cursor: ${drug.stock > 0 ? 'pointer' : 'not-allowed'}; font-weight: 600; margin-top: 10px;">
+                <button onclick="window.addToCart(${drug.drug_id})" ${drug.stock <= 0 ? 'disabled' : ''} style="width: 100%; padding: 10px; background: ${drug.stock > 0 ? '#4CAF50' : '#ccc'}; color: white; border: none; border-radius: 4px; cursor: ${drug.stock > 0 ? 'pointer' : 'not-allowed'}; font-weight: 600; margin-top: 10px;">
                   ${drug.stock > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}
                 </button>
               </div>
@@ -109,18 +117,29 @@
         }).join('');
       }
 
-      window.addToCart = (drugId, name, price) => {
+      window.addToCart = (drugId) => {
+        const drug = allDrugs.find(d => d.drug_id === drugId);
+        if (!drug) {
+          showNotification('Không tìm thấy thuốc', 'error');
+          return;
+        }
+        
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const existing = cart.find(item => item.drug_id === drugId);
         
         if (existing) {
           existing.quantity += 1;
         } else {
-          cart.push({ drug_id: drugId, name, price, quantity: 1 });
+          cart.push({ 
+            drug_id: drug.drug_id, 
+            name: drug.name, 
+            price: drug.price, 
+            quantity: 1 
+          });
         }
         
         localStorage.setItem('cart', JSON.stringify(cart));
-        alert(`✅ Đã thêm "${name}" vào giỏ hàng`);
+        showNotification(`✅ Đã thêm "${drug.name}" vào giỏ hàng`, 'success');
       };
 
       document.getElementById('searchInput').addEventListener('keyup', (e) => {
