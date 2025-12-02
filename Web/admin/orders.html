@@ -94,6 +94,14 @@
             <div id="order-items-display" style="display: none;"></div>
             
             <!-- Edit mode (khi add new) -->
+            <div id="order-items-input" style="display: none;">
+              <div id="items-list"></div>
+              <button type="button" onclick="addNewItemRow()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                <i class='bx bx-plus-circle' style="font-size: 1.3rem;"></i>
+                Thêm sản phẩm
+              </button>
+            </div>
+            
             <textarea id="order-items" 
               placeholder='[
   {
@@ -103,7 +111,7 @@
     "price": 120000
   }
 ]'
-              style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: 'Courier New', monospace; min-height: 180px; background: #f9fafb; transition: all 0.3s; resize: vertical;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'; this.style.background='#ffffff'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'; this.style.background='#f9fafb'"></textarea>
+              style="width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: 'Courier New', monospace; min-height: 180px; background: #f9fafb; transition: all 0.3s; resize: vertical; display: none;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'; this.style.background='#ffffff'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'; this.style.background='#f9fafb'"></textarea>
           </div>
 
           <!-- Payment Method -->
@@ -130,7 +138,30 @@
             <div id="order-notes-display" style="display: none;"></div>
             
             <!-- Edit mode (khi add new) -->
-            <textarea id="order-notes" placeholder='{"fullName":"Jin","phone":"0974088423","address":"363/2/24 bình lợi, Bình Thạnh, TP Hồ Chí Minh","notes":""}' style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; min-height: 100px; font-family: 'Courier New', monospace; background: #f9fafb; transition: all 0.3s; resize: vertical;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'; this.style.background='#ffffff'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'; this.style.background='#f9fafb'"></textarea>
+            <div id="order-notes-input" style="display: none;">
+              <div style="background: white; border: 2px solid #e5e7eb; border-radius: 10px; padding: 20px;">
+                <div style="display: grid; gap: 16px;">
+                  <div>
+                    <label style="display: block; color: #6b7280; font-size: 0.875rem; margin-bottom: 6px; font-weight: 600;">👤 Họ và tên</label>
+                    <input type="text" id="note-fullname" placeholder="Nguyễn Văn A" style="width: 100%; padding: 10px 14px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; transition: all 0.3s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='#e5e7eb'" />
+                  </div>
+                  <div>
+                    <label style="display: block; color: #6b7280; font-size: 0.875rem; margin-bottom: 6px; font-weight: 600;">📞 Số điện thoại</label>
+                    <input type="text" id="note-phone" placeholder="0974088423" style="width: 100%; padding: 10px 14px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; transition: all 0.3s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='#e5e7eb'" />
+                  </div>
+                  <div>
+                    <label style="display: block; color: #6b7280; font-size: 0.875rem; margin-bottom: 6px; font-weight: 600;">📍 Địa chỉ giao hàng</label>
+                    <textarea id="note-address" placeholder="363/2/24 bình lợi, Bình Thạnh, TP Hồ Chí Minh" style="width: 100%; padding: 10px 14px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; min-height: 80px; resize: vertical; transition: all 0.3s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
+                  </div>
+                  <div>
+                    <label style="display: block; color: #6b7280; font-size: 0.875rem; margin-bottom: 6px; font-weight: 600;">📝 Ghi chú thêm (không bắt buộc)</label>
+                    <textarea id="note-notes" placeholder="Giao hàng giờ hành chính..." style="width: 100%; padding: 10px 14px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; min-height: 60px; resize: vertical; transition: all 0.3s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <textarea id="order-notes" placeholder='{"fullName":"Jin","phone":"0974088423","address":"363/2/24 bình lợi, Bình Thạnh, TP Hồ Chí Minh","notes":""}' style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; min-height: 100px; font-family: 'Courier New', monospace; background: #f9fafb; transition: all 0.3s; resize: vertical; display: none;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'; this.style.background='#ffffff'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'; this.style.background='#f9fafb'"></textarea>
           </div>
 
           <!-- Status -->
@@ -212,6 +243,8 @@
       });
 
       // ========== MODAL CONTROL ==========
+      let newOrderItems = []; // Lưu items khi thêm mới
+      
       function openModal(title = "Thêm đơn hàng mới", orderId = null) {
         modalTitle.textContent = title;
         editingOrderId = orderId;
@@ -303,23 +336,37 @@
             
             document.getElementById("order-status").value = order.status || "Pending";
             
-            // Ẩn textarea JSON, hiện display
+            // Ẩn input form, hiện display
             document.getElementById("order-items").style.display = "none";
+            document.getElementById("order-items-input").style.display = "none";
             document.getElementById("order-notes").style.display = "none";
+            document.getElementById("order-notes-input").style.display = "none";
             document.getElementById("order-items-display").style.display = "block";
             document.getElementById("order-notes-display").style.display = "block";
           }
         } else {
-          // Add mode
+          // Add mode - Reset form
           orderForm.reset();
+          newOrderItems = [];
           document.getElementById("order-payment-method").value = "cash";
           document.getElementById("order-status").value = "Pending";
           
-          // Hiện textarea JSON, ẩn display
-          document.getElementById("order-items").style.display = "block";
-          document.getElementById("order-notes").style.display = "block";
+          // Reset notes inputs
+          document.getElementById("note-fullname").value = "";
+          document.getElementById("note-phone").value = "";
+          document.getElementById("note-address").value = "";
+          document.getElementById("note-notes").value = "";
+          
+          // Hiện input form, ẩn display
+          document.getElementById("order-items").style.display = "none";
+          document.getElementById("order-items-input").style.display = "block";
+          document.getElementById("order-notes").style.display = "none";
+          document.getElementById("order-notes-input").style.display = "block";
           document.getElementById("order-items-display").style.display = "none";
           document.getElementById("order-notes-display").style.display = "none";
+          
+          // Render items list
+          renderNewOrderItems();
         }
 
         modal.style.display = "flex";
@@ -332,6 +379,76 @@
           order.order_items.splice(index, 1);
           openModal("✏️ Sửa đơn hàng", editingOrderId);
         }
+      };
+      
+      // Function để render items khi thêm mới
+      function renderNewOrderItems() {
+        const container = document.getElementById("items-list");
+        if (newOrderItems.length === 0) {
+          container.innerHTML = `
+            <div style="background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 10px; padding: 24px; text-align: center; color: #6b7280; margin-bottom: 12px;">
+              <i class='bx bx-package' style="font-size: 3rem; opacity: 0.5; margin-bottom: 8px;"></i>
+              <div>Chưa có sản phẩm nào. Nhấn "Thêm sản phẩm" bên dưới.</div>
+            </div>
+          `;
+        } else {
+          container.innerHTML = newOrderItems.map((item, index) => `
+            <div style="background: white; border: 2px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <input type="text" value="${item.drug_name || ''}" onchange="updateNewOrderItem(${index}, 'drug_name', this.value)" placeholder="Tên thuốc" style="width: 100%; padding: 8px 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-weight: 600; font-size: 1rem; margin-bottom: 8px;" />
+                  <input type="number" value="${item.drug_id || ''}" onchange="updateNewOrderItem(${index}, 'drug_id', this.value)" placeholder="ID thuốc" style="width: 120px; padding: 6px 10px; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem;" />
+                </div>
+                <button type="button" onclick="removeNewOrderItem(${index})" style="background: #fee2e2; color: #dc2626; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: all 0.3s; margin-left: 12px;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fee2e2'">
+                  🗑️ Xóa
+                </button>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+                <div>
+                  <label style="display: block; color: #6b7280; font-size: 0.8rem; margin-bottom: 4px;">Số lượng</label>
+                  <input type="number" value="${item.quantity || 1}" onchange="updateNewOrderItem(${index}, 'quantity', this.value)" min="1" style="width: 100%; padding: 8px 10px; border: 2px solid #e5e7eb; border-radius: 6px; font-weight: 600; color: #10b981;" />
+                </div>
+                <div>
+                  <label style="display: block; color: #6b7280; font-size: 0.8rem; margin-bottom: 4px;">Đơn giá (₫)</label>
+                  <input type="number" value="${item.price || 0}" onchange="updateNewOrderItem(${index}, 'price', this.value)" min="0" step="1000" style="width: 100%; padding: 8px 10px; border: 2px solid #e5e7eb; border-radius: 6px; font-weight: 600; color: #3b82f6;" />
+                </div>
+                <div>
+                  <label style="display: block; color: #6b7280; font-size: 0.8rem; margin-bottom: 4px;">Thành tiền</label>
+                  <div style="padding: 8px 10px; background: #fee2e2; border-radius: 6px; font-weight: 700; color: #dc2626; text-align: center;">
+                    ${((item.quantity || 0) * (item.price || 0)).toLocaleString()}₫
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+      
+      // Thêm row mới
+      window.addNewItemRow = function() {
+        newOrderItems.push({
+          drug_name: "",
+          drug_id: "",
+          quantity: 1,
+          price: 0
+        });
+        renderNewOrderItems();
+      };
+      
+      // Xóa item
+      window.removeNewOrderItem = function(index) {
+        newOrderItems.splice(index, 1);
+        renderNewOrderItems();
+      };
+      
+      // Cập nhật item
+      window.updateNewOrderItem = function(index, field, value) {
+        if (field === 'quantity' || field === 'price' || field === 'drug_id') {
+          newOrderItems[index][field] = Number(value);
+        } else {
+          newOrderItems[index][field] = value;
+        }
+        renderNewOrderItems();
       };
 
       function closeModal() {
@@ -826,36 +943,55 @@
         const paymentMethod = document.getElementById("order-payment-method").value;
         const status = document.getElementById("order-status").value;
 
-        // Parse order items from textarea or get from current order
+        // Parse order items
         let orderItems = [];
         if (editingOrderId) {
+          // Edit mode: lấy từ order hiện tại
           const order = orders.find(o => o.order_id === editingOrderId);
           orderItems = order ? order.order_items : [];
         } else {
-          const itemsText = document.getElementById("order-items").value.trim();
-          if (!itemsText) {
-            showError("Vui lòng nhập danh sách sản phẩm");
+          // Add mode: lấy từ newOrderItems
+          if (newOrderItems.length === 0) {
+            showError("Vui lòng thêm ít nhất 1 sản phẩm");
             return;
           }
-          try {
-            orderItems = JSON.parse(itemsText);
-            if (!Array.isArray(orderItems)) {
-              showError("Danh sách sản phẩm phải là mảng JSON");
+          
+          // Validate items
+          for (let i = 0; i < newOrderItems.length; i++) {
+            const item = newOrderItems[i];
+            if (!item.drug_name || !item.drug_id || !item.quantity || !item.price) {
+              showError(`Sản phẩm #${i+1}: Vui lòng điền đầy đủ thông tin`);
               return;
             }
-          } catch (error) {
-            showError("Dữ liệu sản phẩm không hợp lệ. Vui lòng kiểm tra định dạng JSON");
-            return;
           }
+          
+          orderItems = newOrderItems;
         }
 
         // Parse notes
         let notes = '';
         if (editingOrderId) {
+          // Edit mode: giữ nguyên notes cũ
           const order = orders.find(o => o.order_id === editingOrderId);
           notes = order ? order.notes : '';
         } else {
-          notes = document.getElementById("order-notes").value.trim();
+          // Add mode: lấy từ form inputs
+          const fullName = document.getElementById("note-fullname").value.trim();
+          const phone = document.getElementById("note-phone").value.trim();
+          const address = document.getElementById("note-address").value.trim();
+          const notesText = document.getElementById("note-notes").value.trim();
+          
+          if (!fullName || !phone || !address) {
+            showError("Vui lòng điền đầy đủ thông tin giao hàng");
+            return;
+          }
+          
+          notes = JSON.stringify({
+            fullName,
+            phone,
+            address,
+            notes: notesText
+          });
         }
 
         const payload = {
