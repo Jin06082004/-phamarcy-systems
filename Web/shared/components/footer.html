@@ -1,3 +1,251 @@
 <footer class="footer">
-  <p>© 2025 DrugStore. Tất cả các quyền được bảo lưu.</p>
+  <div class="footer-container">
+    <div class="footer-section">
+      <h3>Về Chúng Tôi</h3>
+      <p>DrugStore - Hệ thống nhà thuốc uy tín, cung cấp các sản phẩm chăm sóc sức khỏe chất lượng cao với giá cả hợp lý.</p>
+      <div class="footer-social">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h3>Liên Kết Nhanh</h3>
+      <ul>
+        <li><a href="/Web/user/index.html">Trang Chủ</a></li>
+        <li><a href="/Web/user/pages/products.html">Sản Phẩm</a></li>
+        <li><a href="/Web/user/pages/promotions.html">Khuyến Mãi</a></li>
+        <li><a href="/Web/user/pages/my-orders.html">Đơn Hàng</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Danh Mục Sản Phẩm</h3>
+      <ul>
+        <li><a href="/Web/user/pages/antibiotics.html">Kháng Sinh</a></li>
+        <li><a href="/Web/user/pages/pain-relief.html">Giảm Đau</a></li>
+        <li><a href="/Web/user/pages/vitamins.html">Vitamin & Dinh Dưỡng</a></li>
+        <li><a href="/Web/user/pages/personal-care.html">Chăm Sóc Cá Nhân</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Chính Sách & Hỗ Trợ</h3>
+      <ul>
+        <li><a href="#">Chính Sách Bảo Mật</a></li>
+        <li><a href="#">Điều Khoản Sử Dụng</a></li>
+        <li><a href="#">Chính Sách Đổi Trả</a></li>
+        <li><a href="#">Hướng Dẫn Mua Hàng</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Liên Hệ</h3>
+      <ul class="footer-contact">
+        <li><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận XYZ, TP.HCM</li>
+        <li><i class="fas fa-phone"></i> Hotline: 1900-xxxx</li>
+        <li><i class="fas fa-envelope"></i> Email: support@drugstore.com</li>
+        <li><i class="fas fa-clock"></i> 24/7 - Phục vụ mọi lúc</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-container">
+      <p>© 2025 DrugStore. Tất cả các quyền được bảo lưu.</p>
+      <div class="footer-payment">
+        <span>Phương thức thanh toán:</span>
+        <i class="fab fa-cc-visa"></i>
+        <i class="fab fa-cc-mastercard"></i>
+        <i class="fab fa-cc-paypal"></i>
+        <i class="fas fa-money-bill-wave"></i>
+      </div>
+    </div>
+  </div>
 </footer>
+
+<style>
+.footer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  padding: 60px 0 0;
+  margin-top: 80px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  padding: 0 20px 40px;
+}
+
+.footer-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-section p {
+  line-height: 1.6;
+  opacity: 0.9;
+  margin-bottom: 15px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 12px;
+}
+
+.footer-section ul li a {
+  color: #ffffff;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.footer-section ul li a:hover {
+  opacity: 1;
+  transform: translateX(5px);
+  color: #ffd700;
+}
+
+.footer-contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.footer-contact li i {
+  margin-top: 3px;
+  color: #ffd700;
+  min-width: 16px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.footer-social a {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.footer-social a:hover {
+  background: #ffd700;
+  color: #667eea;
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.footer-bottom {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 25px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-bottom p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.footer-payment {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.footer-payment span {
+  opacity: 0.8;
+  margin-right: 5px;
+}
+
+.footer-payment i {
+  font-size: 28px;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.footer-payment i:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 40px 0 0;
+    margin-top: 60px;
+  }
+
+  .footer-container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    padding: 0 15px 30px;
+  }
+
+  .footer-section h3 {
+    font-size: 16px;
+  }
+
+  .footer-bottom-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-payment {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
+}
+</style>
+
+<!-- Font Awesome cho icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />

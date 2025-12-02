@@ -130,6 +130,10 @@ const orderCreatedTemplate = (order, user) => {
     </tr>
   `).join('');
 
+  // Tính subtotal (tổng trước giảm giá)
+  const subtotal = order.order_items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+  const discountAmount = order.discount_info?.amount || 0;
+
   return `
 <!DOCTYPE html>
 <html>
@@ -140,9 +144,13 @@ const orderCreatedTemplate = (order, user) => {
     .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
     .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
     .order-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .shipping-info { background: #eff6ff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6; }
     table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
     th { background: #f3f4f6; padding: 12px; text-align: left; font-weight: bold; }
+    td { padding: 10px; border-bottom: 1px solid #ddd; }
+    .discount-row { background: #fef3c7; color: #92400e; font-weight: bold; }
     .total { background: #10b981; color: white; font-size: 18px; }
+    .discount-badge { display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; margin: 10px 0; }
     .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
   </style>
 </head>
@@ -155,12 +163,28 @@ const orderCreatedTemplate = (order, user) => {
       <p>Xin chào <strong>${user.full_name || user.username}</strong>,</p>
       <p>Cảm ơn bạn đã đặt hàng tại Nhà Thuốc Online!</p>
       
+      ${order.discount_info?.code ? `
+        <div style="text-align: center; margin: 20px 0;">
+          <span class="discount-badge">🎁 Đã áp dụng mã giảm giá: ${order.discount_info.code} (-${order.discount_info.percentage}%)</span>
+        </div>
+      ` : ''}
+      
       <div class="order-info">
         <h3>Thông tin đơn hàng #${order.order_id}</h3>
         <p><strong>Ngày đặt:</strong> ${new Date(order.createdAt).toLocaleString('vi-VN')}</p>
         <p><strong>Trạng thái:</strong> <span style="color: #f59e0b;">Chờ xử lý</span></p>
-        <p><strong>Phương thức thanh toán:</strong> ${order.payment_method === 'cash' ? 'Tiền mặt' : order.payment_method === 'card' ? 'Thẻ' : 'Chuyển khoản'}</p>
+        <p><strong>Phương thức thanh toán:</strong> ${order.payment_method === 'cash' ? 'Tiền mặt (COD)' : order.payment_method === 'card' ? 'Thẻ tín dụng' : 'Chuyển khoản'}</p>
         ${order.notes ? `<p><strong>Ghi chú:</strong> ${order.notes}</p>` : ''}
+      </div>
+
+      <div class="shipping-info">
+        <h3 style="margin-top: 0; color: #1e40af;">📍 Địa chỉ giao hàng</h3>
+        <p style="margin: 5px 0;"><strong>Người nhận:</strong> ${order.shipping_address?.recipient_name || user.full_name || user.username}</p>
+        <p style="margin: 5px 0;"><strong>Số điện thoại:</strong> ${order.shipping_address?.phone || user.phone_number || 'Chưa cập nhật'}</p>
+        <p style="margin: 5px 0;"><strong>Địa chỉ:</strong> ${order.shipping_address?.address || 'Chưa cập nhật'}</p>
+        ${order.shipping_address?.ward ? `<p style="margin: 5px 0;"><strong>Phường/Xã:</strong> ${order.shipping_address.ward}</p>` : ''}
+        ${order.shipping_address?.district ? `<p style="margin: 5px 0;"><strong>Quận/Huyện:</strong> ${order.shipping_address.district}</p>` : ''}
+        ${order.shipping_address?.city ? `<p style="margin: 5px 0;"><strong>Tỉnh/Thành phố:</strong> ${order.shipping_address.city}</p>` : ''}
       </div>
 
       <h3>Chi tiết sản phẩm:</h3>
@@ -175,12 +199,32 @@ const orderCreatedTemplate = (order, user) => {
         </thead>
         <tbody>
           ${itemsHTML}
+          ${discountAmount > 0 ? `
+            <tr>
+              <td colspan="3" style="padding: 12px; text-align: right; font-weight: bold;">Tạm tính:</td>
+              <td style="padding: 12px; text-align: right;">${subtotal.toLocaleString('vi-VN')}₫</td>
+            </tr>
+            <tr class="discount-row">
+              <td colspan="3" style="padding: 12px; text-align: right;">
+                <strong>🎁 Giảm giá (${order.discount_info.code} -${order.discount_info.percentage}%):</strong>
+              </td>
+              <td style="padding: 12px; text-align: right;"><strong>-${discountAmount.toLocaleString('vi-VN')}₫</strong></td>
+            </tr>
+          ` : ''}
           <tr class="total">
-            <td colspan="3" style="padding: 15px; text-align: right;"><strong>Tổng cộng:</strong></td>
+            <td colspan="3" style="padding: 15px; text-align: right;"><strong>Tổng thanh toán:</strong></td>
             <td style="padding: 15px; text-align: right;"><strong>${order.total_amount.toLocaleString('vi-VN')}₫</strong></td>
           </tr>
         </tbody>
       </table>
+
+      ${discountAmount > 0 ? `
+        <div style="background: #d1fae5; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981; margin: 20px 0;">
+          <p style="margin: 0; color: #065f46;">
+            <strong>💰 Bạn đã tiết kiệm được ${discountAmount.toLocaleString('vi-VN')}₫ với mã ${order.discount_info.code}!</strong>
+          </p>
+        </div>
+      ` : ''}
 
       <p style="margin-top: 20px;">Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất!</p>
     </div>
@@ -194,7 +238,10 @@ const orderCreatedTemplate = (order, user) => {
 };
 
 // Template đơn hàng đang xử lý
-const orderProcessingTemplate = (order, user) => `
+const orderProcessingTemplate = (order, user) => {
+  const discountAmount = order.discount_info?.amount || 0;
+  
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -203,7 +250,9 @@ const orderProcessingTemplate = (order, user) => `
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
     .header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
     .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .shipping-info { background: #eff6ff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6; }
     .status-badge { display: inline-block; padding: 8px 20px; background: #3b82f6; color: white; border-radius: 20px; font-weight: bold; }
+    .discount-badge { display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
     .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
   </style>
 </head>
@@ -216,12 +265,28 @@ const orderProcessingTemplate = (order, user) => `
       <p>Xin chào <strong>${user.full_name || user.username}</strong>,</p>
       <p>Đơn hàng <strong>#${order.order_id}</strong> của bạn đang được xử lý!</p>
       <p>Trạng thái: <span class="status-badge">Đang xử lý</span></p>
+      
+      ${order.discount_info?.code ? `
+        <div style="text-align: center; margin: 15px 0;">
+          <span class="discount-badge">🎁 Mã giảm giá: ${order.discount_info.code} (-${order.discount_info.percentage}%)</span>
+        </div>
+      ` : ''}
+      
       <p><strong>Thông tin:</strong></p>
       <ul>
         <li>Mã đơn hàng: <strong>#${order.order_id}</strong></li>
         <li>Ngày đặt: ${new Date(order.createdAt).toLocaleString('vi-VN')}</li>
+        ${discountAmount > 0 ? `<li>Tiết kiệm: <strong style="color: #10b981;">${discountAmount.toLocaleString('vi-VN')}₫</strong></li>` : ''}
         <li>Tổng tiền: <strong>${order.total_amount.toLocaleString('vi-VN')}₫</strong></li>
       </ul>
+
+      <div class="shipping-info">
+        <h3 style="margin-top: 0; color: #1e40af;">📍 Địa chỉ giao hàng</h3>
+        <p style="margin: 5px 0;"><strong>Người nhận:</strong> ${order.shipping_address?.recipient_name || user.full_name || user.username}</p>
+        <p style="margin: 5px 0;"><strong>Số điện thoại:</strong> ${order.shipping_address?.phone || user.phone_number || 'Chưa cập nhật'}</p>
+        <p style="margin: 5px 0;"><strong>Địa chỉ:</strong> ${order.shipping_address?.address || 'Chưa cập nhật'}, ${order.shipping_address?.ward || ''}, ${order.shipping_address?.district || ''}, ${order.shipping_address?.city || ''}</p>
+      </div>
+      
       <p>Chúng tôi đang chuẩn bị hàng và sẽ giao đến bạn sớm nhất!</p>
     </div>
     <div class="footer">
@@ -231,9 +296,13 @@ const orderProcessingTemplate = (order, user) => `
 </body>
 </html>
 `;
+};
 
 // Template đơn hàng đã hoàn thành
-const orderCompletedTemplate = (order, user) => `
+const orderCompletedTemplate = (order, user) => {
+  const discountAmount = order.discount_info?.amount || 0;
+  
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -243,6 +312,7 @@ const orderCompletedTemplate = (order, user) => `
     .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
     .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
     .status-badge { display: inline-block; padding: 8px 20px; background: #10b981; color: white; border-radius: 20px; font-weight: bold; }
+    .discount-badge { display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
     .button { display: inline-block; padding: 12px 30px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
     .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
   </style>
@@ -256,12 +326,29 @@ const orderCompletedTemplate = (order, user) => `
       <p>Xin chào <strong>${user.full_name || user.username}</strong>,</p>
       <p>Đơn hàng <strong>#${order.order_id}</strong> đã được giao thành công đến bạn!</p>
       <p>Trạng thái: <span class="status-badge">Hoàn thành</span></p>
+      
+      ${order.discount_info?.code ? `
+        <div style="text-align: center; margin: 15px 0;">
+          <span class="discount-badge">🎁 Đã sử dụng mã: ${order.discount_info.code} (-${order.discount_info.percentage}%)</span>
+        </div>
+      ` : ''}
+      
       <p><strong>Chi tiết:</strong></p>
       <ul>
         <li>Mã đơn hàng: <strong>#${order.order_id}</strong></li>
         <li>Ngày giao: ${new Date().toLocaleString('vi-VN')}</li>
+        ${discountAmount > 0 ? `<li>Đã tiết kiệm: <strong style="color: #10b981;">${discountAmount.toLocaleString('vi-VN')}₫</strong></li>` : ''}
         <li>Tổng tiền: <strong>${order.total_amount.toLocaleString('vi-VN')}₫</strong></li>
       </ul>
+      
+      ${discountAmount > 0 ? `
+        <div style="background: #d1fae5; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981; margin: 20px 0;">
+          <p style="margin: 0; color: #065f46;">
+            <strong>🎊 Cảm ơn bạn đã sử dụng mã giảm giá ${order.discount_info.code}! Bạn đã tiết kiệm ${discountAmount.toLocaleString('vi-VN')}₫</strong>
+          </p>
+        </div>
+      ` : ''}
+      
       <p>Cảm ơn bạn đã tin tưởng và mua sắm tại Nhà Thuốc Online!</p>
       <p>Nếu có bất kỳ vấn đề gì, vui lòng liên hệ với chúng tôi.</p>
       <div style="text-align: center;">
@@ -275,6 +362,7 @@ const orderCompletedTemplate = (order, user) => `
 </body>
 </html>
 `;
+};
 
 // Template đơn hàng bị hủy
 const orderCancelledTemplate = (order, user) => {
@@ -286,6 +374,10 @@ const orderCancelledTemplate = (order, user) => {
       <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;"><strong>${(item.quantity * item.price).toLocaleString('vi-VN')}₫</strong></td>
     </tr>
   `).join('');
+
+  // Tính subtotal (tổng trước giảm giá)
+  const subtotal = order.order_items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+  const discountAmount = order.discount_info?.amount || 0;
 
   return `
 <!DOCTYPE html>
@@ -319,6 +411,7 @@ const orderCancelledTemplate = (order, user) => {
         <h3>Thông tin đơn hàng #${order.order_id}</h3>
         <p><strong>Ngày đặt:</strong> ${new Date(order.createdAt).toLocaleString('vi-VN')}</p>
         <p><strong>Ngày hủy:</strong> ${new Date().toLocaleString('vi-VN')}</p>
+        ${order.discount_info?.code ? `<p><strong>Mã giảm giá đã sử dụng:</strong> ${order.discount_info.code} (-${order.discount_info.percentage}%)</p>` : ''}
         <p><strong>Tổng tiền:</strong> <strong style="color: #ef4444;">${order.total_amount.toLocaleString('vi-VN')}₫</strong></p>
       </div>
 
@@ -342,6 +435,7 @@ const orderCancelledTemplate = (order, user) => {
         <ul style="margin: 10px 0 0 0;">
           <li>Nếu bạn đã thanh toán, số tiền sẽ được hoàn lại trong <strong>3-5 ngày làm việc</strong></li>
           <li>Số lượng sản phẩm đã được hoàn trả vào kho</li>
+          ${discountAmount > 0 ? `<li><strong>Mã giảm giá ${order.discount_info.code}</strong> đã được hoàn lại và có thể sử dụng cho đơn hàng tiếp theo</li>` : ''}
           <li>Bạn có thể đặt lại đơn hàng bất cứ lúc nào</li>
         </ul>
       </div>
@@ -360,7 +454,6 @@ const orderCancelledTemplate = (order, user) => {
     </div>
     <div class="footer">
       <p>© 2024 Nhà Thuốc Online. All rights reserved.</p>
-      <p>Email này được gửi tự động, vui lòng không trả lời.</p>
     </div>
   </div>
 </body>

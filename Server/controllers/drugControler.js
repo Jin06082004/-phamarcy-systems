@@ -23,8 +23,16 @@ export const addDrug = async (req, res) => {
 // Lấy tất cả thuốc
 export const getAllDrugs = async (req, res) => {
     try {
-        const drugs = await drugModel
-            .find();
+        // Hỗ trợ filter theo category_id từ query parameter
+        const { category_id } = req.query;
+        
+        let query = {};
+        if (category_id) {
+            query.category_id = Number(category_id);
+        }
+        
+        const drugs = await drugModel.find(query);
+        
         res.status(200).json({
             success: true,
             count: drugs.length,

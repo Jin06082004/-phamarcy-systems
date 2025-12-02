@@ -267,6 +267,10 @@ a.link:hover {
   gap: 0.5rem;
 }
 
+.error[hidden] {
+  display: none;
+}
+
 .error::before {
   content: '⚠';
   font-size: 1.25rem;
