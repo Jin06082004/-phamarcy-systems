@@ -293,7 +293,7 @@
     <script src="../../shared/include.js"></script>
     <script src="../../shared/notification.js"></script>
     <script type="module">
-      import { orderAPI, invoiceAPI, couponAPI, discountAPI } from "../../shared/api.js";
+      import { orderAPI, invoiceAPI, couponAPI, discountAPI, userAPI } from "../../shared/api.js";
       import { cartAPI } from "../../shared/cartApi.js";
       import { initAdminSecretButton } from "../../shared/adminButton.js";
 
@@ -304,6 +304,9 @@
       let subtotal = 0;
       let discount = 0;
       let shippingFee = 0;
+      let appliedDiscount = null; // Lưu thông tin discount đã áp dụng
+      let appliedCoupon = ''; // Lưu mã coupon đã áp dụng
+      let savedAddresses = []; // Danh sách địa chỉ đã lưu
 
       // VietQR Configuration
       const VIETQR_CONFIG = {
@@ -520,8 +523,6 @@
         console.log('✅ QR Code updated:', qrUrl);
       }
 
-      let appliedDiscount = null;
-
       window.applyCoupon = async () => {
         const codeInput = document.getElementById('couponCode');
         const code = codeInput.value.trim().toUpperCase();
@@ -587,6 +588,7 @@
 
           // Apply discount
           appliedDiscount = discountData;
+          appliedCoupon = code; // Lưu mã coupon đã áp dụng
           discount = Math.round((subtotal * discountData.percentage) / 100);
           
           // Update UI
@@ -626,6 +628,7 @@
 
       function removeCoupon() {
         appliedDiscount = null;
+        appliedCoupon = ''; // Reset mã coupon
         discount = 0;
         
         // Reset UI
@@ -696,13 +699,6 @@
           }
         }
 
-        const shippingInfo = {
-          fullName,
-          phone,
-          address: `${address}, ${district}, ${city}`,
-          notes
-        };
-
         // Show loading
         const btn = event.target;
         const originalHTML = btn.innerHTML;
@@ -711,8 +707,18 @@
 
         try {
           const total = subtotal - discount + shippingFee;
+          
+          // 📍 Chuẩn bị thông tin giao hàng
+          const shippingAddress = {
+            recipient_name: fullName,
+            phone: phone,
+            address: address,
+            ward: '', // Không có trường ward trong form
+            district: district,
+            city: city
+          };
 
-          // Create order
+          // Create order với shipping_address và discount_code
           const orderRes = await orderAPI.create({
             customer_id: user.user_id,
             order_items: cart.map(item => ({
@@ -724,7 +730,9 @@
             total_amount: total,
             payment_method: paymentMethod,
             status: paymentMethod === 'online' ? 'Pending' : 'Pending',
-            notes: JSON.stringify(shippingInfo)
+            notes: notes,
+            shipping_address: shippingAddress,
+            discount_code: appliedCoupon || undefined
           });
 
           const orderId = orderRes.data?.order_id || orderRes.order_id;
@@ -778,6 +786,29 @@
 
           localStorage.removeItem('cart');
 
+          // 📍 Hỏi người dùng có muốn lưu địa chỉ mới không
+          const savedAddressId = document.getElementById('savedAddress').value;
+          if (!savedAddressId) {
+            // Địa chỉ mới - hỏi có muốn lưu không
+            const shouldSave = confirm('Bạn có muốn lưu địa chỉ này để sử dụng cho lần sau không?');
+            if (shouldSave) {
+              try {
+                await userAPI.addAddress({
+                  recipient_name: fullName,
+                  phone: phone,
+                  address: address,
+                  ward: '',
+                  district: district,
+                  city: city,
+                  is_default: savedAddresses.length === 0 // Đặt làm mặc định nếu là địa chỉ đầu tiên
+                });
+                console.log('✅ Đã lưu địa chỉ mới');
+              } catch (saveErr) {
+                console.warn('⚠️ Không thể lưu địa chỉ:', saveErr);
+              }
+            }
+          }
+
           // Show success and redirect
           notification.success(
             appliedDiscount 
@@ -788,7 +819,7 @@
           // Store order info
           localStorage.setItem('lastOrder', JSON.stringify({
             orderId: `ORD-${orderId}`,
-            shippingInfo,
+            shippingAddress: shippingAddress,
             total,
             paymentMethod,
             items: cart,
@@ -887,6 +918,112 @@
       });
 
       // Load user profile and addresses
+      // 📍 Load địa chỉ đã lưu từ server
+      async function loadSavedAddresses() {
+        try {
+          const user = JSON.parse(localStorage.getItem('user') || 'null');
+          if (!user) return;
+
+          const response = await userAPI.getAddresses();
+          if (response.success && response.data && response.data.length > 0) {
+            savedAddresses = response.data;
+            
+            const savedAddressSelect = document.getElementById('savedAddress');
+            const savedAddressGroup = document.getElementById('savedAddressGroup');
+            
+            // Show address dropdown
+            savedAddressGroup.style.display = 'block';
+            
+            // Clear existing options except first one
+            savedAddressSelect.innerHTML = '<option value="">-- Nhập địa chỉ mới --</option>';
+            
+            // Add address options
+            savedAddresses.forEach(addr => {
+              const option = document.createElement('option');
+              option.value = addr._id;
+              const displayText = `${addr.recipient_name} - ${addr.phone} - ${addr.address}${addr.district ? ', ' + addr.district : ''}${addr.city ? ', ' + addr.city : ''}`;
+              option.textContent = displayText;
+              if (addr.is_default) {
+                option.selected = true;
+                option.textContent = '⭐ ' + displayText;
+              }
+              savedAddressSelect.appendChild(option);
+            });
+            
+            // Auto-fill default address
+            const defaultAddr = savedAddresses.find(a => a.is_default);
+            if (defaultAddr) {
+              fillAddressFromSaved(defaultAddr);
+            }
+            
+            // Handle address selection change
+            savedAddressSelect.addEventListener('change', (e) => {
+              const selectedId = e.target.value;
+              if (selectedId) {
+                const addr = savedAddresses.find(a => a._id === selectedId);
+                if (addr) {
+                  fillAddressFromSaved(addr);
+                }
+              } else {
+                // Clear form when selecting "new address"
+                clearAddressForm();
+              }
+            });
+            
+            console.log(`✅ Đã load ${savedAddresses.length} địa chỉ đã lưu`);
+          }
+        } catch (error) {
+          console.error('❌ Lỗi load địa chỉ:', error);
+        }
+      }
+
+      // Fill form từ địa chỉ đã lưu
+      function fillAddressFromSaved(addr) {
+        document.getElementById('fullName').value = addr.recipient_name || '';
+        document.getElementById('phone').value = addr.phone || '';
+        document.getElementById('address').value = addr.address || '';
+        
+        // Set city
+        if (addr.city) {
+          document.getElementById('city').value = addr.city;
+          
+          // Trigger city change to load districts
+          const citySelect = document.getElementById('city');
+          const event = new Event('change');
+          citySelect.dispatchEvent(event);
+          
+          // Set district after a short delay to ensure districts are loaded
+          setTimeout(() => {
+            if (addr.district) {
+              document.getElementById('district').value = addr.district;
+            }
+          }, 100);
+        }
+      }
+
+      // Clear address form
+      function clearAddressForm() {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        
+        // Keep user info but clear address
+        if (user && user.full_name) {
+          document.getElementById('fullName').value = user.full_name;
+        } else {
+          document.getElementById('fullName').value = '';
+        }
+        
+        if (user && user.phone) {
+          document.getElementById('phone').value = user.phone;
+        } else {
+          document.getElementById('phone').value = '';
+        }
+        
+        document.getElementById('address').value = '';
+        document.getElementById('city').value = '';
+        document.getElementById('district').innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+        document.getElementById('district').disabled = true;
+      }
+
       function loadUserProfile() {
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -977,6 +1114,7 @@
         loadCart();
         initLocationSelects();
         loadUserProfile();
+        loadSavedAddresses(); // Load địa chỉ đã lưu
       });
     </script>
   </body>

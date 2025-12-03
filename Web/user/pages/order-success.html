@@ -286,35 +286,80 @@
           <h2>🎉 Đặt hàng thành công!</h2>
           <p>Cảm ơn bạn đã tin tưởng và mua sắm tại DrugStore</p>
 
-          <div class="order-id">
+          <div class="order-id" id="orderIdContainer">
             Mã đơn hàng: <span id="orderId">ORD-0000</span>
           </div>
 
+          <div id="discountBadge" style="display: none; margin: 1rem 0;">
+            <div style="display: inline-block; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border-radius: 20px; font-weight: 700; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">
+              🎁 Mã giảm giá: <span id="discountCode"></span> (-<span id="discountPercent"></span>%)
+            </div>
+          </div>
+
           <div class="order-details">
-            <h3>📦 Chi tiết đơn hàng</h3>
+            <h3>📦 Thông tin đơn hàng</h3>
+            
+            <div class="detail-row">
+              <span class="detail-label">Ngày đặt:</span>
+              <span class="detail-value" id="orderDate">-</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Trạng thái:</span>
+              <span class="detail-value" style="color: #f59e0b;">Chờ xử lý</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Phương thức thanh toán:</span>
+              <span class="detail-value" id="paymentMethod">-</span>
+            </div>
+          </div>
+
+          <div class="order-details">
+            <h3>📍 Địa chỉ giao hàng</h3>
             
             <div class="detail-row">
               <span class="detail-label">Người nhận:</span>
-              <span class="detail-value" id="fullName">-</span>
+              <span class="detail-value" id="recipientName">-</span>
             </div>
 
             <div class="detail-row">
               <span class="detail-label">Số điện thoại:</span>
-              <span class="detail-value" id="phone">-</span>
+              <span class="detail-value" id="recipientPhone">-</span>
             </div>
 
             <div class="detail-row">
-              <span class="detail-label">Địa chỉ giao hàng:</span>
-              <span class="detail-value" id="address">-</span>
+              <span class="detail-label">Địa chỉ:</span>
+              <span class="detail-value" id="recipientAddress" style="text-align: right; max-width: 60%;">-</span>
             </div>
+          </div>
 
-            <div class="detail-row">
-              <span class="detail-label">Tổng tiền:</span>
-              <span class="detail-value" id="totalAmount" style="color: #ef4444; font-size: 1.5rem;">0₫</span>
-            </div>
+          <div class="order-details">
+            <h3>🛒 Chi tiết sản phẩm</h3>
 
             <div class="order-items" id="orderItems">
               <!-- Items will be loaded here -->
+            </div>
+
+            <div class="detail-row" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid var(--border);">
+              <span class="detail-label" style="font-size: 1.125rem;">Tạm tính:</span>
+              <span class="detail-value" id="subtotal">0₫</span>
+            </div>
+
+            <div class="detail-row" id="discountRow" style="display: none; background: #fef3c7; padding: 0.75rem; border-radius: 8px; margin: 0.5rem 0;">
+              <span class="detail-label" style="color: #92400e;">🎁 Giảm giá:</span>
+              <span class="detail-value" style="color: #10b981; font-size: 1.25rem;" id="discountAmount">-0₫</span>
+            </div>
+
+            <div class="detail-row" style="background: linear-gradient(135deg, #10b981, #059669); padding: 1.25rem; border-radius: 12px; margin-top: 0.5rem;">
+              <span class="detail-label" style="color: white; font-size: 1.25rem;">Tổng thanh toán:</span>
+              <span class="detail-value" style="color: white; font-size: 1.75rem;" id="totalAmount">0₫</span>
+            </div>
+
+            <div id="savingsInfo" style="display: none; background: #d1fae5; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid #10b981;">
+              <p style="margin: 0; color: #065f46; font-weight: 600; text-align: center;">
+                💰 Bạn đã tiết kiệm được <strong id="savingsAmount">0₫</strong> với mã <strong id="savingsCode"></strong>!
+              </p>
             </div>
           </div>
 
@@ -362,12 +407,80 @@
           return;
         }
 
-        // Display order info
-        document.getElementById('orderId').textContent = 'ORD-' + lastOrder.orderId;
-        document.getElementById('fullName').textContent = lastOrder.shippingInfo.fullName;
-        document.getElementById('phone').textContent = lastOrder.shippingInfo.phone;
-        document.getElementById('address').textContent = lastOrder.shippingInfo.address;
-        document.getElementById('totalAmount').textContent = lastOrder.total.toLocaleString() + '₫';
+        console.log('📦 Last Order:', lastOrder);
+
+        // Display order ID
+        const orderIdText = lastOrder.orderId || 'ORD-0000';
+        document.getElementById('orderId').textContent = orderIdText;
+
+        // Display order date
+        const orderDate = new Date().toLocaleString('vi-VN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        document.getElementById('orderDate').textContent = orderDate;
+
+        // Display payment method
+        const paymentMethods = {
+          'cash': 'Tiền mặt (COD)',
+          'card': 'Thẻ tín dụng/Ghi nợ',
+          'online': 'Chuyển khoản QR'
+        };
+        document.getElementById('paymentMethod').textContent = paymentMethods[lastOrder.paymentMethod] || lastOrder.paymentMethod || 'Tiền mặt (COD)';
+
+        // Display shipping address
+        const shippingAddr = lastOrder.shippingAddress || {};
+        document.getElementById('recipientName').textContent = shippingAddr.recipient_name || '-';
+        document.getElementById('recipientPhone').textContent = shippingAddr.phone || '-';
+        
+        // Build full address
+        const addressParts = [];
+        if (shippingAddr.address) addressParts.push(shippingAddr.address);
+        if (shippingAddr.ward) addressParts.push(shippingAddr.ward);
+        if (shippingAddr.district) addressParts.push(shippingAddr.district);
+        if (shippingAddr.city) addressParts.push(shippingAddr.city);
+        document.getElementById('recipientAddress').textContent = addressParts.join(', ') || '-';
+
+        // Calculate subtotal
+        let subtotal = 0;
+        if (lastOrder.items && lastOrder.items.length > 0) {
+          lastOrder.items.forEach(item => {
+            subtotal += (item.price || 0) * (item.quantity || 1);
+          });
+        }
+
+        // Display discount info
+        const discount = lastOrder.discount || null;
+        let discountAmount = 0;
+
+        if (discount && discount.code) {
+          // Show discount badge
+          document.getElementById('discountBadge').style.display = 'block';
+          document.getElementById('discountCode').textContent = discount.code;
+          
+          // Calculate percentage if we have it
+          if (discount.amount) {
+            discountAmount = discount.amount;
+            const percentage = Math.round((discountAmount / subtotal) * 100);
+            document.getElementById('discountPercent').textContent = percentage;
+          }
+
+          // Show discount row
+          document.getElementById('discountRow').style.display = 'flex';
+          document.getElementById('discountAmount').textContent = '-' + discountAmount.toLocaleString('vi-VN') + '₫';
+
+          // Show savings info
+          document.getElementById('savingsInfo').style.display = 'block';
+          document.getElementById('savingsAmount').textContent = discountAmount.toLocaleString('vi-VN') + '₫';
+          document.getElementById('savingsCode').textContent = discount.code;
+        }
+
+        // Display amounts
+        document.getElementById('subtotal').textContent = subtotal.toLocaleString('vi-VN') + '₫';
+        document.getElementById('totalAmount').textContent = (lastOrder.total || 0).toLocaleString('vi-VN') + '₫';
 
         // Display order items
         const itemsContainer = document.getElementById('orderItems');
@@ -378,18 +491,20 @@
               <div class="order-item">
                 <div class="item-info">
                   <h4>${item.name}</h4>
-                  <p>Số lượng: ${item.quantity} × ${item.price.toLocaleString()}₫</p>
+                  <p>Số lượng: ${item.quantity} × ${(item.price || 0).toLocaleString('vi-VN')}₫</p>
                 </div>
-                <div class="item-price">${itemTotal.toLocaleString()}₫</div>
+                <div class="item-price">${itemTotal.toLocaleString('vi-VN')}₫</div>
               </div>
             `;
           }).join('');
+        } else {
+          itemsContainer.innerHTML = '<p style="text-align: center; color: #999;">Không có sản phẩm</p>';
         }
 
         // Clear lastOrder after displaying
         setTimeout(() => {
           localStorage.removeItem('lastOrder');
-        }, 5000);
+        }, 60000); // 1 minute
       });
     </script>
   </body>

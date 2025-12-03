@@ -591,13 +591,17 @@
         const order = allOrders.find(o => o.order_id === orderId);
         if (!order) return;
 
-        // Parse shipping info from notes
-        let shippingInfo = {};
-        try {
-          shippingInfo = JSON.parse(order.notes || '{}');
-        } catch (e) {
-          shippingInfo = { fullName: 'N/A', phone: 'N/A', address: 'N/A' };
-        }
+        // Get shipping address from order.shipping_address
+        const shippingAddr = order.shipping_address || {};
+        
+        // Build full address
+        const addressParts = [];
+        if (shippingAddr.address) addressParts.push(shippingAddr.address);
+        if (shippingAddr.ward) addressParts.push(shippingAddr.ward);
+        if (shippingAddr.district) addressParts.push(shippingAddr.district);
+        if (shippingAddr.city) addressParts.push(shippingAddr.city);
+        
+        const fullAddress = addressParts.length > 0 ? addressParts.join(', ') : 'N/A';
 
         const statusText = {
           'Pending': 'Chờ xử lý',
@@ -637,10 +641,10 @@
             <div style="margin-bottom: 20px;">
               <h4 style="font-size: 1.125rem; font-weight: 700; color: #1f2937; margin-bottom: 12px;">📍 Thông tin giao hàng</h4>
               <div style="background: #f9fafb; padding: 16px; border-radius: 8px;">
-                <div style="margin-bottom: 8px;"><strong>Người nhận:</strong> ${shippingInfo.fullName || 'N/A'}</div>
-                <div style="margin-bottom: 8px;"><strong>Số điện thoại:</strong> ${shippingInfo.phone || 'N/A'}</div>
-                <div style="margin-bottom: 8px;"><strong>Địa chỉ:</strong> ${shippingInfo.address || 'N/A'}</div>
-                ${shippingInfo.notes ? `<div><strong>Ghi chú:</strong> ${shippingInfo.notes}</div>` : ''}
+                <div style="margin-bottom: 8px;"><strong>Người nhận:</strong> ${shippingAddr.recipient_name || 'N/A'}</div>
+                <div style="margin-bottom: 8px;"><strong>Số điện thoại:</strong> ${shippingAddr.phone || 'N/A'}</div>
+                <div style="margin-bottom: 8px;"><strong>Địa chỉ:</strong> ${fullAddress}</div>
+                ${order.notes ? `<div><strong>Ghi chú:</strong> ${order.notes}</div>` : ''}
               </div>
             </div>
 

@@ -82,6 +82,13 @@ export const userAPI = {
     getById: (id) => apiCall(`/users/${id}`), // ✅ Cần token
     update: (id, data) => apiCall(`/users/${id}`, "PUT", data),
     delete: (id) => apiCall(`/users/${id}`, "DELETE"),
+    
+    // 📍 Address management
+    getAddresses: () => apiCall("/users/addresses/list"),
+    addAddress: (data) => apiCall("/users/addresses/add", "POST", data),
+    updateAddress: (addressId, data) => apiCall(`/users/addresses/${addressId}`, "PUT", data),
+    deleteAddress: (addressId) => apiCall(`/users/addresses/${addressId}`, "DELETE"),
+    setDefaultAddress: (addressId) => apiCall(`/users/addresses/${addressId}/default`, "PATCH"),
 };
 
 // ========== ORDER API ==========

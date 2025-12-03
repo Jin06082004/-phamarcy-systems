@@ -19,11 +19,16 @@
     <main class="content">
       <section class="hero">
         <div class="hero-text">
-          <h2>Chào mừng đến với <span>DrugStore</span>!</h2>
-          <p>
-            Nơi bạn có thể mua thuốc, vitamin, thực phẩm chức năng và sản phẩm chăm sóc sức khỏe uy tín, an toàn, tiện lợi.
+          <h2 style="font-family: 'Montserrat', sans-serif;">🎁 <span>Mã Giảm Giá Hot</span> - Đừng Bỏ Lỡ!</h2>
+          <p style="margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">
+            Các chương trình khuyến mãi đặc biệt đang diễn ra - Áp dụng ngay để nhận ưu đãi!
           </p>
-          <button class="btn-primary">Khám phá ngay</button>
+          <div id="promotions-container" style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 100%; margin: 0 auto;">
+            <div style="text-align: center; color: #666; font-family: 'Montserrat', sans-serif;">Đang tải khuyến mãi...</div>
+          </div>
+          <button class="btn-primary" style="margin-top: 25px; font-family: 'Montserrat', sans-serif;" onclick="window.location.href='pages/promotions.html'">
+            🎉 Khám phá các khuyến mãi khác
+          </button>
         </div>
       </section>
 
@@ -42,10 +47,106 @@
     <script type="module">
       import { drugAPI } from '../shared/api.js';
       import { cartAPI } from '../shared/cartApi.js';
+      import { couponAPI } from '../shared/couponApi.js';
       import { initAdminSecretButton } from '../shared/adminButton.js';
 
       // 🔒 Khởi tạo nút admin ẩn - chỉ hiển thị với admin
       initAdminSecretButton('/Web/admin/index.html');
+
+      // Load active promotions
+      async function loadPromotions() {
+        try {
+          const res = await couponAPI.getActivePromotions();
+          const promotions = res.data || [];
+          const container = document.getElementById('promotions-container');
+          
+          if (!promotions.length) {
+            container.innerHTML = '<div style="text-align: center; color: #666; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 12px; font-family: \'Montserrat\', sans-serif;">Hiện không có khuyến mãi đặc biệt</div>';
+            return;
+          }
+
+          container.innerHTML = promotions.map(promo => {
+            const badge = promo.isExpiringSoon 
+              ? `<span style="background: #ff5252; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; font-family: 'Montserrat', sans-serif;">⏰ Sắp hết hạn</span>`
+              : `<span style="background: #4caf50; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; font-family: 'Montserrat', sans-serif;">⚡ Hot</span>`;
+            
+            const remaining = promo.usage_limit > 0 
+              ? `<span style="font-size: 0.85rem; color: #666; font-family: 'Montserrat', sans-serif;">Còn ${promo.usage_limit - promo.used_count}/${promo.usage_limit} lượt</span>`
+              : `<span style="font-size: 0.85rem; color: #4caf50; font-family: 'Montserrat', sans-serif;">♾️ Không giới hạn</span>`;
+
+            return `
+              <div style="background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.95) 100%); 
+                          border-radius: 16px; 
+                          padding: 20px; 
+                          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                          border-left: 5px solid #26a69a;
+                          display: flex;
+                          align-items: center;
+                          gap: 20px;
+                          transition: transform 0.2s, box-shadow 0.2s;
+                          cursor: pointer;
+                          font-family: 'Montserrat', sans-serif;"
+                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 25px rgba(0,0,0,0.15)';"
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.1)';">
+                
+                <div style="flex-shrink: 0; background: linear-gradient(135deg, #26a69a 0%, #1e8a7f 100%); 
+                            color: white; 
+                            padding: 20px; 
+                            border-radius: 12px; 
+                            text-align: center;
+                            min-width: 120px;
+                            font-family: 'Montserrat', sans-serif;">
+                  <div style="font-size: 2.5rem; font-weight: 800; line-height: 1;">${promo.percentage}%</div>
+                  <div style="font-size: 0.75rem; margin-top: 5px; opacity: 0.9;">GIẢM GIÁ</div>
+                </div>
+                
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    ${badge}
+                    <span style="font-size: 0.85rem; color: #ff6b6b; font-family: 'Montserrat', sans-serif;">Còn ${promo.daysLeft} ngày</span>
+                  </div>
+                  <div style="font-size: 1.1rem; font-weight: 600; color: #333; margin-bottom: 6px; font-family: 'Montserrat', sans-serif;">
+                    ${promo.description}
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <code style="background: #fff; 
+                                 padding: 8px 16px; 
+                                 border-radius: 8px; 
+                                 font-size: 1.05rem; 
+                                 font-weight: 700; 
+                                 color: #26a69a;
+                                 border: 2px dashed #26a69a;
+                                 letter-spacing: 1px;
+                                 font-family: 'Courier New', monospace;">${promo.code}</code>
+                    ${remaining}
+                  </div>
+                </div>
+                
+                <button onclick="navigator.clipboard.writeText('${promo.code}'); alert('Đã copy mã: ${promo.code}');"
+                        style="background: #26a69a; 
+                               color: white; 
+                               border: none; 
+                               padding: 12px 24px; 
+                               border-radius: 8px; 
+                               font-weight: 600; 
+                               cursor: pointer;
+                               white-space: nowrap;
+                               transition: background 0.2s;
+                               font-family: 'Montserrat', sans-serif;"
+                        onmouseover="this.style.background='#1e8a7f';"
+                        onmouseout="this.style.background='#26a69a';">
+                  📋 Copy mã
+                </button>
+              </div>
+            `;
+          }).join('');
+          
+        } catch (error) {
+          console.error('Load promotions error:', error);
+          document.getElementById('promotions-container').innerHTML = 
+            '<div style="text-align: center; color: #ff5252; padding: 20px; font-family: \'Montserrat\', sans-serif;">Không thể tải khuyến mãi</div>';
+        }
+      }
 
       // ensure there's a guest token for anonymous carts
       function ensureGuestToken() {
@@ -130,7 +231,10 @@
         alert(`Đã thêm ${name} vào giỏ`);
       }
 
-      document.addEventListener('DOMContentLoaded', loadFeatured);
+      document.addEventListener('DOMContentLoaded', () => {
+        loadPromotions();
+        loadFeatured();
+      });
     </script>
     <script src="../shared/chatbox.js"></script>
   </body>
