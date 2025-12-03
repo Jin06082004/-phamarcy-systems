@@ -7,7 +7,7 @@ import userModel from "../models/userModel.js";
 // Tạo đơn hàng mới (tự tăng order_id)
 export const createOrder = async (req, res) => {
   try {
-    let { customer_id, order_items, payment_method, notes, status, discount_code } = req.body;
+    let { customer_id, order_items, payment_method, notes, status, discount_code, shipping_address } = req.body;
     if (req.user && req.user.user_id) {
       customer_id = Number(req.user.user_id);
     }
@@ -72,10 +72,20 @@ export const createOrder = async (req, res) => {
       status: status && ["Pending", "Processing", "Completed", "Cancelled"].includes(status)
         ? status
         : "Pending",
-      discount_info: discount_info
+      discount_info: discount_info,
+      shipping_address: shipping_address || {}
     });
 
     await newOrder.save();
+
+    // Debug: Log order data
+    console.log('📦 Order created:', {
+      order_id: newOrder.order_id,
+      subtotal: order_items.reduce((sum, item) => sum + item.quantity * item.price, 0),
+      discount: discount_info?.amount || 0,
+      total_amount: newOrder.total_amount,
+      discount_info: newOrder.discount_info
+    });
 
     // Gửi email thông báo đặt hàng thành công
     try {

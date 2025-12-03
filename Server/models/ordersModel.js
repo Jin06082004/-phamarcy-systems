@@ -65,6 +65,15 @@ const orderSchema = new mongoose.Schema(
       percentage: { type: Number, default: 0 },
       amount: { type: Number, default: 0 }
     },
+    // 📍 Địa chỉ giao hàng
+    shipping_address: {
+      recipient_name: { type: String },
+      phone: { type: String },
+      address: { type: String },
+      ward: { type: String },
+      district: { type: String },
+      city: { type: String }
+    },
   },
   { timestamps: true }
 );

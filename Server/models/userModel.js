@@ -26,6 +26,17 @@ const userSchema = new mongoose.Schema(
         address: { type: String, default: "" },
         role: { type: String, enum: ["admin", "pharmacist", "user"], default: "user" },
         is_active: { type: Boolean, default: false },
+        // 📍 Danh sách địa chỉ giao hàng đã lưu
+        saved_addresses: [{
+            recipient_name: { type: String, required: true },
+            phone: { type: String, required: true },
+            address: { type: String, required: true },
+            ward: { type: String, default: "" },
+            district: { type: String, default: "" },
+            city: { type: String, default: "" },
+            is_default: { type: Boolean, default: false },
+            createdAt: { type: Date, default: Date.now }
+        }]
     },
     { timestamps: true }
 );

@@ -208,3 +208,198 @@ export const deleteUser = async (req, res) => {
         res.status(500).json({ success: false, message: "Xóa người dùng thất bại", error: error.message });
     }
 };
+
+// 📍 Lấy danh sách địa chỉ đã lưu
+export const getSavedAddresses = async (req, res) => {
+    try {
+        const userId = req.user.user_id;
+        const user = await userModel.findOne({ user_id: userId });
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            data: user.saved_addresses || [] 
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi khi lấy địa chỉ", error: error.message });
+    }
+};
+
+// 📍 Thêm địa chỉ mới
+export const addAddress = async (req, res) => {
+    try {
+        const userId = req.user.user_id;
+        const { recipient_name, phone, address, ward, district, city, is_default } = req.body;
+
+        if (!recipient_name || !phone || !address || !city) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Thiếu thông tin bắt buộc (recipient_name, phone, address, city)" 
+            });
+        }
+
+        const user = await userModel.findOne({ user_id: userId });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+        }
+
+        // Nếu đặt làm mặc định, bỏ mặc định của các địa chỉ khác
+        if (is_default) {
+            user.saved_addresses.forEach(addr => {
+                addr.is_default = false;
+            });
+        }
+
+        // Nếu đây là địa chỉ đầu tiên, tự động đặt làm mặc định
+        const isFirstAddress = !user.saved_addresses || user.saved_addresses.length === 0;
+
+        user.saved_addresses.push({
+            recipient_name,
+            phone,
+            address,
+            ward: ward || '',
+            district: district || '',
+            city,
+            is_default: is_default || isFirstAddress
+        });
+
+        await user.save();
+
+        res.status(201).json({ 
+            success: true, 
+            message: "Thêm địa chỉ thành công",
+            data: user.saved_addresses[user.saved_addresses.length - 1]
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi khi thêm địa chỉ", error: error.message });
+    }
+};
+
+// 📍 Cập nhật địa chỉ
+export const updateAddress = async (req, res) => {
+    try {
+        const userId = req.user.user_id;
+        const { addressId } = req.params;
+        const { recipient_name, phone, address, ward, district, city, is_default } = req.body;
+
+        const user = await userModel.findOne({ user_id: userId });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+        }
+
+        const addressIndex = user.saved_addresses.findIndex(
+            addr => addr._id.toString() === addressId
+        );
+
+        if (addressIndex === -1) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy địa chỉ" });
+        }
+
+        // Nếu đặt làm mặc định, bỏ mặc định của các địa chỉ khác
+        if (is_default) {
+            user.saved_addresses.forEach(addr => {
+                addr.is_default = false;
+            });
+        }
+
+        // Cập nhật địa chỉ
+        if (recipient_name) user.saved_addresses[addressIndex].recipient_name = recipient_name;
+        if (phone) user.saved_addresses[addressIndex].phone = phone;
+        if (address) user.saved_addresses[addressIndex].address = address;
+        if (ward !== undefined) user.saved_addresses[addressIndex].ward = ward;
+        if (district !== undefined) user.saved_addresses[addressIndex].district = district;
+        if (city) user.saved_addresses[addressIndex].city = city;
+        if (is_default !== undefined) user.saved_addresses[addressIndex].is_default = is_default;
+
+        await user.save();
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Cập nhật địa chỉ thành công",
+            data: user.saved_addresses[addressIndex]
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi khi cập nhật địa chỉ", error: error.message });
+    }
+};
+
+// 📍 Xóa địa chỉ
+export const deleteAddress = async (req, res) => {
+    try {
+        const userId = req.user.user_id;
+        const { addressId } = req.params;
+
+        const user = await userModel.findOne({ user_id: userId });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+        }
+
+        const addressIndex = user.saved_addresses.findIndex(
+            addr => addr._id.toString() === addressId
+        );
+
+        if (addressIndex === -1) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy địa chỉ" });
+        }
+
+        const wasDefault = user.saved_addresses[addressIndex].is_default;
+        user.saved_addresses.splice(addressIndex, 1);
+
+        // Nếu xóa địa chỉ mặc định và còn địa chỉ khác, đặt địa chỉ đầu tiên làm mặc định
+        if (wasDefault && user.saved_addresses.length > 0) {
+            user.saved_addresses[0].is_default = true;
+        }
+
+        await user.save();
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Xóa địa chỉ thành công"
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi khi xóa địa chỉ", error: error.message });
+    }
+};
+
+// 📍 Đặt địa chỉ mặc định
+export const setDefaultAddress = async (req, res) => {
+    try {
+        const userId = req.user.user_id;
+        const { addressId } = req.params;
+
+        const user = await userModel.findOne({ user_id: userId });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+        }
+
+        const addressIndex = user.saved_addresses.findIndex(
+            addr => addr._id.toString() === addressId
+        );
+
+        if (addressIndex === -1) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy địa chỉ" });
+        }
+
+        // Bỏ mặc định của tất cả địa chỉ
+        user.saved_addresses.forEach(addr => {
+            addr.is_default = false;
+        });
+
+        // Đặt địa chỉ được chọn làm mặc định
+        user.saved_addresses[addressIndex].is_default = true;
+
+        await user.save();
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Đã đặt địa chỉ mặc định",
+            data: user.saved_addresses[addressIndex]
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Lỗi khi đặt địa chỉ mặc định", error: error.message });
+    }
+};
+
