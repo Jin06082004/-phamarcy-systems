@@ -5,7 +5,7 @@ class Chatbox {
     this.isOpen = false;
     this.messages = [];
     this.API_URL = 'http://localhost:5000';
-    this.isFetching = false; // Flag để tránh gọi API nhiều lần đồng thời
+    this.isFetching = false;
     
     // Cấu hình danh mục và từ khóa liên quan
     this.categoryKeywords = {
@@ -229,7 +229,6 @@ class Chatbox {
     const matchedCategory = this.findMatchingCategory(lowerMessage);
     
     if (matchedCategory) {
-      // Gọi API để lấy danh sách thuốc của category
       this.fetchDrugsByCategory(matchedCategory);
       return;
     }
@@ -240,15 +239,15 @@ class Chatbox {
       response = 'Vui lòng cho biết triệu chứng hoặc loại thuốc bạn cần tư vấn. Tôi sẽ giúp bạn tìm sản phẩm phù hợp. 💊\n\nVí dụ: "Thuốc giảm đau đầu", "Thuốc cảm cúm", "Vitamin tăng đề kháng"\n\nLưu ý: Đối với thuốc kê đơn, bạn cần có đơn của bác sĩ.';
       this.addBotMessage(response);
     } else if (lowerMessage.includes('khuyến mãi') || lowerMessage.includes('giảm giá')) {
-      // Gọi API để lấy danh sách khuyến mãi
       this.fetchPromotions();
       return;
     } else if (lowerMessage.includes('đặt hàng') || lowerMessage.includes('mua')) {
       response = 'Để đặt hàng, bạn có thể:\n\n1️⃣ Duyệt sản phẩm trên website\n2️⃣ Thêm vào giỏ hàng\n3️⃣ Tiến hành thanh toán\n\nBạn cần hỗ trợ bước nào không? 🛒';
       this.addBotMessage(response);
     } else if (lowerMessage.includes('đơn hàng') || lowerMessage.includes('kiểm tra')) {
-      response = 'Bạn có thể kiểm tra đơn hàng tại:\n\n📦 <a href="/Web/user/pages/my-orders.html">Đơn Hàng Của Tôi</a>\n\nHoặc cung cấp mã đơn hàng để tôi tra cứu giúp bạn.';
-      this.addBotMessage(response);
+      // Gọi API để lấy danh sách đơn hàng
+      this.fetchMyOrders();
+      return;
     } else if (lowerMessage.includes('giờ') || lowerMessage.includes('mở cửa')) {
       response = '⏰ Chúng tôi phục vụ 24/7!\n\nGiao hàng:\n• Nội thành: 1-2 giờ\n• Ngoại thành: 2-4 giờ\n• Tỉnh khác: 1-3 ngày';
       this.addBotMessage(response);
@@ -474,6 +473,158 @@ class Chatbox {
         '• Liên hệ hotline: <strong>1900-xxxx</strong>\n' +
         '• Thử lại sau! 😊'
       );
+    }
+  }
+
+  // Lấy danh sách đơn hàng của khách hàng
+  async fetchMyOrders() {
+    if (this.isFetching) {
+      console.log('⚠️ Đang tải dữ liệu, vui lòng đợi...');
+      return;
+    }
+
+    this.isFetching = true;
+
+    try {
+      // Kiểm tra user đã đăng nhập chưa
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const token = localStorage.getItem('token');
+
+      if (!user || !token) {
+        this.addBotMessage(
+          '🔐 Bạn cần đăng nhập để xem đơn hàng.\n\n' +
+          'Vui lòng <a href="/Web/user/pages/login.html">đăng nhập tại đây</a> để tiếp tục.'
+        );
+        return;
+      }
+
+      // Hiển thị loading message
+      this.addBotMessage('⏳ Đang tải danh sách đơn hàng của bạn...');
+
+      // Gọi API lấy đơn hàng
+      const response = await fetch(`${this.API_URL}/orders/my-orders`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Không thể tải danh sách đơn hàng');
+      }
+
+      const result = await response.json();
+      const orders = Array.isArray(result) ? result : (result.data || []);
+
+      if (!orders || orders.length === 0) {
+        this.addBotMessage(
+          '📦 Bạn chưa có đơn hàng nào.\n\n' +
+          'Bạn có thể:\n' +
+          '• Xem <a href="/Web/user/pages/drugs.html">danh sách sản phẩm</a>\n' +
+          '• Liên hệ hotline: <strong>1900-xxxx</strong> để được tư vấn 😊'
+        );
+        return;
+      }
+
+      // Sắp xếp đơn hàng mới nhất lên đầu
+      orders.sort((a, b) => new Date(b.order_date) - new Date(a.order_date));
+
+      // Tạo message với danh sách đơn hàng (hiển thị 5 đơn gần nhất)
+      const displayOrders = orders.slice(0, 5);
+      
+      let ordersHTML = `📦 <strong>Đơn hàng của bạn</strong> (${orders.length} đơn):\n\n`;
+
+      displayOrders.forEach((order, index) => {
+        const statusEmoji = {
+          'Pending': '⏳',
+          'Processing': '🔄',
+          'Completed': '✅',
+          'Cancelled': '❌'
+        }[order.status] || '📋';
+
+        const statusText = {
+          'Pending': 'Chờ xử lý',
+          'Processing': 'Đang xử lý',
+          'Completed': 'Hoàn thành',
+          'Cancelled': 'Đã hủy'
+        }[order.status] || order.status;
+
+        const orderDate = new Date(order.order_date).toLocaleString('vi-VN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const total = order.total_amount || order.order_items.reduce(
+          (sum, item) => sum + (item.price * item.quantity), 
+          0
+        );
+
+        const itemCount = order.order_items?.length || 0;
+
+        ordersHTML += `
+<div class="order-item-chat" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 14px; border-radius: 12px; margin: 10px 0; border-left: 4px solid ${order.status === 'Completed' ? '#10b981' : order.status === 'Cancelled' ? '#ef4444' : order.status === 'Processing' ? '#3b82f6' : '#f59e0b'};">
+  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+    <div>
+      <div style="font-weight: 700; font-size: 1rem; color: #1f2937; margin-bottom: 4px;">
+        🛒 Đơn hàng #ORD-${order.order_id}
+      </div>
+      <div style="font-size: 0.875rem; color: #6b7280;">
+        📅 ${orderDate}
+      </div>
+    </div>
+    <div style="background: ${order.status === 'Completed' ? '#dcfce7' : order.status === 'Cancelled' ? '#fee2e2' : order.status === 'Processing' ? '#dbeafe' : '#fef3c7'}; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: ${order.status === 'Completed' ? '#15803d' : order.status === 'Cancelled' ? '#b91c1c' : order.status === 'Processing' ? '#1e40af' : '#92400e'};">
+      ${statusEmoji} ${statusText}
+    </div>
+  </div>
+  <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1);">
+    <div style="font-size: 0.875rem; color: #6b7280;">
+      📦 ${itemCount} sản phẩm
+    </div>
+    <div style="font-weight: 700; font-size: 1rem; color: #ef4444;">
+      ${total.toLocaleString('vi-VN')}₫
+    </div>
+  </div>
+</div>`;
+      });
+
+      if (orders.length > 5) {
+        ordersHTML += `\n<div style="text-align: center; margin-top: 12px; padding: 10px; background: #f0fdf4; border-radius: 8px; border: 1px dashed #86efac;">
+          <div style="font-size: 0.875rem; color: #15803d; margin-bottom: 8px;">
+            Còn <strong>${orders.length - 5}</strong> đơn hàng khác
+          </div>
+        </div>`;
+      }
+
+      ordersHTML += `\n\n<div style="text-align: center; margin-top: 16px;">
+        <a href="/Web/user/pages/my-orders.html" style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">
+          📋 Xem tất cả đơn hàng
+        </a>
+      </div>`;
+
+      this.addBotMessage(ordersHTML);
+
+    } catch (error) {
+      console.error('❌ Lỗi khi tải đơn hàng:', error);
+      
+      let errorMessage = '❌ Đã xảy ra lỗi khi tải danh sách đơn hàng.\n\n';
+      
+      if (error.message.includes('401') || error.message.includes('403')) {
+        errorMessage += 'Phiên đăng nhập đã hết hạn. Vui lòng <a href="/Web/user/pages/login.html">đăng nhập lại</a>.';
+      } else {
+        errorMessage += `Lỗi: ${error.message}\n\n`;
+        errorMessage += 'Vui lòng:\n' +
+          '• Kiểm tra kết nối internet\n' +
+          '• Thử lại sau ít phút\n' +
+          '• Hoặc liên hệ hotline: <strong>1900-xxxx</strong> 📞';
+      }
+
+      this.addBotMessage(errorMessage);
+    } finally {
+      this.isFetching = false;
     }
   }
 
