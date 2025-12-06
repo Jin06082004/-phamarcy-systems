@@ -296,12 +296,20 @@
                     console.warn('Merge guest cart failed:', mergeErr);
                   }
 
-                  // Redirect
-                  const redirectPath = response.data.role === "admin" 
-                    ? "/Web/admin/index.html" 
-                    : "/Web/user/index.html";
+                  // Redirect based on role
+                  let redirectPath;
+                  switch(response.data.role) {
+                    case 'admin':
+                      redirectPath = '/Web/admin/index.html';
+                      break;
+                    case 'pharmacist':
+                      redirectPath = '/Web/pharmacist/index.html';
+                      break;
+                    default:
+                      redirectPath = '/Web/user/index.html';
+                  }
                   
-                  console.log('➡️ Redirecting to:', redirectPath);
+                  console.log('➡️ Redirecting to:', redirectPath, '(role:', response.data.role + ')');
                   window.location.href = redirectPath;
                 } else {
                   loginError.textContent = response.message || "Đăng nhập thất bại.";

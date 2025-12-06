@@ -119,6 +119,69 @@ const adminUpgradeTemplate = (user) => `
 </html>
 `;
 
+// Template nâng cấp pharmacist
+const pharmacistUpgradeTemplate = (user) => `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+    .badge { display: inline-block; padding: 5px 15px; background: #10b981; color: white; border-radius: 20px; font-weight: bold; }
+    .button { display: inline-block; padding: 12px 30px; background: #10b981; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+    .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+    .icon { font-size: 48px; text-align: center; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>💊 Chúc mừng nâng cấp Dược sĩ!</h1>
+    </div>
+    <div class="content">
+      <div class="icon">🏥</div>
+      <p>Xin chào <strong>${user.full_name || user.username}</strong>,</p>
+      <p>Chúc mừng! Tài khoản của bạn đã được nâng cấp lên quyền <span class="badge">DƯỢC SĨ</span></p>
+      
+      <p><strong>Quyền hạn mới của bạn:</strong></p>
+      <ul>
+        <li>💳 Thanh toán tại quầy (POS)</li>
+        <li>📦 Quản lý đơn hàng</li>
+        <li>💊 Quản lý thuốc và tồn kho</li>
+        <li>🖨️ In hóa đơn cho khách hàng</li>
+        <li>📊 Xem thống kê doanh thu</li>
+        <li>👥 Tư vấn và hỗ trợ khách hàng</li>
+      </ul>
+      
+      <p><strong>Lưu ý quan trọng:</strong></p>
+      <ul>
+        <li>🔐 Bảo mật thông tin khách hàng</li>
+        <li>✅ Kiểm tra kỹ đơn thuốc và toa bác sĩ</li>
+        <li>📝 Ghi chép đầy đủ thông tin bán hàng</li>
+        <li>⚕️ Tuân thủ quy định về dược phẩm</li>
+      </ul>
+      
+      <p>Chúng tôi tin tưởng bạn sẽ thực hiện tốt vai trò dược sĩ và phục vụ khách hàng một cách chuyên nghiệp!</p>
+      
+      <div style="text-align: center;">
+        <a href="${process.env.WEB_URL || 'http://localhost:5500'}/Web/pharmacist/index.html" class="button">Truy cập trang Dược sĩ</a>
+      </div>
+      
+      <p style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 14px;">
+        💡 <strong>Mẹo:</strong> Khi đăng nhập lần tiếp theo, hệ thống sẽ tự động chuyển bạn đến trang dành cho dược sĩ.
+      </p>
+    </div>
+    <div class="footer">
+      <p>© 2024 Nhà Thuốc Online. All rights reserved.</p>
+      <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ admin.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
 // Template đặt hàng thành công
 const orderCreatedTemplate = (order, user) => {
   const itemsHTML = order.order_items.map(item => `
@@ -549,6 +612,15 @@ export const emailService = {
     
     const subject = '👑 Chúc mừng! Bạn đã được nâng cấp lên Admin';
     const html = adminUpgradeTemplate(user);
+    return await sendEmail(user.email, subject, html);
+  },
+
+  // Gửi email nâng cấp pharmacist
+  sendPharmacistUpgradeEmail: async (user) => {
+    if (!user.email) return { success: false, message: 'Không có email' };
+    
+    const subject = '💊 Chúc mừng! Bạn đã được nâng cấp lên Dược sĩ';
+    const html = pharmacistUpgradeTemplate(user);
     return await sendEmail(user.email, subject, html);
   },
 

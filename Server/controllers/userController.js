@@ -189,8 +189,24 @@ export const updateUser = async (req, res) => {
         const user = await userModel.findOne({ user_id: Number(id) });
         if (!user) return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
 
+        // Kiểm tra nếu role được nâng cấp lên pharmacist
+        const oldRole = user.role;
+        const newRole = req.body.role;
+        const isUpgradedToPharmacist = oldRole !== 'pharmacist' && newRole === 'pharmacist';
+
         Object.assign(user, req.body);
         await user.save();
+
+        // Gửi email thông báo nếu được nâng cấp lên pharmacist
+        if (isUpgradedToPharmacist && user.email) {
+            emailService.sendPharmacistUpgradeEmail(user).then(result => {
+                if (result.success) {
+                    console.log('✅ Email thông báo nâng cấp pharmacist đã được gửi đến:', user.email);
+                } else {
+                    console.warn('⚠️ Không thể gửi email nâng cấp:', result.message || result.error);
+                }
+            });
+        }
 
         res.status(200).json({ success: true, message: "Cập nhật người dùng thành công", data: { user_id: user.user_id, username: user.username } });
     } catch (error) {

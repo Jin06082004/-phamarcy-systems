@@ -43,3 +43,16 @@ export const isAdmin = (req, res, next) => {
   }
   next();
 };
+
+// Middleware: Chỉ admin hoặc pharmacist
+export const isAdminOrPharmacist = (req, res, next) => {
+  if (!req.user || !["admin", "pharmacist"].includes(req.user.role)) {
+    console.warn("⚠️ Access denied - not admin/pharmacist:", req.user?.username, "role:", req.user?.role);
+    return res.status(403).json({
+      success: false,
+      message: "Yêu cầu quyền admin hoặc dược sĩ",
+    });
+  }
+  console.log("✅ Access granted for", req.user.role, ":", req.user.username);
+  next();
+};

@@ -9,15 +9,15 @@ import {
     cancelInvoice,
     deleteInvoice,
 } from "../controllers/invoiceController.js";
-import { authenticateToken, isAdmin } from "../middleware/authMiddleware.js";
+import { authenticateToken, isAdmin, isAdminOrPharmacist } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
 // Create invoice (no auth required for checkout)
 router.post("/", createInvoice);
 
-// List invoices (admin)
-router.get("/", authenticateToken, isAdmin, getAllInvoices);
+// List invoices (admin or pharmacist)
+router.get("/", authenticateToken, isAdminOrPharmacist, getAllInvoices);
 
 // Get by invoice number
 router.get("/number/:number", getInvoiceByNumber);

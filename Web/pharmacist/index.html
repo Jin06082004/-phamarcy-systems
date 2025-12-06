@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Dược sĩ - DrugStore</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../admin/css/admin.css" />
+  <link rel="stylesheet" href="css/pharmacist.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="bx bx-capsule logo-icon"></i>
+      <span class="logo-text">Pharmacy</span>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li class="active"><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+      <li><a href="pos.html"><i class="bx bx-cart"></i><span>Thanh toán tại quầy</span></a></li>
+      <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Quản lý thuốc</span></a></li>
+      <li><a href="inventory.html"><i class="bx bx-package"></i><span>Tồn kho</span></a></li>
+      <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
+    </ul>
+
+    <div class="sidebar-toggle" id="toggleSidebar">
+      <i class="bx bx-chevron-left"></i>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="main-header">
+      <h1>🏥 Dashboard Dược sĩ</h1>
+      <div class="user-info">
+        <i class="bx bx-user-circle"></i>
+        <span id="pharmacist-name">Dược sĩ</span>
+      </div>
+    </header>
+
+    <section class="content">
+      <div class="dashboard-grid">
+        <div class="card-modern">
+          <h3><i class='bx bx-receipt'></i> Hóa đơn hôm nay</h3>
+          <p id="today-invoices">—</p>
+          <small>Số giao dịch trong ngày</small>
+        </div>
+        <div class="card-modern">
+          <h3><i class='bx bx-dollar-circle'></i> Doanh thu hôm nay</h3>
+          <p id="today-revenue">—</p>
+          <small>Tổng doanh thu trong ngày</small>
+        </div>
+        <div class="card-modern">
+          <h3><i class='bx bx-error-circle'></i> Thuốc sắp hết</h3>
+          <p id="low-stock">—</p>
+          <small>Tồn kho < 10 đơn vị</small>
+        </div>
+      </div>
+
+      <div style="background: white; padding: 40px; border-radius: var(--radius-md); margin-top: 24px; text-align: center; box-shadow: var(--shadow-md);">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark)); margin: 0 auto 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <i class='bx bx-cart' style="font-size: 3rem; color: white;"></i>
+        </div>
+        <h2 style="margin-bottom: 16px; color: var(--gray-800);">Thanh toán tại quầy</h2>
+        <p style="color: var(--gray-600); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+          Bán hàng trực tiếp, tạo hóa đơn và in bill cho khách hàng một cách nhanh chóng
+        </p>
+        <a href="pos.html" class="btn btn-primary btn-lg">
+          <i class='bx bx-right-arrow-alt'></i>
+          Bắt đầu thanh toán
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../shared/notification.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

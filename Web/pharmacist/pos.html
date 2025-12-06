@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thanh toán tại quầy - DrugStore</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../admin/css/admin.css" />
+  <link rel="stylesheet" href="css/pharmacist.css" />
+</head>
+<body>
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="bx bx-capsule logo-icon"></i>
+      <span class="logo-text">Pharmacy</span>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+      <li class="active"><a href="pos.html"><i class="bx bx-cart"></i><span>Thanh toán tại quầy</span></a></li>
+      <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Quản lý thuốc</span></a></li>
+      <li><a href="inventory.html"><i class="bx bx-package"></i><span>Tồn kho</span></a></li>
+      <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
+    </ul>
+
+    <div class="sidebar-toggle" id="toggleSidebar">
+      <i class="bx bx-chevron-left"></i>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1>💳 Thanh toán tại quầy</h1>
+      <div class="user-info">
+        <i class="bx bx-user-circle"></i>
+        <span id="pharmacist-name">Dược sĩ</span>
+      </div>
+    </header>
+
+    <div class="pos-container">
+      <!-- LEFT: Product Selection -->
+      <div class="pos-products">
+        <div class="search-box-modern" style="max-width: 100%; margin-bottom: 24px;">
+          <i class='bx bx-search'></i>
+          <input 
+            type="text" 
+            id="search-product" 
+            placeholder="Tìm kiếm thuốc theo tên hoặc mã..."
+          />
+        </div>
+        
+        <div id="product-grid" class="product-grid">
+          <div style="grid-column: 3/-3; text-align: center; padding: 60px 20px;">
+            <div class="spinner-container">
+              <div class="spinner"></div>
+              <p style="color: var(--gray-600); margin-top: 16px;">Đang tải danh sách thuốc...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Cart & Checkout -->
+      <div class="pos-cart">
+        <h2><i class='bx bx-cart'></i> Giỏ hàng</h2>
+        
+        <!-- Customer Info -->
+        <div class="customer-info-grid">
+          <div class="form-group">
+            <label><i class='bx bx-user'></i> Họ tên</label>
+            <input type="text" id="customer-name" class="input-modern" placeholder="Nhập họ tên..." />
+          </div>
+          <div class="form-group">
+            <label><i class='bx bx-phone'></i> SĐT</label>
+            <input type="tel" id="customer-phone" class="input-modern" placeholder="Nhập SĐT..." />
+          </div>
+        </div>
+
+        <!-- Cart Items -->
+        <div id="cart-items" class="cart-items">
+          <div class="cart-empty">
+            <i class='bx bx-cart-alt'></i>
+            <p>Chưa có sản phẩm trong giỏ hàng</p>
+            <small style="display: block; margin-top: 8px; color: var(--gray-600);">Chọn thuốc từ danh sách bên trái</small>
+          </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+          <div class="cart-total">
+            <span class="cart-total-label">Tổng cộng:</span>
+            <strong class="cart-total-amount" id="total">0₫</strong>
+          </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="payment-methods">
+          <h4><i class='bx bx-credit-card'></i> Phương thức thanh toán</h4>
+          <div class="payment-options">
+            <label class="payment-option active">
+              <input type="radio" name="payment" value="cash" checked style="display: none;" />
+              <i class='bx bx-money'></i>
+              <span>Tiền mặt</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="card" style="display: none;" />
+              <i class='bx bx-credit-card'></i>
+              <span>Thẻ ngân hàng</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="credit" style="display: none;" />
+              <i class='bx bx-credit-card-front'></i>
+              <span>Thẻ tín dụng</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <button class="btn btn-primary btn-lg checkout-button" id="btn-checkout" disabled>
+          <i class='bx bx-check-circle'></i>
+          Thanh toán
+        </button>
+        <button class="btn btn-danger btn-sm" id="btn-clear" style="width: 100%; margin-top: 8px;">
+          <i class='bx bx-trash'></i>
+          Xóa giỏ hàng
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../shared/notification.js"></script>
+  <script type="module" src="js/pos.js"></script>
+</body>
+</html>

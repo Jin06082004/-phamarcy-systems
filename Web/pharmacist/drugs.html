@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý Thuốc - Pharmacist</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../admin/css/admin.css" />
+  <link rel="stylesheet" href="css/pharmacist.css" />
+</head>
+<body>
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="bx bx-capsule logo-icon"></i>
+      <span class="logo-text">Pharmacy</span>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+      <li><a href="pos.html"><i class="bx bx-cart"></i><span>Thanh toán tại quầy</span></a></li>
+      <li class="active"><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Quản lý thuốc</span></a></li>
+      <li><a href="inventory.html"><i class="bx bx-package"></i><span>Tồn kho</span></a></li>
+      <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
+    </ul>
+
+    <div class="sidebar-toggle" id="toggleSidebar">
+      <i class="bx bx-chevron-left"></i>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1>💊 Quản lý Thuốc</h1>
+      <div class="user-info">
+        <i class="bx bx-user-circle"></i>
+        <span id="pharmacist-name">Dược sĩ</span>
+      </div>
+    </header>
+
+    <section class="content">
+      <!-- Search & Filter -->
+      <div class="drugs-header">
+        <div class="search-box-modern">
+          <i class="bx bx-search"></i>
+          <input type="text" id="search-input" placeholder="Tìm kiếm theo tên thuốc, mã thuốc..." />
+        </div>
+        
+        <div class="drugs-filters">
+          <div class="filter-group">
+            <label><i class='bx bx-category'></i> Danh mục</label>
+            <select id="category-filter" class="select-modern">
+              <option value="">Tất cả danh mục</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label><i class='bx bx-package'></i> Tồn kho</label>
+            <select id="stock-filter" class="select-modern">
+              <option value="">Tất cả tồn kho</option>
+              <option value="low">Sắp hết (< 10)</option>
+              <option value="out">Hết hàng (= 0)</option>
+              <option value="available">Còn hàng (> 0)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drugs Table -->
+      <div class="table-container">
+        <table class="table-modern">
+          <thead>
+            <tr>
+              <th><i class='bx bx-barcode'></i> Mã thuốc</th>
+              <th><i class='bx bx-capsule'></i> Tên thuốc</th>
+              <th><i class='bx bx-category'></i> Danh mục</th>
+              <th><i class='bx bx-money'></i> Giá bán</th>
+              <th><i class='bx bx-package'></i> Tồn kho</th>
+              <th><i class='bx bx-cube'></i> Đơn vị</th>
+              <th><i class='bx bx-info-circle'></i> Trạng thái</th>
+              <th><i class='bx bx-cog'></i> Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="drugs-table-body">
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 40px;">
+                <div class="spinner-container">
+                  <div class="spinner"></div>
+                  <p>Đang tải dữ liệu...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination">
+        <!-- Pagination buttons will be inserted here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- VIEW DRUG MODAL -->
+  <div class="modal" id="view-modal">
+    <div class="modal-content medium">
+      <div class="modal-header">
+        <h2><i class='bx bx-info-circle'></i> Chi tiết thuốc</h2>
+        <button class="modal-close" onclick="closeViewModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-drug-details">
+        <!-- Drug details will be inserted here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeViewModal()">
+          <i class='bx bx-x'></i> Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../shared/notification.js"></script>
+  <script type="module" src="js/drugs.js"></script>
+</body>
+</html>

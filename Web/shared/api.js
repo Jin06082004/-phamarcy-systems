@@ -1,5 +1,5 @@
 // Tự động detect API URL
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "http://localhost:5000/api";
 
 console.log('🌐 API Base URL:', API_BASE_URL);
 

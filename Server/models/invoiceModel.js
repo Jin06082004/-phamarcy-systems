@@ -33,6 +33,9 @@ const invoiceSchema = new mongoose.Schema(
         invoice_id: { type: Number, unique: true },
         invoice_number: { type: String, unique: true, index: true },
         customer_id: { type: Number },
+        customer_name: { type: String, trim: true },
+        customer_phone: { type: String, trim: true },
+        pharmacist_id: { type: Number },
         guest: {
             name: { type: String, trim: true },
             phone: { type: String, trim: true },

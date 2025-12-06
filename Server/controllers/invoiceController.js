@@ -97,6 +97,14 @@ export const createInvoice = async (req, res) => {
             };
         }
 
+        // 🔄 Chuyển đổi guest sang customer_name và customer_phone nếu có
+        if (payload.guest) {
+            payload.customer_name = payload.guest.name;
+            payload.customer_phone = payload.guest.phone;
+        }
+
+        console.log('📝 Tạo hóa đơn với dữ liệu:', JSON.stringify(payload, null, 2));
+
         const created = await invoiceModel.create(payload);
 
         // ✅ Giảm tồn kho sau khi tạo hóa đơn thành công

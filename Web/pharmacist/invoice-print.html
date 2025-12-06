@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hóa đơn - DrugStore</title>
+  <link rel="stylesheet" href="css/pharmacist.css" />
+</head>
+<body>
+  <div class="invoice-container" id="invoice-container">
+    <div class="invoice-header">
+      <h1>💊 DRUGSTORE PHARMACY</h1>
+      <p>123 Đường ABC, Quận XYZ, TP.HCM</p>
+      <p>Hotline: 1900-xxxx | Email: support@drugstore.com</p>
+    </div>
+
+    <div class="invoice-info">
+      <div>
+        <h3>Thông tin khách hàng:</h3>
+        <p><strong>Họ tên:</strong> <span id="customer-name">—</span></p>
+        <p><strong>Số điện thoại:</strong> <span id="customer-phone">—</span></p>
+      </div>
+      <div style="text-align: right;">
+        <h3>Hóa đơn:</h3>
+        <p><strong>Số hóa đơn:</strong> <span id="invoice-number">—</span></p>
+        <p><strong>Ngày:</strong> <span id="invoice-date">—</span></p>
+        <p><strong>Dược sĩ:</strong> <span id="pharmacist-name">—</span></p>
+      </div>
+    </div>
+
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tên thuốc</th>
+          <th>Đơn giá</th>
+          <th>SL</th>
+          <th>Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody id="invoice-items">
+        <tr>
+          <td colspan="5" style="text-align: center;">Đang tải...</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" style="text-align: right;">Tạm tính:</td>
+          <td id="subtotal-print">—</td>
+        </tr>
+        <tr>
+          <td colspan="4" style="text-align: right;">Thuế VAT (10%):</td>
+          <td id="tax-print">—</td>
+        </tr>
+        <tr>
+          <td colspan="4" style="text-align: right; font-size: 1.2rem;">Tổng cộng:</td>
+          <td id="total-print" style="font-size: 1.2rem; color: #10b981;">—</td>
+        </tr>
+        <tr>
+          <td colspan="4" style="text-align: right;">Phương thức:</td>
+          <td id="payment-method">—</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="invoice-footer">
+      <p><strong>Cảm ơn quý khách đã mua hàng!</strong></p>
+      <p>Vui lòng kiểm tra kỹ sản phẩm trước khi rời quầy</p>
+      <p style="font-size: 0.9rem; margin-top: 20px;">
+        Hóa đơn này được tạo tự động bởi hệ thống DrugStore
+      </p>
+    </div>
+  </div>
+
+  <div class="print-actions">
+    <button class="btn-print" onclick="window.print()">
+      🖨️ In hóa đơn
+    </button>
+    <button class="btn-back" onclick="window.location.href='pos.html'">
+      ← Quay lại
+    </button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../shared/notification.js"></script>
+  <script type="module" src="js/invoice-print.js"></script>
+</body>
+</html>

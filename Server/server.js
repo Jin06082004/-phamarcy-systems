@@ -91,17 +91,17 @@ app.use((req, res, next) => {
     next();
 });
 
-// Mount API routers
-app.use("/drugs", drugRouter);
-app.use("/categories", categoryRouter);
-app.use('/inventories', inventoryRouter);
-app.use('/invoices', invoiceRouter);
-app.use('/prescriptions', prescriptionRouter);
-app.use('/users', userRouter);
-app.use('/orders', ordersRouter);
-app.use("/discounts", discountRouter);
-app.use("/carts", cartRouter);
-app.use("/coupons", couponRouter);
+// Mount API routers with /api prefix
+app.use("/api/drugs", drugRouter);
+app.use("/api/categories", categoryRouter);
+app.use('/api/inventories', inventoryRouter);
+app.use('/api/invoices', invoiceRouter);
+app.use('/api/prescriptions', prescriptionRouter);
+app.use('/api/users', userRouter);
+app.use('/api/orders', ordersRouter);
+app.use("/api/discounts", discountRouter);
+app.use("/api/carts", cartRouter);
+app.use("/api/coupons", couponRouter);
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -110,10 +110,11 @@ app.get('/', (req, res) => {
         status: 'OK',
         timestamp: new Date().toISOString(),
         endpoints: {
-            drugs: '/drugs',
-            categories: '/categories',
-            orders: '/orders',
-            users: '/users',
+            drugs: '/api/drugs',
+            categories: '/api/categories',
+            orders: '/api/orders',
+            users: '/api/users',
+            invoices: '/api/invoices',
             uploads: '/uploads/drug-image'
         }
     });

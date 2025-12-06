@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tồn Kho - Pharmacist</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../admin/css/admin.css" />
+  <link rel="stylesheet" href="css/pharmacist.css" />
+</head>
+<body>
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="bx bx-capsule logo-icon"></i>
+      <span class="logo-text">Pharmacy</span>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li><a href="index.html"><i class="bx bx-home"></i><span>Bảng điều khiển</span></a></li>
+      <li><a href="pos.html"><i class="bx bx-cart"></i><span>Thanh toán tại quầy</span></a></li>
+      <li><a href="drugs.html"><i class="bx bx-plus-medical"></i><span>Quản lý thuốc</span></a></li>
+      <li class="active"><a href="inventory.html"><i class="bx bx-package"></i><span>Tồn kho</span></a></li>
+      <li class="logout"><a href="#" id="logout-link"><i class="bx bx-log-out"></i><span>Đăng xuất</span></a></li>
+    </ul>
+
+    <div class="sidebar-toggle" id="toggleSidebar">
+      <i class="bx bx-chevron-left"></i>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1>📦 Quản lý Tồn Kho</h1>
+      <div class="user-info">
+        <i class="bx bx-user-circle"></i>
+        <span id="pharmacist-name">Dược sĩ</span>
+      </div>
+    </header>
+
+    <section class="content">
+      <!-- Alert Cards -->
+      <div class="dashboard-grid">
+        <div class="card-modern" style="border-top: 4px solid #ef4444;">
+          <h3><i class='bx bx-error-circle'></i> Hết hàng</h3>
+          <p id="out-of-stock" style="color: #ef4444;">—</p>
+          <small>Cần nhập ngay</small>
+        </div>
+        <div class="card-modern" style="border-top: 4px solid #f59e0b;">
+          <h3><i class='bx bx-error'></i> Sắp hết (< 10)</h3>
+          <p id="low-stock" style="color: #f59e0b;">—</p>
+          <small>Cần theo dõi</small>
+        </div>
+        <div class="card-modern" style="border-top: 4px solid #10b981;">
+          <h3><i class='bx bx-check-circle'></i> Còn hàng</h3>
+          <p id="in-stock" style="color: #10b981;">—</p>
+          <small>Tình trạng tốt</small>
+        </div>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="drugs-header">
+        <div class="search-box-modern">
+          <i class="bx bx-search"></i>
+          <input type="text" id="search-input" placeholder="Tìm kiếm thuốc..." />
+        </div>
+        
+        <div class="drugs-filters">
+          <div class="filter-group">
+            <label><i class='bx bx-filter'></i> Lọc tồn kho</label>
+            <select id="stock-filter" class="select-modern">
+              <option value="">Tất cả</option>
+              <option value="out">Hết hàng (0)</option>
+              <option value="low">Sắp hết (< 10)</option>
+              <option value="ok">Còn hàng (≥ 10)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="table-container">
+        <table class="table-modern">
+          <thead>
+            <tr>
+              <th><i class='bx bx-barcode'></i> Mã thuốc</th>
+              <th><i class='bx bx-capsule'></i> Tên thuốc</th>
+              <th><i class='bx bx-package'></i> Tồn kho</th>
+              <th><i class='bx bx-cube'></i> Đơn vị</th>
+              <th><i class='bx bx-info-circle'></i> Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table-body">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 40px;">
+                <div class="spinner-container">
+                  <div class="spinner"></div>
+                  <p>Đang tải dữ liệu...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../shared/notification.js"></script>
+  <script type="module" src="js/inventory.js"></script>
+</body>
+</html>
