@@ -78,15 +78,10 @@ function renderProducts(products) {
     return `
       <div class="product-card-pos ${outOfStock ? 'out-of-stock' : ''}" 
            ${outOfStock ? '' : `onclick="window.addToCart(${p.drug_id})"`}>
-        ${p.image ? `
-          <div class="product-image">
-            <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
-          </div>
-        ` : `
-          <div class="product-image product-no-image">
-            <i class='bx bx-capsule'></i>
-          </div>
-        `}
+        <div class="product-image ${!p.image ? 'product-no-image' : ''}">
+          ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">` : ''}
+          ${!p.image ? `<i class='bx bx-capsule'></i>` : `<i class='bx bx-capsule' style='display:none'></i>`}
+        </div>
         <div class="product-info">
           <h4>${p.name}</h4>
           <div class="product-meta">
@@ -140,7 +135,6 @@ window.addToCart = function(drugId) {
   if (existing) {
     if (existing.quantity < drug.stock) {
       existing.quantity++;
-      showSuccess(`Đã tăng số lượng ${drug.name}`);
     } else {
       showError(`Chỉ còn ${drug.stock} sản phẩm trong kho`);
       return;
@@ -153,7 +147,6 @@ window.addToCart = function(drugId) {
       quantity: 1,
       stock: drug.stock
     });
-    showSuccess(`Đã thêm ${drug.name}`);
   }
   
   renderCart();
@@ -309,8 +302,8 @@ async function handleCheckout() {
     
     // Calculate totals
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const tax = Math.round(subtotal * 0.1);
-    const total = subtotal + tax;
+    const tax = 0;
+    const total = subtotal;
     
     // Get current pharmacist info
     const currentUser = getCurrentUser();
@@ -368,9 +361,6 @@ async function handleCheckout() {
     if (!invoiceId) {
       throw new Error('Không nhận được mã hóa đơn');
     }
-    
-    // Show success message
-    showSuccess(`✅ Thanh toán thành công! Mã hóa đơn: #${invoiceId}`);
     
     // Clear cart
     cart = [];

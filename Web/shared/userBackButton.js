@@ -47,10 +47,6 @@ export function initUserBackButton(targetPage = '/Web/user/index.html') {
     button.innerHTML = '⏳';
     button.style.pointerEvents = 'none';
 
-    if (window.notification) {
-      await window.notification.success('Đang chuyển về trang người dùng...', '🏠 User Portal');
-    }
-
     setTimeout(() => {
       window.location.href = targetPage;
     }, 800);

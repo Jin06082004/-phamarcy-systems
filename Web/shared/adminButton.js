@@ -68,10 +68,6 @@ export function initAdminSecretButton(targetPage = '/Web/admin/index.html') {
       button.innerHTML = '⏳';
       button.style.pointerEvents = 'none';
 
-      if (window.notification) {
-        await window.notification.success('Đang chuyển đến trang quản lý...', '🚀 Admin Portal');
-      }
-
       setTimeout(() => {
         window.location.href = targetPage;
       }, 800);

@@ -809,7 +809,6 @@
         localStorage.setItem('user', JSON.stringify(updatedUser));
         currentUser = updatedUser;
 
-        notification.success('Cập nhật thông tin thành công!');
         loadUserData();
       } catch (error) {
         console.error('Update error:', error);
@@ -841,7 +840,6 @@
           currentPassword: currentPassword
         });
 
-        notification.success('Đổi mật khẩu thành công!');
         document.getElementById('passwordForm').reset();
       } catch (error) {
         console.error('Change password error:', error);
@@ -999,7 +997,6 @@
           addresses = addresses.filter(a => a.id !== id);
           saveAddresses();
           renderAddresses();
-          notification.success('Đã xóa địa chỉ');
         }
       });
     };
@@ -1011,7 +1008,6 @@
       }));
       saveAddresses();
       renderAddresses();
-      notification.success('Đã đặt làm địa chỉ mặc định');
     };
 
     document.getElementById('addressForm').addEventListener('submit', (e) => {
@@ -1041,7 +1037,6 @@
       saveAddresses();
       renderAddresses();
       closeAddressModal();
-      notification.success(editingAddressId ? 'Cập nhật địa chỉ thành công!' : 'Thêm địa chỉ thành công!');
     });
 
     // Modal backdrop click

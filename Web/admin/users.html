@@ -458,14 +458,12 @@
           let res;
           if (editingUserId) {
             res = await userAPI.update(editingUserId, payload);
-            showSuccess("Cập nhật người dùng thành công");
           } else {
             if (!password) {
               showError("Mật khẩu là bắt buộc khi tạo người dùng mới");
               return;
             }
             res = await userAPI.register(payload);
-            showSuccess("Thêm người dùng thành công");
           }
 
           console.log("Response:", res);
@@ -512,7 +510,6 @@
 
         try {
           const res = await userAPI.delete(id);
-          showSuccess("Xóa người dùng thành công");
           await loadUsers();
         } catch (error) {
           showError("Lỗi khi xóa: " + error.message);

@@ -616,7 +616,6 @@
           }
           
           updateSummary();
-          notification.success(`✨ Đã áp dụng mã giảm giá ${discountData.percentage}%!`);
           
         } catch (error) {
           console.error('Apply coupon error:', error);
@@ -808,13 +807,6 @@
               }
             }
           }
-
-          // Show success and redirect
-          notification.success(
-            appliedDiscount 
-              ? `Đặt hàng thành công với mã giảm giá ${appliedDiscount.code}! 🎉`
-              : 'Đặt hàng thành công! 🎉'
-          );
 
           // Store order info
           localStorage.setItem('lastOrder', JSON.stringify({

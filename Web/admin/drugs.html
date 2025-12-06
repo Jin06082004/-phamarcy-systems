@@ -564,7 +564,6 @@
           if (response.success) {
             uploadedImageFilename = response.data.filename;
             document.getElementById("drug-image").value = response.data.url;
-            showSuccess("Upload ảnh thành công!");
           } else {
             throw new Error(response.message || 'Upload failed');
           }
@@ -625,10 +624,8 @@
           
           if (editingDrugId) {
             response = await drugAPI.update(editingDrugId, formData);
-            showSuccess("Cập nhật thuốc thành công!");
           } else {
             response = await drugAPI.create(formData);
-            showSuccess("Thêm thuốc mới thành công!");
           }
 
           console.log("Response:", response);
@@ -662,7 +659,6 @@
         try {
           console.log("🗑️ Đang xóa thuốc ID:", drugId);
           await drugAPI.delete(drugId);
-          showSuccess("Xóa thuốc thành công!");
           await loadDrugs();
         } catch (error) {
           console.error("❌ Lỗi xóa thuốc:", error);

@@ -406,10 +406,8 @@
           let res;
           if (editingDiscountId) {
             res = await discountAPI.update(editingDiscountId, payload);
-            showSuccess("Cập nhật mã giảm giá thành công");
           } else {
             res = await discountAPI.create(payload);
-            showSuccess("Thêm mã giảm giá thành công");
           }
 
           console.log("Response:", res);
@@ -458,7 +456,6 @@
 
         try {
           const res = await discountAPI.delete(id);
-          showSuccess("Xóa mã giảm giá thành công");
           await loadDiscounts();
         } catch (error) {
           showError("Lỗi khi xóa: " + error.message);

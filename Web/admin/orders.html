@@ -1052,10 +1052,6 @@
                   <span style="color: #059669; font-weight: 600;">Tạm tính:</span>
                   <span style="font-weight: 700; color: #1f2937;">${(invoice.subtotal || 0).toLocaleString()}₫</span>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span style="color: #059669; font-weight: 600;">Thuế VAT (10%):</span>
-                  <span style="font-weight: 700; color: #1f2937;">${(invoice.tax || 0).toLocaleString()}₫</span>
-                </div>
                 <div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 3px solid #10b981; font-size: 1.4rem;">
                   <span style="color: #059669; font-weight: 800;">Tổng cộng:</span>
                   <span style="font-weight: 900; color: #10b981;">${(invoice.total || 0).toLocaleString()}₫</span>
@@ -1188,7 +1184,6 @@
             message += '\n\n✅ Đã trừ lại số lượng thuốc từ kho';
           }
           
-          showSuccess(message);
           detailModal.style.display = "none";
           await loadOrders();
         } catch (error) {
@@ -1237,7 +1232,6 @@
 
         try {
           await orderAPI.delete(id);
-          showSuccess("Xóa đơn hàng thành công!" + (order.status !== 'Cancelled' ? '\n✅ Đã hoàn trả số lượng thuốc vào kho' : ''));
           detailModal.style.display = "none";
           await loadOrders();
         } catch (error) {
@@ -1316,10 +1310,8 @@
           let res;
           if (editingOrderId) {
             res = await orderAPI.update(editingOrderId, payload);
-            showSuccess("Cập nhật đơn hàng thành công");
           } else {
             res = await orderAPI.create(payload);
-            showSuccess("Thêm đơn hàng thành công");
           }
 
           console.log("Response:", res);

@@ -344,7 +344,6 @@
           if (res.success) {
             closeModal();
             await loadCategories();
-            showSuccess(editingCategoryId ? 'Cập nhật danh mục thành công' : 'Thêm danh mục thành công');
           } else {
             showError('Lỗi: ' + (res.message || ''));
           }
@@ -383,7 +382,6 @@
         try {
           const res = await categoryAPI.delete(id);
           if (res.success) {
-            showSuccess('Xóa danh mục thành công');
             await loadCategories();
           } else {
             showError('Xóa thất bại: ' + (res.message || ''));
