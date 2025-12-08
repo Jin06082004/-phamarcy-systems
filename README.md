@@ -6,30 +6,39 @@ Hệ thống quản lý nhà thuốc toàn diện với giao diện web hiện �
 
 ## 📋 Mục lục
 
-- [Tổng quan](#tổng-quan)
-- [Tính năng](#tính-năng)
-- [Công nghệ sử dụng](#công-nghệ-sử-dụng)
-- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
-- [Cài đặt](#cài-đặt)
-- [Cấu hình biến môi trường](#cấu-hình-biến-môi-trường)
-- [Chạy ứng dụng](#chạy-ứng-dụng)
-- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
-- [API Endpoints](#api-endpoints)
-- [Hướng dẫn sử dụng](#hướng-dẫn-sử-dụng)
-- [Troubleshooting](#troubleshooting)
-- [Đóng góp](#đóng-góp)
-- [License](#license)
+- [Tổng quan](#-tổng-quan)
+- [Tính năng](#-tính-năng)
+- [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
+- [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
+- [Cài đặt](#-cài-đặt)
+- [Cấu hình biến môi trường](#-cấu-hình-biến-môi-trường)
+- [Chạy ứng dụng](#-chạy-ứng-dụng)
+- [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
+- [API Endpoints](#-api-endpoints)
+- [Hướng dẫn sử dụng](#-hướng-dẫn-sử-dụng)
+- [Troubleshooting](#-troubleshooting)
+- [Testing](#-testing)
+- [Đóng góp](#-đóng-góp)
+- [Changelog](#-changelog)
+- [License](#-license)
+- [Team](#-team)
+- [Tài liệu tham khảo](#-tài-liệu-tham-khảo)
 
 ---
 
 ## 🎯 Tổng quan
 
-**DrugStore** là một hệ thống quản lý nhà thuốc đầy đủ chức năng, được xây dựng với kiến trúc **Client-Server** hiện đại:
+**DrugStore** là hệ thống quản lý nhà thuốc được xây dựng với kiến trúc **Client-Server**, sử dụng **MongoDB** làm cơ sở dữ liệu và **RESTful API** để giao tiếp giữa frontend và backend.
 
-- **Backend**: Node.js + Express + MongoDB
-- **Frontend**: HTML5 + CSS3 + JavaScript (ES6+)
-- **Kiến trúc**: RESTful API
-- **Database**: MongoDB Atlas (Cloud)
+**Đặc điểm nổi bật:**
+- ✅ Phân quyền 3 cấp: Admin, Pharmacist (Dược sĩ), User
+- ✅ Quản lý đầy đủ: Thuốc, Danh mục, Đơn hàng, Người dùng, Khuyến mãi
+- ✅ Gửi email tự động (đăng ký, nâng cấp quyền, trạng thái đơn hàng)
+- ✅ Thanh toán VietQR tích hợp
+- ✅ Quản lý địa chỉ 63 tỉnh/thành Việt Nam
+- ✅ Hệ thống POS (Point of Sale) cho dược sĩ
+- ✅ Chatbox AI tư vấn khách hàng
+- ✅ Thống kê trực quan với Chart.js
 
 ---
 
@@ -42,13 +51,15 @@ Hệ thống quản lý nhà thuốc toàn diện với giao diện web hiện �
 - ✅ Gửi email xác nhận đăng ký và nâng cấp quyền
 
 ### 👤 Người dùng (User)
-- 🛒 Xem danh sách thuốc theo danh mục
+- 🛒 Xem danh sách thuốc theo 10 danh mục
 - 🔍 Tìm kiếm, lọc sản phẩm
 - 🛍️ Thêm vào giỏ hàng, thanh toán
 - 📦 Xem lịch sử đơn hàng
 - 🎁 Áp dụng mã khuyến mãi
 - 👤 Quản lý thông tin cá nhân
 - 📍 Quản lý địa chỉ giao hàng (63 tỉnh/thành phố VN)
+- 💳 Thanh toán VietQR hoặc COD
+- 🤖 Chatbox tư vấn AI
 
 ### 🔧 Quản trị viên (Admin)
 - 📊 Dashboard với thống kê trực quan (Chart.js)
@@ -60,14 +71,24 @@ Hệ thống quản lý nhà thuốc toàn diện với giao diện web hiện �
 - 📈 Thống kê doanh thu, thuốc bán chạy
 - 📧 Nhận thông báo email khi có đơn hàng mới
 
+### 💊 Dược sĩ (Pharmacist)
+- 🛒 Hệ thống POS (Point of Sale) bán hàng tại quầy
+- 💳 Thanh toán tiền mặt/thẻ/credit
+- 🖨️ In hóa đơn cho khách hàng
+- 📦 Quản lý đơn hàng
+- 📊 Kiểm tra tồn kho
+- 💊 Xem thông tin thuốc (read-only)
+- 📈 Thống kê doanh thu cá nhân
+
 ### 🚀 Tính năng nâng cao
-- 🔄 Real-time validation
-- 📱 Responsive design (Mobile-first)
-- 🎨 UI/UX hiện đại với gradient & animations
-- 🔒 Bảo mật: bcrypt (hash password), JWT, CORS, sanitization
-- 📧 Email service (đăng ký, nâng cấp admin, đơn hàng)
-- 💳 Tích hợp VietQR (chuyển khoản ngân hàng)
-- 🛒 Guest cart (giỏ hàng khách vãng lai)
+- 📧 Email Service (Nodemailer + Gmail SMTP)
+- 💳 VietQR Payment Integration
+- 🗺️ Địa chỉ Việt Nam (63 tỉnh/thành + quận/huyện)
+- 🎨 UI/UX hiện đại (Gradient, Animations)
+- 📱 Responsive Design
+- 🤖 AI Chatbox tư vấn thuốc
+- 🔍 Tìm kiếm thông minh
+- 📊 Biểu đồ thống kê real-time
 
 ---
 
@@ -132,13 +153,11 @@ npm install
 - `nodemailer`
 - `multer`
 
-### 3. Cài đặt dependencies cho Frontend (optional)
+### 3. Cài đặt Frontend (optional)
 
-Frontend không cần build tool, chỉ cần serve static files. Nếu dùng Live Server:
+Frontend không cần build tool, chỉ cần serve static files. Khuyến nghị dùng **Live Server** (VSCode extension) hoặc:
 
 ```bash
-# Cài Live Server (VSCode extension) hoặc dùng extension tương tự
-# Hoặc dùng Node.js serve:
 npm install -g serve
 ```
 
@@ -213,7 +232,7 @@ NODE_ENV=development
 | `JWT_EXPIRES` | Thời gian token hết hạn | `7d` | 7 ngày |
 | `ADMIN_ACTIVATION_KEY` | Key kích hoạt Admin | `MyS3cr3tAdm1nK3y` | **BẮT BUỘC** đổi trong production |
 | `EMAIL_USER` | Email Gmail | `demo.pharmacy@gmail.com` | Thay bằng Gmail của bạn |
-| `EMAIL_PASSWORD` | App Password Gmail | `abcd efgh ijkl mnop` | Xem `EMAIL_SETUP.md` |
+| `EMAIL_PASSWORD` | App Password Gmail | `abcd efgh ijkl mnop` | Xem [`EMAIL_SETUP.md`](Server/EMAIL_SETUP.md) |
 | `WEB_URL` | URL Frontend | `http://localhost:5500` | Dùng domain thật khi deploy |
 | `USE_ETHEREAL` | Test mode email | `false` | `true` = không gửi email thật |
 | `NODE_ENV` | Môi trường | `development` | `production` khi deploy |
@@ -263,42 +282,40 @@ MongoDB connected successfully!
 ```
 → Kiểm tra lại `DB_USERNAME` và `DB_PASSWORD` trong `.env`
 
+---
+
 ### 2. Khởi động Frontend
 
-#### Cách 1: Dùng Live Server (VSCode) - Khuyên dùng ✅
+**Khuyến nghị:** Dùng **Live Server** (VSCode Extension)
 
-1. Mở thư mục `Web` trong VSCode
-2. Click phải vào `Web/user/index.html`
-3. Chọn **"Open with Live Server"**
+1. Cài đặt extension **Live Server** trong VSCode
+2. Mở thư mục `Web/` trong VSCode
+3. Click chuột phải vào file `index.html` → **"Open with Live Server"**
+4. Frontend sẽ chạy tại: **http://127.0.0.1:5500**
 
-Frontend sẽ chạy tại: **http://127.0.0.1:5500** (hoặc port tương tự)
-
-#### Cách 2: Dùng Node.js serve
+**Hoặc dùng Node.js serve:**
 
 ```bash
 cd Web
 npx serve -s . -p 5500
+# Hoặc
+python -m http.server 5500  # Python 3
 ```
 
-#### Cách 3: Dùng Python
+**⚠️ LƯU Ý:**
+- **PHẢI** chạy qua HTTP server (Live Server hoặc serve)
+- **KHÔNG** mở trực tiếp file HTML (double-click) vì sẽ bị lỗi CORS khi load components
 
-```bash
-cd Web
-# Python 3
-python -m http.server 5500
-
-# Python 2
-python -m SimpleHTTPServer 5500
-```
+---
 
 ### 3. Truy cập ứng dụng
 
-| Trang | URL |
-|-------|-----|
-| **Trang chủ User** | http://127.0.0.1:5500/user/index.html |
-| **Đăng nhập** | http://127.0.0.1:5500/user/pages/login.html |
-| **Admin Dashboard** | http://127.0.0.1:5500/admin/index.html |
-| **Kích hoạt Admin** | http://127.0.0.1:5500/admin/activate.html |
+| Vai trò | URL | Ghi chú |
+|---------|-----|---------|
+| **User** | http://127.0.0.1:5500/Web/user/index.html | Trang chủ |
+| **Admin** | http://127.0.0.1:5500/Web/admin/index.html | Cần đăng nhập với role admin |
+| **Pharmacist** | http://127.0.0.1:5500/Web/pharmacist/index.html | Cần đăng nhập với role pharmacist |
+| **API Server** | http://localhost:5000/api | Backend API |
 
 ---
 
@@ -307,38 +324,44 @@ python -m SimpleHTTPServer 5500
 ```
 DACN/
 ├── Server/                    # Backend (Node.js + Express)
-│   ├── controllers/           # Xử lý logic API
-│   │   ├── userController.js
-│   │   ├── drugControler.js
-│   │   ├── ordersController.js
-│   │   ├── invoiceController.js
-│   │   ├── discountController.js
+│   ├── controllers/           # Logic xử lý request
 │   │   ├── cartController.js
+│   │   ├── categoriesControler.js
 │   │   ├── couponController.js
-│   │   └── ...
-│   ├── models/                # Schema MongoDB (Mongoose)
-│   │   ├── userModel.js
-│   │   ├── drugModel.js
-│   │   ├── ordersModel.js
-│   │   ├── invoiceModel.js
+│   │   ├── discountController.js
+│   │   ├── drugControler.js
+│   │   ├── inventoryController.js
+│   │   ├── invoiceController.js
+│   │   ├── ordersController.js
+│   │   ├── prescriptionController.js
+│   │   ├── uploadController.js
+│   │   └── userController.js
+│   ├── models/                # Schema MongoDB
+│   │   ├── cartModel.js
+│   │   ├── categoryModel.js
 │   │   ├── discountModel.js
-│   │   └── ...
-│   ├── routers/               # Định tuyến API
-│   │   ├── userRoutes.js
-│   │   ├── drugRoutes.js
-│   │   ├── ordersRouter.js
-│   │   ├── invoiceRoutes.js
-│   │   ├── discountRouters.js
-│   │   ├── cartRoutes.js
-│   │   ├── couponRoutes.js
-│   │   └── ...
+│   │   ├── drugModel.js
+│   │   ├── inventoryModel.js
+│   │   ├── invoiceModel.js
+│   │   ├── orderModel.js
+│   │   ├── prescriptionModel.js
+│   │   └── userModel.js
+│   ├── routers/               # API routes
+│   │   ├── cartRouter.js
+│   │   ├── categoriesRouter.js
+│   │   ├── couponRouter.js
+│   │   ├── discountRouter.js
+│   │   ├── drugRouter.js
+│   │   ├── inventoryRouter.js
+│   │   ├── invoiceRouter.js
+│   │   ├── orderRouter.js
+│   │   ├── prescriptionRouter.js
+│   │   ├── uploadRouter.js
+│   │   └── userRouter.js
 │   ├── middleware/            # Middleware (auth, validation)
 │   │   └── authMiddleware.js
 │   ├── services/              # Business logic
-│   │   ├── ordersServices.js
-│   │   └── emailService.js    # ✨ Email service
-│   ├── src/
-│   │   └── dbConfig.js        # Kết nối MongoDB
+│   │   └── emailService.js    # ✨ Gửi email
 │   ├── data/                  # Seed data
 │   │   ├── categories-seed.json
 │   │   └── drugs-seed.json
@@ -360,6 +383,24 @@ DACN/
 │   │   ├── activate.html      # Kích hoạt Admin
 │   │   └── css/
 │   │       └── admin.css
+│   │
+│   ├── pharmacist/            # Trang dược sĩ ✨
+│   │   ├── index.html         # Dashboard dược sĩ
+│   │   ├── pos.html           # Point of Sale (bán hàng)
+│   │   ├── orders.html        # Quản lý đơn hàng
+│   │   ├── drugs.html         # Xem danh sách thuốc
+│   │   ├── inventory.html     # Kiểm tra tồn kho
+│   │   ├── invoice-print.html # In hóa đơn
+│   │   ├── css/
+│   │   │   └── pharmacist.css
+│   │   └── js/                # ✨ JavaScript modules
+│   │       ├── auth.js        # Authentication
+│   │       ├── dashboard.js   # Dashboard logic
+│   │       ├── pos.js         # POS system
+│   │       ├── orders.js      # Order management
+│   │       ├── drugs.js       # Drug viewing
+│   │       ├── inventory.js   # Stock checking
+│   │       └── invoice-print.js # Invoice printing
 │   │
 │   ├── user/                  # Trang người dùng
 │   │   ├── index.html         # Trang chủ
@@ -396,6 +437,7 @@ DACN/
 │       ├── userBackButton.js  # ✨ Nút quay lại user
 │       ├── include.js         # Component loader
 │       ├── notification.js    # Toast notification
+│       ├── chatbox.js         # ✨ AI Chatbox
 │       ├── components/
 │       │   ├── topbar.html
 │       │   ├── navbar.html    # ✨ Tự động load 10 categories
@@ -404,6 +446,8 @@ DACN/
 │           └── (logo, banners, etc.)
 │
 ├── CATEGORY_PAGES.md          # 📖 Hướng dẫn thêm trang category
+├── PHARMACIST_LOGIN_UPDATE.md # 📖 Hướng dẫn pharmacist
+├── CHATBOX_README.md          # 📖 Hướng dẫn chatbox
 └── README.md                  # File này
 ```
 
@@ -411,74 +455,58 @@ DACN/
 
 ## 🌐 API Endpoints
 
-### 👤 User API
+**Base URL:** `http://localhost:5000/api`
+
+### 🔐 Authentication
 
 | Method | Endpoint | Mô tả | Auth |
 |--------|----------|-------|------|
-| POST | `/users/register` | Đăng ký tài khoản | ❌ |
+| POST | `/users/register` | Đăng ký user | ❌ |
 | POST | `/users/login` | Đăng nhập | ❌ |
 | POST | `/users/activate-admin` | Kích hoạt Admin | ❌ |
-| GET | `/users` | Lấy danh sách user | ✅ |
-| GET | `/users/:id` | Lấy thông tin user | ✅ |
-| PUT | `/users/:id` | Cập nhật user | ✅ |
-| DELETE | `/users/:id` | Xóa user | ✅ |
+| GET | `/users/me` | Lấy thông tin user hiện tại | ✅ |
 
-### 💊 Drug API
+### 💊 Drugs API
 
 | Method | Endpoint | Mô tả | Auth |
 |--------|----------|-------|------|
 | GET | `/drugs` | Lấy tất cả thuốc | ❌ |
-| GET | `/drugs/:id` | Lấy thông tin thuốc | ❌ |
-| GET | `/drugs/code/:code` | Lấy thuốc theo mã | ❌ |
-| GET | `/drugs/search?q=xxx` | Tìm kiếm thuốc | ❌ |
-| GET | `/drugs/category/:categoryId` | Thuốc theo danh mục | ❌ |
-| GET | `/drugs/low-stock?threshold=10` | Thuốc sắp hết hàng | ✅ |
-| POST | `/drugs` | Thêm thuốc mới | ✅ |
-| PUT | `/drugs/:id` | Cập nhật thuốc | ✅ |
-| DELETE | `/drugs/:id` | Xóa thuốc | ✅ |
+| GET | `/drugs/:id` | Lấy chi tiết thuốc | ❌ |
+| POST | `/drugs` | Thêm thuốc mới | ✅ Admin |
+| PUT | `/drugs/:id` | Cập nhật thuốc | ✅ Admin |
+| DELETE | `/drugs/:id` | Xóa thuốc | ✅ Admin |
+| GET | `/drugs/search` | Tìm kiếm thuốc | ❌ |
 
-### 📂 Category API
+### 📂 Categories API
 
 | Method | Endpoint | Mô tả | Auth |
 |--------|----------|-------|------|
 | GET | `/categories` | Lấy tất cả danh mục | ❌ |
-| GET | `/categories/:id` | Lấy thông tin danh mục | ❌ |
-| POST | `/categories` | Thêm danh mục | ✅ |
-| PUT | `/categories/:id` | Cập nhật danh mục | ✅ |
-| DELETE | `/categories/:id` | Xóa danh mục | ✅ |
+| GET | `/categories/:id` | Lấy chi tiết danh mục | ❌ |
+| POST | `/categories` | Thêm danh mục | ✅ Admin |
+| PUT | `/categories/:id` | Cập nhật danh mục | ✅ Admin |
+| DELETE | `/categories/:id` | Xóa danh mục | ✅ Admin |
 
-### 📦 Order API
-
-| Method | Endpoint | Mô tả | Auth |
-|--------|----------|-------|------|
-| GET | `/orders` | Lấy tất cả đơn hàng | ✅ |
-| GET | `/orders/my-orders` | Đơn hàng của tôi | ✅ |
-| GET | `/orders/:id` | Chi tiết đơn hàng | ✅ |
-| GET | `/orders/top/:period` | Top bán chạy (week/month/year) | ❌ |
-| POST | `/orders` | Tạo đơn hàng | ❌ |
-| PUT | `/orders/:id` | Cập nhật đơn hàng | ✅ |
-| PUT | `/orders/:id/status` | Cập nhật trạng thái | ✅ |
-| DELETE | `/orders/:id` | Xóa đơn hàng | ✅ |
-
-### 🧾 Invoice API
+### 📋 Orders API
 
 | Method | Endpoint | Mô tả | Auth |
 |--------|----------|-------|------|
-| GET | `/invoices` | Lấy tất cả hóa đơn | ✅ |
-| GET | `/invoices/:id` | Chi tiết hóa đơn | ✅ |
-| POST | `/invoices` | Tạo hóa đơn | ✅ |
-| POST | `/invoices/:id/pay` | Thanh toán | ✅ |
-| DELETE | `/invoices/:id` | Xóa hóa đơn | ✅ |
+| GET | `/orders` | Lấy tất cả đơn hàng | ✅ Admin |
+| GET | `/orders/my-orders` | Lấy đơn hàng của user | ✅ |
+| GET | `/orders/:id` | Lấy chi tiết đơn hàng | ✅ |
+| POST | `/orders` | Tạo đơn hàng mới | ✅ |
+| PUT | `/orders/update-status/:id` | Cập nhật trạng thái | ✅ Admin |
+| DELETE | `/orders/:id` | Xóa đơn hàng | ✅ Admin |
 
-### 🎁 Discount API
+### 👥 Users API
 
 | Method | Endpoint | Mô tả | Auth |
 |--------|----------|-------|------|
-| GET | `/discounts` | Lấy tất cả mã giảm giá | ❌ |
-| GET | `/discounts/:id` | Chi tiết mã | ❌ |
-| POST | `/discounts` | Tạo mã giảm giá | ✅ |
-| PUT | `/discounts/:id` | Cập nhật mã | ✅ |
-| DELETE | `/discounts/:id` | Xóa mã | ✅ |
+| GET | `/users` | Lấy tất cả user | ✅ Admin |
+| GET | `/users/:id` | Lấy chi tiết user | ✅ Admin |
+| PUT | `/users/:id` | Cập nhật user | ✅ Admin |
+| DELETE | `/users/:id` | Xóa user | ✅ Admin |
+| PUT | `/users/:id/upgrade-role` | Nâng cấp role | ✅ Admin |
 
 ### 🛒 Cart API
 
@@ -496,6 +524,24 @@ DACN/
 |--------|----------|-------|------|
 | POST | `/coupons/redeem` | Sử dụng mã giảm giá | ❌ |
 
+### 🎁 Discount API
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| GET | `/discounts` | Lấy tất cả discount | ❌ |
+| GET | `/discounts/:id` | Lấy chi tiết discount | ❌ |
+| POST | `/discounts` | Thêm discount | ✅ Admin |
+| PUT | `/discounts/:id` | Cập nhật discount | ✅ Admin |
+| DELETE | `/discounts/:id` | Xóa discount | ✅ Admin |
+
+### 🧾 Invoice API (Pharmacist)
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| GET | `/invoices` | Lấy tất cả hóa đơn | ✅ Pharmacist |
+| GET | `/invoices/:id` | Lấy chi tiết hóa đơn | ✅ Pharmacist |
+| POST | `/invoices` | Tạo hóa đơn mới (POS) | ✅ Pharmacist |
+
 ---
 
 ## 📖 Hướng dẫn sử dụng
@@ -503,7 +549,7 @@ DACN/
 ### 1️⃣ Đăng ký & Đăng nhập
 
 #### Người dùng (User)
-1. Truy cập: http://127.0.0.1:5500/user/pages/login.html
+1. Truy cập: http://127.0.0.1:5500/Web/user/pages/login.html
 2. Click tab **"Đăng ký"**
 3. Điền thông tin:
    - Họ tên (VD: `Nguyễn Văn A`)
@@ -516,9 +562,11 @@ DACN/
 
 **Mặc định:** Role = `user`, is_active = `true` (tự động kích hoạt)
 
+---
+
 #### Quản trị viên (Admin)
 1. Đăng ký tài khoản như user (VD: `adminuser`)
-2. Truy cập: http://127.0.0.1:5500/admin/activate.html
+2. Truy cập: http://127.0.0.1:5500/Web/admin/activate.html
 3. Nhập:
    - Tên đăng nhập: `adminuser`
    - Admin key: `MyS3cr3tAdm1nK3y` (hoặc key bạn đặt trong `.env`)
@@ -528,20 +576,30 @@ DACN/
 
 **💡 Mẹo:** Key mặc định trong file mẫu là `MyS3cr3tAdm1nK3y`
 
+---
+
+#### Dược sĩ (Pharmacist)
+1. Admin nâng cấp user thành pharmacist:
+   - Vào **"Người dùng"** → Click **"Nâng cấp"**
+   - Chọn role **"Pharmacist"**
+2. ✅ User nhận email thông báo nâng cấp
+3. Đăng nhập lại → Tự động redirect đến `/Web/pharmacist/index.html`
+
+---
+
 ### 2️⃣ Mua hàng (User)
 
 1. **Xem sản phẩm:**
-   - Trang chủ: http://127.0.0.1:5500/user/index.html
-   - Tất cả thuốc: `/user/pages/drugs.html`
-   - Theo danh mục:
+   - Trang chủ: Xem sản phẩm nổi bật
+   - Hoặc vào từng danh mục:
      - Giảm đau - Hạ sốt: `/user/pages/pain-relief.html`
      - Kháng sinh: `/user/pages/antibiotics.html`
-     - Vitamin: `/user/pages/vitamins.html`
+     - Vitamin & Khoáng chất: `/user/pages/vitamins.html`
      - Tiêu hóa: `/user/pages/digestive.html`
      - Cảm cúm - Dị ứng: `/user/pages/cold-flu.html`
      - Thực phẩm chức năng: `/user/pages/products.html`
-     - Mẹ & Bé: `/user/pages/mom-baby.html`
      - Chăm sóc cá nhân: `/user/pages/personal-care.html`
+     - Mẹ & Bé: `/user/pages/mom-baby.html`
      - Tim mạch - Huyết áp: `/user/pages/cardiovascular.html`
      - Dạ dày - Đường ruột: `/user/pages/stomach.html`
 
@@ -553,19 +611,16 @@ DACN/
    - Trong trang giỏ hàng, click **"Thanh toán"**
    - Điền thông tin giao hàng (có dropdown 63 tỉnh/thành VN)
    - Chọn phương thức thanh toán:
-     - 💵 COD (Thanh toán khi nhận hàng)
-     - 💳 Chuyển khoản ngân hàng (VietQR)
-     - 💳 Thẻ tín dụng/ghi nợ
-   - Áp dụng mã giảm giá (nếu có, VD: `SUMMER2024`)
+     - 💳 **VietQR** (quét mã QR)
+     - 💰 **COD** (thanh toán khi nhận hàng)
    - Click **"Đặt hàng"**
-   - ✅ Nhận email xác nhận đơn hàng
 
-4. **Xem đơn hàng:**
+4. **Theo dõi đơn hàng:**
    - Menu → **"Đơn hàng của tôi"** (`/user/pages/my-orders.html`)
    - Xem trạng thái:
      - 🟡 Pending (Chờ xử lý)
      - 🔵 Processing (Đang xử lý)
-     - 🟢 Completed (Hoàn thành)
+     - 🟢 Completed (Đã hoàn thành)
      - 🔴 Cancelled (Đã hủy)
 
 5. **Quản lý tài khoản:**
@@ -574,16 +629,13 @@ DACN/
    - Quản lý địa chỉ giao hàng (thêm/sửa/xóa)
    - Đổi mật khẩu
 
+---
+
 ### 3️⃣ Quản lý (Admin)
 
 #### Dashboard
-- Truy cập: http://127.0.0.1:5500/admin/index.html
-- Xem tổng quan:
-  - 💊 Tổng số thuốc
-  - 📦 Tổng đơn hàng
-  - 💰 Doanh thu (đã thanh toán)
-  - 📊 Biểu đồ doanh thu 6 tháng
-  - 🏆 Top thuốc bán chạy trong tháng
+- Xem tổng quan: Tổng thuốc, đơn hàng, người dùng, doanh thu
+- Biểu đồ: Doanh thu 6 tháng, Top thuốc bán chạy
 
 #### Quản lý thuốc
 1. Click **"Thuốc"** trong sidebar
@@ -618,6 +670,10 @@ DACN/
 2. Xem danh sách user
 3. **Sửa thông tin:** Click icon ✏️
 4. **Xóa user:** Click icon 🗑️
+5. **Nâng cấp quyền:**
+   - Click **"Nâng cấp"**
+   - Chọn role mới (Admin/Pharmacist)
+   - ✅ User nhận email thông báo
 
 #### Quản lý khuyến mãi
 1. Click **"Khuyến mãi"** trong sidebar
@@ -643,23 +699,49 @@ DACN/
 
 ---
 
+### 4️⃣ Dược sĩ (Pharmacist)
+
+#### Dashboard
+- Xem thống kê:
+  - 🧾 Hóa đơn hôm nay
+  - 💰 Doanh thu hôm nay
+  - ⚠️ Thuốc sắp hết (< 10 đơn vị)
+
+#### Bán hàng (POS)
+1. Click **"Bán hàng"** (`/pharmacist/pos.html`)
+2. **Thêm sản phẩm:**
+   - Tìm kiếm thuốc (auto-complete)
+   - Nhập số lượng
+   - Click **"Thêm"**
+3. **Xem giỏ hàng:**
+   - Kiểm tra danh sách sản phẩm
+   - Tự động tính: Tạm tính, VAT 10%, Tổng cộng
+4. **Thanh toán:**
+   - Nhập thông tin khách hàng (tên, SĐT)
+   - Chọn phương thức: Tiền mặt/Thẻ/Credit
+   - Click **"Thanh toán"**
+   - ✅ Tạo hóa đơn và tự động giảm tồn kho
+
+#### In hóa đơn
+- Sau khi thanh toán, redirect đến trang in
+- Click **"In hóa đơn"** (Ctrl+P)
+
+#### Kiểm tra tồn kho
+1. Click **"Tồn kho"** (`/pharmacist/inventory.html`)
+2. Xem thống kê:
+   - 🔴 Hết hàng
+   - 🟡 Sắp hết (< 10)
+   - 🟢 Còn hàng
+3. Tìm kiếm, lọc theo danh mục
+
+#### Quản lý đơn hàng
+1. Click **"Đơn hàng"** (`/pharmacist/orders.html`)
+2. Xem danh sách đơn hàng online
+3. Cập nhật trạng thái (tương tự Admin)
+
+---
+
 ## 🔍 Troubleshooting
-
-### Lỗi kết nối MongoDB
-
-**Lỗi:**
-```
-❌ Error connecting to MongoDB: MongooseServerSelectionError
-```
-
-**Giải pháp:**
-1. Kiểm tra `DB_USERNAME` và `DB_PASSWORD` trong `.env`
-2. Đảm bảo IP của bạn được whitelist trong MongoDB Atlas:
-   - Vào [MongoDB Atlas Dashboard](https://cloud.mongodb.com)
-   - Network Access → Add IP Address → **Allow Access from Anywhere** (0.0.0.0/0)
-   - Hoặc thêm IP hiện tại
-3. Kiểm tra URL connection string trong [`Server/src/dbConfig.js`](Server/src/dbConfig.js)
-4. Đảm bảo MongoDB cluster đang chạy (không bị pause)
 
 ### Lỗi CORS
 
@@ -681,6 +763,8 @@ has been blocked by CORS policy
   ```
 - Khởi động lại server sau khi sửa
 
+---
+
 ### Không tải được component (topbar/navbar/footer)
 
 **Lỗi:**
@@ -697,6 +781,8 @@ Không thể tải component.
    - ❌ KHÔNG mở trực tiếp file HTML (double-click)
    - ✅ Dùng Live Server hoặc `npx serve -s . -p 5500`
 3. Mở Developer Tools (F12) → Console để xem lỗi chi tiết
+
+---
 
 ### Không nhận được email
 
@@ -717,82 +803,59 @@ Không thể tải component.
    ✅ Email sent successfully: <message-id>
    ✅ Email đăng ký đã được gửi đến: user@example.com
    ```
-4. Nếu dùng `USE_ETHEREAL=true` (test mode):
-   - Email không gửi thật
-   - Xem link preview trong console log
+4. Kiểm tra thư mục **Spam** trong Gmail
 
-### Đăng nhập thành công nhưng không redirect
+---
 
-**Giải pháp:**
-1. Mở Developer Tools (F12) → Console
-2. Kiểm tra response từ API `/users/login`:
-   ```json
-   {
-     "success": true,
-     "message": "Đăng nhập thành công",
-     "user": {...},
-     "token": "eyJhbGc..."
-   }
-   ```
-3. Đảm bảo `is_active = true` trong database:
-   ```javascript
-   // Trong MongoDB Compass hoặc Atlas:
-   db.users.findOne({ username: "testuser" })
-   // Kiểm tra: is_active: true
-   ```
-4. Clear localStorage và thử lại:
-   ```javascript
-   // Trong Console
-   localStorage.clear();
-   location.reload();
-   ```
-
-### Thuốc trong kho không giảm khi đặt hàng
-
-**Nguyên nhân:** Logic giảm stock bị trùng lặp ở 2 controller (đã fix).
-
-**Giải pháp:** Đã khắc phục trong phiên bản hiện tại:
-- ✅ Chỉ giảm stock trong [`invoiceController.createInvoice`](Server/controllers/invoiceController.js)
-- ✅ [`ordersController.createOrder`](Server/controllers/ordersController.js) chỉ validate stock
-- Nếu vẫn gặp lỗi, pull code mới nhất từ repo
-
-### Không thấy ảnh sản phẩm
-
-**Giải pháp:**
-1. Kiểm tra trường `image` trong database có URL hợp lệ:
-   ```
-   https://example.com/images/paracetamol.jpg
-   ```
-2. Đảm bảo URL bắt đầu bằng `http://` hoặc `https://`
-3. Nếu dùng local images:
-   - Đặt trong `Web/shared/images/`
-   - Dùng đường dẫn: `/shared/images/paracetamol.jpg`
-4. Test URL trong trình duyệt xem có mở được không
-
-### Lỗi "Invalid token" khi truy cập trang Admin
+### Lỗi MongoDB Connection
 
 **Lỗi:**
-```json
-{
-  "success": false,
-  "message": "Token không hợp lệ hoặc đã hết hạn"
-}
+```
+❌ Error connecting to MongoDB: MongooseServerSelectionError
 ```
 
 **Giải pháp:**
-1. Token đã hết hạn (mặc định 7 ngày)
-2. Đăng xuất và đăng nhập lại
-3. Nếu vẫn lỗi, đổi `JWT_SECRET` trong `.env` và restart server
+1. Kiểm tra `DB_USERNAME` và `DB_PASSWORD` trong `.env`
+2. Đảm bảo đã tạo database user trong MongoDB Atlas
+3. Whitelist IP address:
+   - Vào MongoDB Atlas → Network Access
+   - Add IP: `0.0.0.0/0` (cho phép tất cả IP)
+4. Kiểm tra connection string trong `server.js`:
+   ```javascript
+   mongoose.connect(
+     `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@cluster0.xxxxx.mongodb.net/drugstore?retryWrites=true&w=majority`
+   );
+   ```
 
-### Mã giảm giá không áp dụng được
+---
+
+### Token hết hạn
+
+**Lỗi:**
+```
+401 Unauthorized: Token expired
+```
 
 **Giải pháp:**
-1. Kiểm tra mã có tồn tại trong database: `/discounts`
-2. Đảm bảo:
-   - Mã chưa hết hạn (`end_date > now`)
-   - Còn lượt sử dụng (`used_count < usage_limit`)
-   - Mã đã kích hoạt (`is_active = true`)
-3. Xem log server để biết lý do từ chối
+- Đăng xuất và đăng nhập lại
+- Token mặc định hết hạn sau 7 ngày (cấu hình trong `.env`: `JWT_EXPIRES=7d`)
+
+---
+
+### Pharmacist không thể truy cập POS
+
+**Lỗi:**
+```
+Bạn không có quyền truy cập trang này
+```
+
+**Giải pháp:**
+1. Đảm bảo user đã được nâng cấp lên role **pharmacist**
+2. Đăng xuất và đăng nhập lại
+3. Kiểm tra localStorage:
+   ```javascript
+   JSON.parse(localStorage.getItem('user')).role // Phải là "pharmacist"
+   ```
 
 ---
 
@@ -802,7 +865,7 @@ Không thể tải component.
 
 #### 1. Đăng ký user (Dữ liệu mẫu)
 ```http
-POST http://localhost:5000/users/register
+POST http://localhost:5000/api/users/register
 Content-Type: application/json
 
 {
@@ -814,9 +877,11 @@ Content-Type: application/json
 }
 ```
 
+---
+
 #### 2. Đăng nhập (Dữ liệu mẫu)
 ```http
-POST http://localhost:5000/users/login
+POST http://localhost:5000/api/users/login
 Content-Type: application/json
 
 {
@@ -842,20 +907,27 @@ Content-Type: application/json
 ```
 📌 **Lưu token để dùng cho các request tiếp theo**
 
+---
+
 #### 3. Lấy danh sách thuốc
 ```http
-GET http://localhost:5000/drugs
+GET http://localhost:5000/api/drugs
 ```
+
+---
 
 #### 4. Tìm kiếm thuốc (Dữ liệu mẫu)
 ```http
-GET http://localhost:5000/drugs/search?q=paracetamol
+GET http://localhost:5000/api/drugs/search?keyword=paracetamol
 ```
+
+---
 
 #### 5. Tạo đơn hàng (Dữ liệu mẫu)
 ```http
-POST http://localhost:5000/orders
+POST http://localhost:5000/api/orders
 Content-Type: application/json
+Authorization: Bearer <your-token>
 
 {
   "customer_id": 1,
@@ -881,9 +953,11 @@ Content-Type: application/json
 }
 ```
 
+---
+
 #### 6. Áp dụng mã giảm giá (Dữ liệu mẫu)
 ```http
-POST http://localhost:5000/coupons/redeem
+POST http://localhost:5000/api/coupons/redeem
 Content-Type: application/json
 
 {
@@ -904,9 +978,11 @@ Content-Type: application/json
 }
 ```
 
+---
+
 #### 7. Kích hoạt Admin (Dữ liệu mẫu)
 ```http
-POST http://localhost:5000/users/activate-admin
+POST http://localhost:5000/api/users/activate-admin
 Content-Type: application/json
 
 {
@@ -915,44 +991,47 @@ Content-Type: application/json
 }
 ```
 
+---
+
 #### 8. Lấy danh sách user (Cần token Admin)
 ```http
-GET http://localhost:5000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+GET http://localhost:5000/api/users
+Authorization: Bearer <admin-token>
 ```
+
+---
 
 ### Test Frontend
 
-#### Test đăng ký & đăng nhập
-1. Mở http://127.0.0.1:5500/user/pages/login.html
-2. Đăng ký với thông tin mẫu:
-   - Username: `demo_user_2`
+1. **Kiểm tra trang chủ:**
+   - Truy cập: http://127.0.0.1:5500/Web/user/index.html
+   - Kiểm tra: Navbar, footer, sản phẩm nổi bật
+
+2. **Kiểm tra đăng nhập:**
+   - Username: `demo_user`
    - Password: `Demo@1234`
-   - Email: `demo2@example.com`
-   - Full Name: `Demo User 2`
-3. Đăng nhập với tài khoản vừa tạo
-4. Kiểm tra có redirect về trang chủ không
 
-#### Test giỏ hàng
-1. Vào trang thuốc bất kỳ
-2. Click **"Thêm vào giỏ"**
-3. Click icon 🛒 ở topbar
-4. Kiểm tra giỏ hàng có sản phẩm không
-5. Thử tăng/giảm số lượng
-6. Thử xóa sản phẩm
+3. **Kiểm tra giỏ hàng:**
+   - Thêm sản phẩm vào giỏ
+   - Cập nhật số lượng
+   - Xóa sản phẩm
 
-#### Test checkout
-1. Trong giỏ hàng, click **"Thanh toán"**
-2. Điền thông tin mẫu:
-   - Họ tên: `Nguyễn Văn Test`
-   - SĐT: `0901234567`
-   - Email: `test@example.com`
-   - Tỉnh/Thành phố: `Hồ Chí Minh`
-   - Quận/Huyện: `Quận 1`
-   - Địa chỉ: `123 Đường ABC`
-3. Chọn phương thức thanh toán: **COD**
-4. Click **"Đặt hàng"**
-5. Kiểm tra có redirect sang trang success không
+4. **Kiểm tra checkout:**
+   - Điền thông tin giao hàng
+   - Chọn tỉnh/thành → Xem quận/huyện
+   - Tạo đơn hàng
+
+5. **Kiểm tra Admin:**
+   - Kích hoạt admin với key
+   - Đăng nhập → Truy cập dashboard
+   - Thêm/sửa/xóa thuốc
+   - Quản lý đơn hàng
+
+6. **Kiểm tra Pharmacist:**
+   - Nâng cấp user lên pharmacist
+   - Đăng nhập → Redirect đến POS
+   - Tạo hóa đơn bán hàng
+   - In hóa đơn
 
 ---
 
@@ -986,15 +1065,17 @@ Chúng tôi hoan nghênh mọi đóng góp! Để đóng góp:
 ## 📝 Changelog
 
 ### Version 1.1.0 (2024-12-02) - Latest ✨
-- ✅ Thêm Email Service (đăng ký, nâng cấp admin, đơn hàng)
+- ✅ Thêm Email Service (đăng ký, nâng cấp admin/pharmacist, đơn hàng)
 - ✅ Tích hợp VietQR cho thanh toán
 - ✅ Thêm quản lý địa chỉ với 63 tỉnh/thành VN
 - ✅ Thêm 10 trang category đầy đủ
 - ✅ Cải thiện UI/UX (gradient, animations)
 - ✅ Thêm trang khuyến mãi cho user
 - ✅ Thêm trang thống kê chi tiết cho admin
+- ✅ Thêm hệ thống Pharmacist (POS, in hóa đơn, tồn kho)
 - ✅ Fix bug giảm stock khi đặt hàng
 - ✅ Cập nhật hướng dẫn sử dụng dữ liệu mẫu
+- ✅ Thêm AI Chatbox tư vấn khách hàng
 
 ### Version 1.0.0 (2024-01-15)
 - ✅ Hoàn thiện hệ thống User & Admin
@@ -1008,6 +1089,9 @@ Chúng tôi hoan nghênh mọi đóng góp! Để đóng góp:
 
 ## 📜 License
 
+Dự án này được phát hành dưới giấy phép **MIT License**.
+
+```
 MIT License
 
 Copyright (c) 2024 DrugStore Team
@@ -1076,11 +1160,13 @@ SOFTWARE.
 **🎉 Happy Coding! 🎉**
 
 Nếu gặp vấn đề, vui lòng:
-1. Kiểm tra [Troubleshooting](#troubleshooting)
+1. Kiểm tra [Troubleshooting](#-troubleshooting)
 2. Xem [`Server/EMAIL_SETUP.md`](Server/EMAIL_SETUP.md) cho vấn đề email
 3. Xem [`CATEGORY_PAGES.md`](CATEGORY_PAGES.md) để thêm trang category mới
-4. Tạo [Issue](https://github.com/yourusername/DACN/issues) trên GitHub
-5. Liên hệ qua email: Phucnguyenn0608@gmail.com
+4. Xem [`PHARMACIST_LOGIN_UPDATE.md`](PHARMACIST_LOGIN_UPDATE.md) cho hệ thống Pharmacist
+5. Xem [`CHATBOX_README.md`](Web/CHATBOX_README.md) cho tính năng Chatbox
+6. Tạo [Issue](https://github.com/yourusername/DACN/issues) trên GitHub
+7. Liên hệ qua email: Phucnguyenn0608@gmail.com
 
 ---
 
