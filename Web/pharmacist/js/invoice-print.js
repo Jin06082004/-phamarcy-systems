@@ -80,19 +80,25 @@ function displayInvoice(invoice) {
     pharmacistNameEl.textContent = user.full_name || 'Dược sĩ';
   }
   
-  // Invoice items
+  // Invoice items with unit support
   const itemsBody = document.getElementById('invoice-items');
+  const unitLabels = { pill: 'Viên', blister: 'Vỉ', box: 'Hộp' };
   
   if (itemsBody && invoice.items && invoice.items.length > 0) {
-    itemsBody.innerHTML = invoice.items.map((item, index) => `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${item.name}</td>
-        <td>${formatCurrency(item.unit_price || 0)}</td>
-        <td>${item.quantity}</td>
-        <td>${formatCurrency(item.total_price || 0)}</td>
-      </tr>
-    `).join('');
+    itemsBody.innerHTML = invoice.items.map((item, index) => {
+      const unitLabel = item.unit ? unitLabels[item.unit] || item.unit : '';
+      const unitDisplay = unitLabel ? ` (${unitLabel})` : '';
+      
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.name}${unitDisplay}</td>
+          <td>${formatCurrency(item.unit_price || 0)}</td>
+          <td>${item.quantity}</td>
+          <td>${formatCurrency(item.total_price || 0)}</td>
+        </tr>
+      `;
+    }).join('');
   }
   
   // Summary

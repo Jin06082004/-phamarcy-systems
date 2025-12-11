@@ -475,6 +475,7 @@
 
       function renderCart() {
         const container = document.getElementById('orderItems');
+        const unitLabels = { pill: 'Viên', blister: 'Vỉ', box: 'Hộp' };
         
         if (cart.length === 0) {
           container.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Giỏ hàng trống</div>';
@@ -482,21 +483,34 @@
           return;
         }
 
-        container.innerHTML = cart.map(item => `
-          <div class="order-item">
-            <div class="item-info">
-              <h4>${item.name}</h4>
-              <p>Số lượng: ${item.quantity}</p>
+        container.innerHTML = cart.map(item => {
+          const unitPrice = item.unit_price || item.price;
+          const unitLabel = item.unit ? unitLabels[item.unit] || item.unit : '';
+          const totalPrice = unitPrice * item.quantity;
+          
+          return `
+            <div class="order-item">
+              <div class="item-info">
+                <h4>${item.name}</h4>
+                <p>
+                  ${unitLabel ? `Đơn vị: <strong>${unitLabel}</strong> | ` : ''}
+                  Số lượng: ${item.quantity} | 
+                  Đơn giá: ${unitPrice.toLocaleString()}₫
+                </p>
+              </div>
+              <div class="item-price">${totalPrice.toLocaleString()}₫</div>
             </div>
-            <div class="item-price">${(item.price * item.quantity).toLocaleString()}₫</div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
 
         updateSummary();
       }
 
       function updateSummary() {
-        subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        subtotal = cart.reduce((sum, item) => {
+          const unitPrice = item.unit_price || item.price;
+          return sum + (unitPrice * item.quantity);
+        }, 0);
         const total = subtotal - discount + shippingFee;
 
         document.getElementById('subtotal').textContent = subtotal.toLocaleString() + '₫';
@@ -724,7 +738,8 @@
               drug_id: item.drug_id,
               drug_name: item.name,
               quantity: item.quantity,
-              price: item.price
+              price: item.unit_price || item.price,
+              unit: item.unit // thêm unit vào order items
             })),
             total_amount: total,
             payment_method: paymentMethod,
@@ -744,8 +759,9 @@
               medicine_id: item.drug_id,
               name: item.name,
               quantity: item.quantity,
-              unit_price: item.price,
-              total_price: item.price * item.quantity
+              unit_price: item.unit_price || item.price,
+              total_price: (item.unit_price || item.price) * item.quantity,
+              unit: item.unit // thêm unit vào invoice items
             })),
             subtotal: subtotal,
             discount: discount,

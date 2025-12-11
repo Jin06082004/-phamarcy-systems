@@ -56,8 +56,23 @@ export const createOrder = async (req, res) => {
       if (!drug) {
         return res.status(400).json({ success: false, message: `Không tìm thấy thuốc với drug_id ${item.drug_id}` });
       }
-      if (drug.stock < item.quantity) {
-        return res.status(400).json({ success: false, message: `Thuốc ${drug.name} không đủ số lượng trong kho` });
+      
+      // Validate stock dựa trên đơn vị
+      const unit = item.unit || 'pill';
+      let availableStock = 0;
+      
+      if (drug.pricing && drug.pricing[unit]) {
+        availableStock = drug.pricing[unit].stock || 0;
+      } else {
+        // Fallback to legacy stock if pricing not available
+        availableStock = drug.stock || 0;
+      }
+      
+      if (availableStock < item.quantity) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Thuốc ${drug.name} (${unit}) không đủ số lượng trong kho. Còn ${availableStock}, cần ${item.quantity}` 
+        });
       }
       // KHÔNG giảm stock ở đây nữa
     }
@@ -192,9 +207,18 @@ export const updateOrderStatus = async (req, res) => {
         try {
           const drug = await Drug.findOne({ drug_id: item.drug_id });
           if (drug) {
-            drug.stock = Number(drug.stock) + Number(item.quantity);
+            const unit = item.unit || 'pill';
+            
+            // Hoàn trả stock theo đơn vị
+            if (drug.pricing && drug.pricing[unit]) {
+              drug.pricing[unit].stock = Number(drug.pricing[unit].stock || 0) + Number(item.quantity);
+            } else {
+              // Fallback to legacy stock
+              drug.stock = Number(drug.stock) + Number(item.quantity);
+            }
+            
             await drug.save();
-            console.log(`✅ Hoàn trả ${item.quantity} ${drug.name}`);
+            console.log(`✅ Hoàn trả ${item.quantity} ${drug.name} (${unit})`);
           } else {
             console.warn(`⚠️ Không tìm thấy thuốc ID ${item.drug_id}`);
           }
@@ -212,14 +236,35 @@ export const updateOrderStatus = async (req, res) => {
         try {
           const drug = await Drug.findOne({ drug_id: item.drug_id });
           if (drug) {
-            if (drug.stock < item.quantity) {
-              return res.status(400).json({ 
-                message: `Không đủ tồn kho cho thuốc ${drug.name}. Còn ${drug.stock}, cần ${item.quantity}` 
-              });
+            const unit = item.unit || 'pill';
+            let availableStock = 0;
+            
+            // Kiểm tra stock theo đơn vị
+            if (drug.pricing && drug.pricing[unit]) {
+              availableStock = drug.pricing[unit].stock || 0;
+              
+              if (availableStock < item.quantity) {
+                return res.status(400).json({ 
+                  message: `Không đủ tồn kho cho thuốc ${drug.name} (${unit}). Còn ${availableStock}, cần ${item.quantity}` 
+                });
+              }
+              
+              drug.pricing[unit].stock = Number(availableStock) - Number(item.quantity);
+            } else {
+              // Fallback to legacy stock
+              availableStock = drug.stock || 0;
+              
+              if (availableStock < item.quantity) {
+                return res.status(400).json({ 
+                  message: `Không đủ tồn kho cho thuốc ${drug.name}. Còn ${availableStock}, cần ${item.quantity}` 
+                });
+              }
+              
+              drug.stock = Number(drug.stock) - Number(item.quantity);
             }
-            drug.stock = Number(drug.stock) - Number(item.quantity);
+            
             await drug.save();
-            console.log(`✅ Giảm ${item.quantity} ${drug.name}`);
+            console.log(`✅ Giảm ${item.quantity} ${drug.name} (${unit})`);
           }
         } catch (error) {
           console.error(`❌ Lỗi giảm stock cho drug_id ${item.drug_id}:`, error);
@@ -377,9 +422,18 @@ export const deleteOrder = async (req, res) => {
         try {
           const drug = await Drug.findOne({ drug_id: item.drug_id });
           if (drug) {
-            drug.stock = Number(drug.stock) + Number(item.quantity);
+            const unit = item.unit || 'pill';
+            
+            // Hoàn trả stock theo đơn vị
+            if (drug.pricing && drug.pricing[unit]) {
+              drug.pricing[unit].stock = Number(drug.pricing[unit].stock || 0) + Number(item.quantity);
+            } else {
+              // Fallback to legacy stock
+              drug.stock = Number(drug.stock) + Number(item.quantity);
+            }
+            
             await drug.save();
-            console.log(`✅ Hoàn trả ${item.quantity} ${drug.name}`);
+            console.log(`✅ Hoàn trả ${item.quantity} ${drug.name} (${unit})`);
           }
         } catch (error) {
           console.error(`❌ Lỗi hoàn trả stock cho drug_id ${item.drug_id}:`, error);

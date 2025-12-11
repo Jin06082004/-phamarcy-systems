@@ -34,6 +34,12 @@ const orderItemSchema = new mongoose.Schema({
   },
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
+  // 💊 Đơn vị (viên, vỉ, hộp)
+  unit: {
+    type: String,
+    enum: ['pill', 'blister', 'box'],
+    default: 'pill'
+  }
 });
 
 const orderSchema = new mongoose.Schema(

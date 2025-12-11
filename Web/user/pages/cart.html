@@ -92,15 +92,23 @@
           return;
         }
 
+        const unitLabels = { pill: 'Viên', blister: 'Vỉ', box: 'Hộp' };
         let subtotal = 0;
         container.innerHTML = cart.map((item, idx) => {
-          const total = (item.price || 0) * (item.quantity || 0);
+          const unitPrice = item.unit_price || item.price || 0;
+          const total = unitPrice * (item.quantity || 0);
           subtotal += total;
+          const unitLabel = item.unit ? unitLabels[item.unit] || item.unit : '';
+          const unitDisplay = unitLabel ? ` (${unitLabel})` : '';
+          
           return `
             <div style="display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; align-items: center;">
               <div style="flex: 1;">
                 <h4 style="margin: 0 0 5px;">${item.name}</h4>
-                <p style="margin: 0; color: #666; font-size: 14px;">Giá: ${item.price.toLocaleString()}₫</p>
+                <p style="margin: 0; color: #666; font-size: 14px;">
+                  Đơn vị: <span style="font-weight: 600; color: #10b981;">${unitLabel || 'N/A'}</span> | 
+                  Giá: ${unitPrice.toLocaleString()}₫/${unitLabel || 'đơn vị'}
+                </p>
               </div>
               <div style="display: flex; align-items: center; gap: 10px;">
                 <button onclick="window.changeQty(${idx}, -1)" style="width: 30px; height: 30px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px;">−</button>
@@ -123,7 +131,11 @@
           try {
             const item = serverCart.items[idx];
             const newQty = Math.max(1, Number(item.quantity) + delta);
-            await cartAPI.updateItem(serverCart._id, { drug_id: item.drug_id, quantity: newQty });
+            await cartAPI.updateItem(serverCart._id, { 
+              drug_id: item.drug_id, 
+              quantity: newQty,
+              unit: item.unit // bao gồm unit khi cập nhật
+            });
             // reload server cart
             const res = await cartAPI.get(serverCart.user_id ? serverCart.user_id : serverCart.guest_token);
             serverCart = res.data || res;
@@ -143,7 +155,10 @@
         if (serverCart && serverCart._id) {
           try {
             const item = serverCart.items[idx];
-            await cartAPI.removeItem(serverCart._id, { drug_id: item.drug_id });
+            await cartAPI.removeItem(serverCart._id, { 
+              drug_id: item.drug_id,
+              unit: item.unit // bao gồm unit khi xóa
+            });
             const res = await cartAPI.get(serverCart.user_id ? serverCart.user_id : serverCart.guest_token);
             serverCart = res.data || res;
             renderCart();

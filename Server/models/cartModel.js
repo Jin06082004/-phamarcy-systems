@@ -6,6 +6,9 @@ const cartItemSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0 },
     quantity: { type: Number, required: true, min: 1 },
+    // ✨ THÊM: Đơn vị và giá theo đơn vị
+    unit: { type: String, enum: ['pill', 'blister', 'box'], default: 'pill' },
+    unit_price: { type: Number, default: 0 } // Giá gốc của đơn vị này
   },
   { _id: false }
 );

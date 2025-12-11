@@ -24,6 +24,12 @@ const lineItemSchema = new mongoose.Schema(
         total_price: { type: Number, required: true, min: 0 },
         batch_number: { type: String, default: "" },
         expiration_date: { type: Date },
+        // 💊 Đơn vị (viên, vỉ, hộp)
+        unit: {
+            type: String,
+            enum: ['pill', 'blister', 'box'],
+            default: 'pill'
+        }
     },
     { _id: false }
 );

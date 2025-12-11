@@ -6,7 +6,11 @@
         "start": "node server.js",
         "dev": "nodemon server.js",
         "seed": "node scripts/seedDatabase.js",
-        "seed:force": "node scripts/seedDatabase.js --delete-old"
+        "seed:force": "node scripts/seedDatabase.js --delete-old",
+        "seed:pricing": "node scripts/seedDrugsWithPricing.js",
+        "seed:pricing:force": "node scripts/seedDrugsWithPricing.js --delete-old",
+        "migrate:pricing": "node scripts/migrateDrugPricing.js",
+        "convert:seed": "node scripts/convertDrugsSeedToPricing.js"
     },
     "dependencies": {
         "express": "^4.18.2",

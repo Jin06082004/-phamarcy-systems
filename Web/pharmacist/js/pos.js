@@ -63,21 +63,29 @@ function renderProducts(products) {
   }
   
   grid.innerHTML = products.map(p => {
-    const outOfStock = p.stock <= 0;
-    const lowStock = p.stock > 0 && p.stock < 10;
+    // ✨ Tính tổng tồn kho từ tất cả đơn vị
+    const pricing = p.pricing || { pill: { price: p.price || 0, stock: p.stock || 0 } };
+    const totalStock = (pricing.pill?.stock || 0) + (pricing.blister?.stock || 0) + (pricing.box?.stock || 0);
+    
+    const outOfStock = totalStock <= 0;
+    const lowStock = totalStock > 0 && totalStock < 10;
     
     let stockBadge = '';
     if (outOfStock) {
       stockBadge = '<span class="badge badge-danger"><i class="bx bx-x-circle"></i> Hết hàng</span>';
     } else if (lowStock) {
-      stockBadge = `<span class="badge badge-warning"><i class="bx bx-error-circle"></i> Còn ${p.stock}</span>`;
+      stockBadge = `<span class="badge badge-warning"><i class="bx bx-error-circle"></i> Còn ${totalStock}</span>`;
     } else {
-      stockBadge = `<span class="badge badge-success"><i class="bx bx-check-circle"></i> Còn ${p.stock}</span>`;
+      stockBadge = `<span class="badge badge-success"><i class="bx bx-check-circle"></i> Còn ${totalStock}</span>`;
     }
+    
+    // Hiển thị giá đơn vị mặc định
+    const defaultUnit = p.default_unit || 'pill';
+    const defaultPrice = pricing[defaultUnit]?.price || p.price || 0;
     
     return `
       <div class="product-card-pos ${outOfStock ? 'out-of-stock' : ''}" 
-           ${outOfStock ? '' : `onclick="window.addToCart(${p.drug_id})"`}>
+           ${outOfStock ? '' : `onclick="window.showUnitSelector(${p.drug_id})"`}>
         <div class="product-image ${!p.image ? 'product-no-image' : ''}">
           ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">` : ''}
           ${!p.image ? `<i class='bx bx-capsule'></i>` : `<i class='bx bx-capsule' style='display:none'></i>`}
@@ -88,7 +96,7 @@ function renderProducts(products) {
             <span class="product-code"><i class='bx bx-barcode'></i> ${p.drug_code || 'N/A'}</span>
           </div>
           <div class="product-footer">
-            <div class="price">${formatCurrency(p.price || 0)}</div>
+            <div class="price">${formatCurrency(defaultPrice)}</div>
             ${stockBadge}
           </div>
           ${!outOfStock ? '<div class="add-icon"><i class="bx bx-plus"></i></div>' : ''}
@@ -122,6 +130,126 @@ function setupSearch() {
 }
 
 // ========== CART FUNCTIONS ==========
+// ✨ Modal chọn đơn vị
+window.showUnitSelector = function(drugId) {
+  const drug = allDrugs.find(d => d.drug_id === drugId);
+  if (!drug) return;
+  
+  const pricing = drug.pricing || { pill: { price: drug.price || 0, stock: drug.stock || 0 } };
+  const unitLabels = { pill: 'Viên', blister: 'Vỉ', box: 'Hộp' };
+  
+  const unitButtons = Object.keys(pricing).map(unit => {
+    const data = pricing[unit];
+    if (!data || data.stock <= 0) return '';
+    
+    return `
+      <button onclick="window.addToCartWithUnit(${drugId}, '${unit}')" 
+              style="padding: 16px; border: 2px solid #e5e7eb; border-radius: 12px; background: white; cursor: pointer; text-align: left; transition: all 0.2s; width: 100%; margin-bottom: 12px; display: block;"
+              onmouseover="this.style.borderColor='#10b981'; this.style.background='#f0fdf4'"
+              onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='white'">
+        <div style="font-weight: 600; color: #1f2937; font-size: 1.1rem; margin-bottom: 8px;">
+          ${unit === 'pill' ? '💊' : '📦'} ${unitLabels[unit] || unit}
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="color: #6b7280; font-size: 0.9rem;">
+            <i class="bx bx-package"></i> Còn ${data.stock}
+          </span>
+          <span style="color: #dc2626; font-weight: 700; font-size: 1.2rem;">${formatCurrency(data.price || 0)}</span>
+        </div>
+      </button>
+    `;
+  }).join('');
+  
+  if (!unitButtons) {
+    showError('Sản phẩm đã hết hàng');
+    return;
+  }
+  
+  // Tạo modal custom
+  const modal = document.createElement('div');
+  modal.id = 'unit-selector-modal';
+  modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+  
+  modal.innerHTML = `
+    <div style="background: white; padding: 28px; border-radius: 16px; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: #1f2937; font-size: 1.3rem;">
+          <i class="bx bx-shopping-bag" style="color: #10b981;"></i>
+          Chọn đơn vị - ${drug.name}
+        </h3>
+        <button onclick="this.closest('#unit-selector-modal').remove()" style="background: #f3f4f6; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; color: #6b7280; transition: all 0.2s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+          ✕
+        </button>
+      </div>
+      <div style="margin-bottom: 16px;">
+        ${unitButtons}
+      </div>
+      <button onclick="this.closest('#unit-selector-modal').remove()" style="width: 100%; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">
+        Đóng
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+};
+
+// ✨ Thêm vào giỏ với đơn vị
+window.addToCartWithUnit = function(drugId, unit) {
+  // Close modal first
+  const modal = document.getElementById('unit-selector-modal');
+  if (modal) modal.remove();
+  
+  const drug = allDrugs.find(d => d.drug_id === drugId);
+  if (!drug) {
+    showError('Không tìm thấy sản phẩm');
+    return;
+  }
+  
+  const pricing = drug.pricing || { pill: { price: drug.price || 0, stock: drug.stock || 0 } };
+  const unitData = pricing[unit];
+  
+  if (!unitData || unitData.stock <= 0) {
+    showError('Sản phẩm hết hàng với đơn vị này');
+    return;
+  }
+  
+  const unitLabels = { pill: 'Viên', blister: 'Vỉ', box: 'Hộp' };
+  
+  // Tìm item với cùng drug_id VÀ unit
+  const existing = cart.find(item => item.drug_id === drugId && item.unit === unit);
+  
+  if (existing) {
+    if (existing.quantity < unitData.stock) {
+      existing.quantity++;
+      showInfo(`Đã tăng số lượng ${drug.name} (${unitLabels[unit]})`);
+    } else {
+      showError(`Chỉ còn ${unitData.stock} ${unitLabels[unit].toLowerCase()}`);
+      return;
+    }
+  } else {
+    cart.push({
+      drug_id: drug.drug_id,
+      name: drug.name,
+      unit: unit,
+      unit_label: unitLabels[unit],
+      price: unitData.price,
+      quantity: 1,
+      stock: unitData.stock
+    });
+    showInfo(`Đã thêm ${drug.name} (${unitLabels[unit]})`);
+  }
+  
+  renderCart();
+};
+
+// DEPRECATED: Old addToCart function kept for compatibility
 window.addToCart = function(drugId) {
   const drug = allDrugs.find(d => d.drug_id === drugId);
   
@@ -145,21 +273,23 @@ window.addToCart = function(drugId) {
       name: drug.name,
       price: drug.price || 0,
       quantity: 1,
-      stock: drug.stock
+      stock: drug.stock,
+      unit: 'pill',
+      unit_label: 'Viên'
     });
   }
   
   renderCart();
 };
 
-window.updateCartQty = function(drugId, delta) {
-  const item = cart.find(i => i.drug_id === drugId);
+window.updateCartQty = function(drugId, unit, delta) {
+  const item = cart.find(i => i.drug_id === drugId && i.unit === unit);
   if (!item) return;
   
   const newQty = item.quantity + delta;
   
   if (newQty <= 0) {
-    removeFromCart(drugId);
+    removeFromCart(drugId, unit);
     return;
   }
   
@@ -172,8 +302,8 @@ window.updateCartQty = function(drugId, delta) {
   renderCart();
 };
 
-window.removeFromCart = function(drugId) {
-  cart = cart.filter(item => item.drug_id !== drugId);
+window.removeFromCart = function(drugId, unit) {
+  cart = cart.filter(item => !(item.drug_id === drugId && item.unit === unit));
   renderCart();
   showInfo('Đã xóa sản phẩm khỏi giỏ hàng');
 };
@@ -200,18 +330,21 @@ function renderCart() {
   container.innerHTML = cart.map(item => `
     <div class="cart-item">
       <div class="cart-item-header">
-        <span class="cart-item-name">${item.name}</span>
-        <button class="cart-item-remove" onclick="window.removeFromCart(${item.drug_id})">
+        <span class="cart-item-name">
+          ${item.name}
+          ${item.unit_label ? `<br><small style="color: #6b7280; font-size: 0.85rem;">(${item.unit_label})</small>` : ''}
+        </span>
+        <button class="cart-item-remove" onclick="window.removeFromCart(${item.drug_id}, '${item.unit || 'pill'}')">
           <i class='bx bx-x'></i>
         </button>
       </div>
       <div class="cart-item-details">
         <div class="quantity-controls">
-          <button onclick="window.updateCartQty(${item.drug_id}, -1)">
+          <button onclick="window.updateCartQty(${item.drug_id}, '${item.unit || 'pill'}', -1)">
             <i class='bx bx-minus'></i>
           </button>
           <span>${item.quantity}</span>
-          <button onclick="window.updateCartQty(${item.drug_id}, 1)">
+          <button onclick="window.updateCartQty(${item.drug_id}, '${item.unit || 'pill'}', 1)">
             <i class='bx bx-plus'></i>
           </button>
         </div>

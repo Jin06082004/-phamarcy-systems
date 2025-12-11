@@ -3,11 +3,32 @@ import userModel from "../models/userModel.js";
 
 /**
  * POST /carts/add
- * body: { user_id?, guest_token?, item: { drug_id, name, price, quantity } }
+ * body: { user_id?, guest_token?, guest_id?, item: { drug_id, name, price, quantity, unit?, unit_price? } }
+ * OR body: { guest_id, drug_id, quantity, unit?, unit_price? }
  */
 export const addToCart = async (req, res) => {
   try {
-    const { user_id, guest_token, item } = req.body;
+    // ✨ Hỗ trợ cả 2 format: legacy và new format
+    let user_id, guest_token, item;
+    
+    if (req.body.item) {
+      // Legacy format
+      ({ user_id, guest_token, item } = req.body);
+      guest_token = guest_token || req.body.guest_id;
+    } else {
+      // New format (direct params)
+      const { guest_id, drug_id, quantity, unit, unit_price, name, price } = req.body;
+      guest_token = guest_id;
+      item = {
+        drug_id,
+        name: name || `Drug ${drug_id}`,
+        price: unit_price || price || 0,
+        quantity: quantity || 1,
+        unit: unit || 'pill',
+        unit_price: unit_price || price || 0
+      };
+    }
+    
     if (!item || !item.drug_id || !item.quantity) {
       return res.status(400).json({ success: false, message: "Item không hợp lệ" });
     }
@@ -18,11 +39,16 @@ export const addToCart = async (req, res) => {
     if (!cart) {
       cart = await Cart.create({ ...query, items: [item] });
     } else {
-      // ghép item nếu đã tồn tại drug_id
-      const idx = cart.items.findIndex(i => Number(i.drug_id) === Number(item.drug_id));
+      // ✨ Ghép item nếu đã tồn tại drug_id VÀ unit
+      const idx = cart.items.findIndex(i => 
+        Number(i.drug_id) === Number(item.drug_id) && 
+        (i.unit || 'pill') === (item.unit || 'pill')
+      );
+      
       if (idx >= 0) {
         cart.items[idx].quantity = Number(cart.items[idx].quantity) + Number(item.quantity);
         cart.items[idx].price = Number(item.price || cart.items[idx].price || 0);
+        cart.items[idx].unit_price = Number(item.unit_price || cart.items[idx].unit_price || item.price || 0);
       } else {
         cart.items.push(item);
       }

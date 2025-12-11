@@ -162,14 +162,97 @@
             </select>
           </div>
 
-          <!-- Giá và Số lượng (Grid 2 cột) -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+          <!-- Giá và Số lượng theo đơn vị -->
+          <div style="margin-bottom: 24px;">
+            <h4 style="color: #10b981; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 1.1rem;">
+              <i class='bx bx-purchase-tag' style="font-size: 1.3rem;"></i>
+              Giá & Tồn kho theo đơn vị
+            </h4>
+            
+            <!-- VIÊN -->
+            <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <h5 style="color: #065f46; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+                <i class='bx bxs-circle' style="color: #10b981; font-size: 0.7rem;"></i>
+                💊 Viên (Đơn vị cơ bản)
+              </h5>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Giá (₫/viên)</label>
+                  <input type="number" id="price-pill" min="0" placeholder="5000" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Tồn kho (viên)</label>
+                  <input type="number" id="stock-pill" min="0" placeholder="1000" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+              </div>
+            </div>
+            
+            <!-- VỈ -->
+            <div style="background: #eff6ff; border: 2px solid #93c5fd; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <h5 style="color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+                <i class='bx bxs-grid' style="color: #3b82f6; font-size: 0.9rem;"></i>
+                📦 Vỉ
+              </h5>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Giá (₫/vỉ)</label>
+                  <input type="number" id="price-blister" min="0" placeholder="45000" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Số viên/vỉ</label>
+                  <input type="number" id="qty-blister" min="1" placeholder="10" value="10" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Tồn kho (vỉ)</label>
+                  <input type="number" id="stock-blister" min="0" placeholder="50" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+              </div>
+            </div>
+            
+            <!-- HỘP -->
+            <div style="background: #fef3c7; border: 2px solid #fcd34d; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+              <h5 style="color: #78350f; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
+                <i class='bx bxs-box' style="color: #f59e0b; font-size: 1rem;"></i>
+                📦 Hộp
+              </h5>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Giá (₫/hộp)</label>
+                  <input type="number" id="price-box" min="0" placeholder="400000" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Số viên/hộp</label>
+                  <input type="number" id="qty-box" min="1" placeholder="100" value="100" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+                <div>
+                  <label style="font-size: 0.875rem; color: #374151; margin-bottom: 4px; display: block; font-weight: 600;">Tồn kho (hộp)</label>
+                  <input type="number" id="stock-box" min="0" placeholder="10" style="width: 100%; padding: 10px 12px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-weight: 600;" />
+                </div>
+              </div>
+            </div>
+            
+            <!-- Đơn vị mặc định -->
+            <div style="margin-top: 16px;">
+              <label style="font-weight: 600; color: #374151; margin-bottom: 8px; display: block; font-size: 0.95rem;">
+                <i class='bx bx-check-circle' style="color: #10b981;"></i>
+                Đơn vị hiển thị mặc định
+              </label>
+              <select id="default-unit" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; cursor: pointer;">
+                <option value="pill">💊 Viên</option>
+                <option value="blister">📦 Vỉ</option>
+                <option value="box">📦 Hộp</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Giá và Số lượng (Grid 2 cột) - DEPRECATED -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; display: none;">
             <div class="form-group">
               <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #1f2937; margin-bottom: 8px; font-size: 0.95rem;">
                 <i class='bx bx-money' style="font-size: 1.2rem; color: #10b981;"></i>
                 Giá (₫):
               </label>
-              <input type="number" id="drug-price" required min="0" placeholder="150000" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s; font-weight: 600;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'" />
+              <input type="number" id="drug-price" min="0" placeholder="150000" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s; font-weight: 600;" />
             </div>
 
             <div class="form-group">
@@ -177,7 +260,7 @@
                 <i class='bx bx-package' style="font-size: 1.2rem; color: #10b981;"></i>
                 Số lượng:
               </label>
-              <input type="number" id="drug-stock" required min="0" placeholder="58" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s; font-weight: 600;" onfocus="this.style.borderColor='#10b981'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'" />
+              <input type="number" id="drug-stock" min="0" placeholder="58" style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; transition: all 0.3s; font-weight: 600;" />
             </div>
           </div>
 
@@ -482,17 +565,36 @@
         editingDrugId = drugId;
         
         if (drugId) {
-          modalTitle.textContent = "Sửa thông tin thuốc";
+          modalTitle.innerHTML = '<i class="bx bx-edit"></i><span>Sửa thông tin thuốc</span>';
           const drug = allDrugs.find(d => d.drug_id === drugId);
           
           if (drug) {
             document.getElementById("drug-code").value = drug.drug_code || "";
             document.getElementById("drug-name").value = drug.name || "";
             document.getElementById("drug-category").value = drug.category_id || "";
-            document.getElementById("drug-price").value = drug.price || "";
-            document.getElementById("drug-stock").value = drug.stock || "";
             document.getElementById("drug-description").value = drug.description || "";
             document.getElementById("drug-image").value = drug.image || "";
+            
+            // ✨ Load pricing data
+            if (drug.pricing) {
+              document.getElementById("price-pill").value = drug.pricing.pill?.price || 0;
+              document.getElementById("stock-pill").value = drug.pricing.pill?.stock || 0;
+              
+              document.getElementById("price-blister").value = drug.pricing.blister?.price || 0;
+              document.getElementById("qty-blister").value = drug.pricing.blister?.quantity_per_unit || 10;
+              document.getElementById("stock-blister").value = drug.pricing.blister?.stock || 0;
+              
+              document.getElementById("price-box").value = drug.pricing.box?.price || 0;
+              document.getElementById("qty-box").value = drug.pricing.box?.quantity_per_unit || 100;
+              document.getElementById("stock-box").value = drug.pricing.box?.stock || 0;
+              
+              document.getElementById("default-unit").value = drug.default_unit || 'pill';
+            } else {
+              // Fallback to old format
+              document.getElementById("price-pill").value = drug.price || 0;
+              document.getElementById("stock-pill").value = drug.stock || 0;
+              document.getElementById("default-unit").value = 'pill';
+            }
             
             // Preview existing image
             if (drug.image) {
@@ -508,11 +610,14 @@
             }
           }
         } else {
-          modalTitle.textContent = "Thêm thuốc mới";
+          modalTitle.innerHTML = '<i class="bx bx-plus-medical"></i><span>Thêm thuốc mới</span>';
           form.reset();
           document.getElementById("image-preview").style.display = "none";
           document.getElementById("preview-img").src = "";
           document.getElementById("drug-image").value = "";
+          document.getElementById("default-unit").value = "pill";
+          document.getElementById("qty-blister").value = "10";
+          document.getElementById("qty-box").value = "100";
           uploadedImageFilename = null;
         }
         
@@ -600,20 +705,36 @@
           drug_code: document.getElementById("drug-code").value.trim().toUpperCase(),
           name: document.getElementById("drug-name").value.trim(),
           category_id: Number(document.getElementById("drug-category").value),
-          price: Number(document.getElementById("drug-price").value),
-          stock: Number(document.getElementById("drug-stock").value),
           description: document.getElementById("drug-description").value.trim(),
           image: document.getElementById("drug-image").value.trim(),
+          
+          // ✨ Pricing structure
+          pricing: {
+            pill: {
+              price: Number(document.getElementById("price-pill").value) || 0,
+              stock: Number(document.getElementById("stock-pill").value) || 0
+            },
+            blister: {
+              price: Number(document.getElementById("price-blister").value) || 0,
+              quantity_per_unit: Number(document.getElementById("qty-blister").value) || 10,
+              stock: Number(document.getElementById("stock-blister").value) || 0
+            },
+            box: {
+              price: Number(document.getElementById("price-box").value) || 0,
+              quantity_per_unit: Number(document.getElementById("qty-box").value) || 100,
+              stock: Number(document.getElementById("stock-box").value) || 0
+            }
+          },
+          default_unit: document.getElementById("default-unit").value,
+          
+          // DEPRECATED: Giữ để tương thích
+          price: Number(document.getElementById("price-pill").value) || 0,
+          stock: Number(document.getElementById("stock-pill").value) || 0,
         };
 
         // Validate
         if (!formData.drug_code || !formData.name || !formData.category_id) {
           showError("Vui lòng điền đầy đủ thông tin bắt buộc (Mã thuốc, Tên thuốc, Danh mục)");
-          return;
-        }
-
-        if (formData.price < 0 || formData.stock < 0) {
-          showError("Giá và số lượng phải lớn hơn hoặc bằng 0");
           return;
         }
 

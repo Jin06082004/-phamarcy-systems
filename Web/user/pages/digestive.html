@@ -30,6 +30,7 @@
     <script type="module">
       import { drugAPI } from "../../shared/api.js";
       import { initAdminSecretButton } from "../../shared/adminButton.js";
+      import { renderProducts, updatePrice, addToCartWithUnit } from "../../shared/productDisplay.js";
 
       initAdminSecretButton('/Web/admin/drugs.html');
       
@@ -43,7 +44,20 @@
           products = products.filter(p => Number(p.category_id) === CATEGORY_ID);
           allProducts = products;
 
-          const list = document.getElementById('productList');
+          renderProducts(products, 'productList');
+        } catch (error) {
+          console.error('❌ Lỗi tải dữ liệu:', error);
+          document.getElementById('productList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
+        }
+      }
+      
+      window.updatePrice = (drugId) => updatePrice(drugId, allProducts);
+      window.addToCartWithUnit = (drugId) => addToCartWithUnit(drugId, allProducts);
+
+      loadProducts();
+    </script>
+  </body>
+</html>
           if (products.length === 0) {
             list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">Chưa có sản phẩm</div>';
             return;

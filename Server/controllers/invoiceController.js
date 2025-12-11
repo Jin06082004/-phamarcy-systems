@@ -63,14 +63,32 @@ export const createInvoice = async (req, res) => {
                 return res.status(404).json({ success: false, message: `Không tìm thấy thuốc: ${it.medicine_id}` });
             }
 
-            if (drug.stock < Number(it.quantity)) {
-                return res.status(400).json({ success: false, message: `Không đủ tồn kho cho thuốc ${drug.name}` });
+            // Kiểm tra stock theo đơn vị
+            const unit = it.unit || 'pill';
+            let availableStock = 0;
+            let unitPrice = 0;
+            
+            if (drug.pricing && drug.pricing[unit]) {
+                availableStock = drug.pricing[unit].stock || 0;
+                unitPrice = drug.pricing[unit].price || 0;
+            } else {
+                // Fallback to legacy stock
+                availableStock = drug.stock || 0;
+                unitPrice = drug.price || 0;
+            }
+            
+            if (availableStock < Number(it.quantity)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Không đủ tồn kho cho thuốc ${drug.name} (${unit}). Còn ${availableStock}, cần ${it.quantity}` 
+                });
             }
 
             // Fill missing fields
             it.name = it.name || drug.name;
-            it.unit_price = Number(it.unit_price ?? drug.price);
+            it.unit_price = Number(it.unit_price ?? unitPrice);
             it.total_price = Number(it.total_price ?? it.unit_price * Number(it.quantity) - Number(it.discount || 0));
+            it.unit = unit; // Lưu đơn vị vào item
         }
 
         // Compute invoice totals
@@ -112,10 +130,21 @@ export const createInvoice = async (req, res) => {
         for (const it of payload.items) {
             const drug = await drugModel.findOne({ drug_id: Number(it.medicine_id) });
             if (drug) {
-                const oldStock = drug.stock;
-                drug.stock = Number(drug.stock) - Number(it.quantity);
-                await drug.save();
-                console.log(`✅ Giảm ${it.quantity} ${drug.name} (${oldStock} → ${drug.stock})`);
+                const unit = it.unit || 'pill';
+                
+                // Giảm stock theo đơn vị
+                if (drug.pricing && drug.pricing[unit]) {
+                    const oldStock = drug.pricing[unit].stock;
+                    drug.pricing[unit].stock = Number(oldStock || 0) - Number(it.quantity);
+                    await drug.save();
+                    console.log(`✅ Giảm ${it.quantity} ${drug.name} (${unit}): ${oldStock} → ${drug.pricing[unit].stock}`);
+                } else {
+                    // Fallback to legacy stock
+                    const oldStock = drug.stock;
+                    drug.stock = Number(drug.stock) - Number(it.quantity);
+                    await drug.save();
+                    console.log(`✅ Giảm ${it.quantity} ${drug.name} (legacy): ${oldStock} → ${drug.stock}`);
+                }
             }
         }
 
