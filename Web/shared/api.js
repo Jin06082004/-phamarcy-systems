@@ -40,7 +40,7 @@ export const apiCall = async (endpoint, method = "GET", data = null) => {
 
         console.log(`📥 Status: ${response.status}`, parsed);
 
-        // ✅ Tự động clear token cũ khi gặp lỗi 403 (Forbidden)
+        // Tự động clear token cũ khi gặp lỗi 403 (Forbidden)
         if (response.status === 403 || response.status === 401) {
             console.warn('⚠️ Token không hợp lệ, đang xóa...');
             localStorage.removeItem('token');
@@ -78,8 +78,8 @@ export const userAPI = {
     register: (payload) => apiCall("/users/register", "POST", payload),
     login: (payload) => apiCall("/users/login", "POST", payload),
     activateAdmin: (payload) => apiCall("/users/activate-admin", "POST", payload),
-    getAll: () => apiCall("/users"), // ✅ Cần token
-    getById: (id) => apiCall(`/users/${id}`), // ✅ Cần token
+    getAll: () => apiCall("/users"), //  Cần token
+    getById: (id) => apiCall(`/users/${id}`), //  Cần token
     update: (id, data) => apiCall(`/users/${id}`, "PUT", data),
     delete: (id) => apiCall(`/users/${id}`, "DELETE"),
     
@@ -93,9 +93,9 @@ export const userAPI = {
 
 // ========== ORDER API ==========
 export const orderAPI = {
-    getAll: () => apiCall("/orders"), // ✅ Cần token
+    getAll: () => apiCall("/orders"), //  Cần token
     getById: (id) => apiCall(`/orders/${id}`),
-    getMyOrders: () => apiCall("/orders/my-orders"), // ✅ Cần token
+    getMyOrders: () => apiCall("/orders/my-orders"), //  Cần token
     getTopSellers: (period) => apiCall(`/orders/top/${period}`),
     create: (data) => apiCall("/orders", "POST", data),
     update: (id, data) => apiCall(`/orders/${id}`, "PUT", data),

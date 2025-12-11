@@ -4,7 +4,8 @@ class Chatbox {
   constructor() {
     this.isOpen = false;
     this.messages = [];
-    this.API_URL = 'http://localhost:5000';
+    // trỏ đến API server có tiền tố /api (server mount routers tại /api/...)
+    this.API_URL = (window.__API_URL__ || 'http://localhost:5000') + '/api';
     this.isFetching = false;
     
     // Cấu hình danh mục và từ khóa liên quan
