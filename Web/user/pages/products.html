@@ -30,6 +30,7 @@
     <script type="module">
       import { drugAPI } from "../../shared/api.js";
       import { initAdminSecretButton } from "../../shared/adminButton.js";
+      import { renderProducts } from "../../shared/productDisplay.js";
 
       // 🔒 Khởi tạo nút admin ẩn
       initAdminSecretButton('/Web/admin/drugs.html');
@@ -48,54 +49,18 @@
           
           allProducts = products;
 
-          const list = document.getElementById('productsList');
           if (products.length === 0) {
-            list.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">Chưa có sản phẩm</div>';
+            document.getElementById('productsList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #666;">Chưa có sản phẩm</div>';
             return;
           }
 
-          list.innerHTML = products.map(p => {
-            let imgTag = "";
-            if (p.image) {
-              const isAbsolute = p.image.startsWith("http") || p.image.startsWith("/");
-              const src = isAbsolute ? p.image : ("/shared/" + p.image.replace(/^\.\//, "").replace(/^\//, ""));
-              imgTag = `<img src="${src}" alt="${p.name}" style="width:100%;height:180px;object-fit:cover;" />`;
-            }
-            return `
-            <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              ${imgTag}
-              <div style="padding: 15px;">
-                <h4 style="margin: 0 0 8px; color: #155724;">${p.name}</h4>
-                <p style="margin: 0 0 10px; font-size: 13px; color: #666;">${p.description || 'Sản phẩm chất lượng'}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-weight: bold; color: #d32f2f;">${(p.price || 0).toLocaleString()}₫</span>
-                  <button onclick="window.addToCart(${p.drug_id})" style="background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Thêm giỏ</button>
-                </div>
-              </div>
-            </div>
-          `;
-          }).join('');
+          // ✨ Dùng renderProducts từ productDisplay.js với unit selector
+          renderProducts(products, 'productsList');
         } catch (error) {
           console.error('Error:', error);
           document.getElementById('productsList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
         }
       }
-      
-      window.addToCart = (id) => {
-        const product = allProducts.find(p => p.drug_id === id);
-        if (!product) {
-          alert('Không tìm thấy sản phẩm');
-          return;
-        }
-        
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existing = cart.find(item => item.drug_id === id);
-        if (existing) existing.quantity++;
-        else cart.push({ drug_id: id, name: product.name, price: product.price, quantity: 1 });
-        localStorage.setItem('cart', JSON.stringify(cart));
-        alert(`✅ Đã thêm "${product.name}" vào giỏ`);
-      };
-
       loadProducts();
     </script>
   </body>

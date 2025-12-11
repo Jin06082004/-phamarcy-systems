@@ -10,10 +10,16 @@ const UNIT_LABELS = {
   box: 'Hộp'
 };
 
+// ✨ Store products globally để inline onclick handlers có thể access
+let _currentProducts = [];
+
 /**
  * Render danh sách sản phẩm với dropdown chọn đơn vị
  */
 export function renderProducts(products, containerId = 'productList') {
+  // Store products trong module scope
+  _currentProducts = products || [];
+  
   const list = document.getElementById(containerId);
   
   if (!products || products.length === 0) {
@@ -83,8 +89,9 @@ export function renderProducts(products, containerId = 'productList') {
 /**
  * Cập nhật giá khi thay đổi đơn vị
  */
-export function updatePrice(drugId, allProducts) {
-  const product = allProducts.find(p => p.drug_id === drugId);
+export function updatePrice(drugId) {
+  // Tìm product từ stored products
+  const product = _currentProducts.find(p => p.drug_id === drugId);
   if (!product) return;
   
   const selectedUnit = document.getElementById(`unit-${drugId}`).value;
@@ -97,8 +104,9 @@ export function updatePrice(drugId, allProducts) {
 /**
  * Thêm vào giỏ hàng với đơn vị đã chọn
  */
-export async function addToCartWithUnit(drugId, allProducts) {
-  const product = allProducts.find(p => p.drug_id === drugId);
+export async function addToCartWithUnit(drugId) {
+  // Tìm product từ stored products
+  const product = _currentProducts.find(p => p.drug_id === drugId);
   if (!product) {
     if (window.notification) {
       window.notification.error('Không tìm thấy sản phẩm');
@@ -155,3 +163,7 @@ export async function addToCartWithUnit(drugId, allProducts) {
     }
   }
 }
+
+// ✨ Expose functions vào window để inline onclick handlers có thể gọi
+window.updatePrice = updatePrice;
+window.addToCartWithUnit = addToCartWithUnit;
