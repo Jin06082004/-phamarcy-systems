@@ -35,14 +35,12 @@
       initAdminSecretButton('/Web/admin/drugs.html');
       
       const CATEGORY_ID = 3; // Vitamin & Khoáng chất
-      let allProducts = [];
 
       async function loadProducts() {
         try {
           const drugsRes = await drugAPI.getAll();
           let products = Array.isArray(drugsRes) ? drugsRes : (drugsRes.data || []);
           products = products.filter(p => Number(p.category_id) === CATEGORY_ID);
-          allProducts = products;
 
           renderProducts(products, 'productList');
         } catch (error) {
@@ -50,9 +48,6 @@
           document.getElementById('productList').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: red;">Lỗi tải dữ liệu</div>';
         }
       }
-      
-      window.updatePrice = (drugId) => updatePrice(drugId, allProducts);
-      window.addToCartWithUnit = (drugId) => addToCartWithUnit(drugId, allProducts);
 
       loadProducts();
     </script>

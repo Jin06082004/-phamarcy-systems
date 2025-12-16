@@ -201,35 +201,48 @@
       // load server cart first if possible
       document.addEventListener('DOMContentLoaded', async () => {
         const user = JSON.parse(localStorage.getItem('user') || 'null');
+        const token = localStorage.getItem('token');
         
         // Try to load from server
         let serverSuccess = false;
         try {
-          if (user && user.user_id) {
-            const res = await cartAPI.get(user.user_id);
-            serverCart = res.data || res;
-            serverSuccess = true;
+          let key;
+          
+          // ✅ Ưu tiên user_id nếu đã login
+          if (user && user.user_id && token) {
+            key = user.user_id;
+            console.log('🔑 Loading cart for user:', key);
           } else {
-            const guest = localStorage.getItem('guest_token');
-            if (guest) {
-              const res = await cartAPI.get(guest);
+            // ✅ Fallback sang guest_token
+            const guestToken = localStorage.getItem('guest_token');
+            if (guestToken) {
+              key = guestToken;
+              console.log('🔑 Loading cart for guest:', key);
+            }
+          }
+          
+          if (key) {
+            const res = await cartAPI.get(key);
+            console.log('📦 Cart response:', res);
+            
+            if (res && (res.data || res.items)) {
               serverCart = res.data || res;
-              serverSuccess = true;
+              if (serverCart.items && serverCart.items.length > 0) {
+                serverSuccess = true;
+                console.log('✅ Loaded server cart:', serverCart.items.length, 'items');
+              }
             }
           }
         } catch (err) {
-          console.warn('Load server cart failed, using localStorage', err);
-          serverCart = null;
+          console.warn('⚠️ Failed to load server cart:', err);
+        }
+
+        // Fallback to localStorage if server failed
+        if (!serverSuccess) {
+          console.log('ℹ️ Falling back to localStorage cart');
         }
         
-        // If server cart is empty but localStorage has items, use localStorage
-        const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        if ((!serverCart || !serverCart.items || serverCart.items.length === 0) && localCart.length > 0) {
-          console.log('Server cart empty, using localStorage cart');
-          serverCart = null;
-        }
-        
-        await renderCart();
+        renderCart();
       });
     </script>
   </body>

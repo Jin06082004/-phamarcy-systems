@@ -105,7 +105,6 @@ export function updatePrice(drugId) {
  * Thêm vào giỏ hàng với đơn vị đã chọn
  */
 export async function addToCartWithUnit(drugId) {
-  // Tìm product từ stored products
   const product = _currentProducts.find(p => p.drug_id === drugId);
   if (!product) {
     if (window.notification) {
@@ -126,24 +125,59 @@ export async function addToCartWithUnit(drugId) {
   }
 
   try {
-    const guestId = localStorage.getItem('guest_id') || 'guest_' + Date.now();
-    localStorage.setItem('guest_id', guestId);
+    // ✅ KIỂM TRA USER ĐÃ LOGIN HAY CHƯA
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const token = localStorage.getItem('token');
+    
+    let payload;
+    
+    if (user && user.user_id && token) {
+      // ✅ ĐÃ LOGIN: Dùng user_id
+      payload = {
+        user_id: user.user_id,
+        item: {
+          drug_id: drugId,
+          name: product.name,
+          quantity: 1,
+          unit: selectedUnit,
+          unit_price: unitData.price,
+          price: unitData.price
+        }
+      };
+    } else {
+      // ✅ CHƯA LOGIN: Dùng guest_token
+      const guestToken = localStorage.getItem('guest_token') || 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('guest_token', guestToken);
+      
+      payload = {
+        guest_token: guestToken,
+        item: {
+          drug_id: drugId,
+          name: product.name,
+          quantity: 1,
+          unit: selectedUnit,
+          unit_price: unitData.price,
+          price: unitData.price
+        }
+      };
+    }
 
-    const payload = {
-      guest_id: guestId,
-      drug_id: drugId,
-      quantity: 1,
-      unit: selectedUnit,
-      unit_price: unitData.price
-    };
+    console.log('🛒 Adding to cart:', payload);
 
     const res = await fetch('http://localhost:5000/api/carts/add', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        // ✅ Gửi token nếu đã login
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
       body: JSON.stringify(payload)
     });
 
     if (res.ok) {
+      const result = await res.json();
+      console.log('✅ Cart updated:', result);
+      
       if (window.notification) {
         window.notification.success(`✅ Đã thêm ${product.name} (${UNIT_LABELS[selectedUnit]}) vào giỏ hàng!`);
       }
@@ -152,6 +186,7 @@ export async function addToCartWithUnit(drugId) {
       }
     } else {
       const error = await res.json();
+      console.error('❌ Add to cart error:', error);
       if (window.notification) {
         window.notification.error('Không thể thêm vào giỏ: ' + (error.message || 'Lỗi không xác định'));
       }
